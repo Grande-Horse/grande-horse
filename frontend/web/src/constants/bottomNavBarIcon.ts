@@ -1,4 +1,4 @@
-import GrossIcon from '@/assets/icons/grassIcon.svg?react';
+import PastureIcon from '@/assets/icons/pastureIcon.svg?react';
 import StallIcon from '@/assets/icons/stallIcon.svg?react';
 import RacetrackIcon from '@/assets/icons/racetrackIcon.svg?react';
 import HorseDealIcon from '@/assets/icons/horseDealIcon.svg?react';
@@ -10,7 +10,7 @@ import CoinIcon from '@/assets/icons/coinIcon.svg?react';
 
 export const bottomNavBarIcon = {
   default: [
-    { icon: GrossIcon, text: '목장' },
+    { icon: PastureIcon, text: '목장' },
     { icon: StallIcon, text: '마구간' },
     { icon: RacetrackIcon, text: '경마장' },
     { icon: HorseDealIcon, text: '마시장' },
