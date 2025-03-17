@@ -11,30 +11,14 @@ const Header: React.FC<HeaderProps> = ({ variant = 'default', title }) => {
   const coin = 100000;
   const foot = 100000;
 
-  return (
-    <>
-      {variant === 'default' && (
-        <header className={commonStyle}>
-          <DefaultContent coin={coin} foot={foot} />
-        </header>
-      )}
-      {variant === 'info' && (
-        <header className={commonStyle}>
-          <InfoContent title={title} />
-        </header>
-      )}
-      {variant === 'waitingRoom' && (
-        <header className={commonStyle}>
-          <WaitingRoomContent title={title} />
-        </header>
-      )}
-      {variant === 'ranch' && (
-        <header className={commonStyle}>
-          <RanchContent coin={coin} foot={foot} />
-        </header>
-      )}
-    </>
-  );
+  const component = {
+    default: <DefaultContent coin={coin} foot={foot} />,
+    info: <InfoContent title={title} />,
+    waitingRoom: <WaitingRoomContent title={title} />,
+    ranch: <RanchContent coin={coin} foot={foot} />,
+  };
+
+  return <header className={commonStyle}>{component[variant]}</header>;
 };
 
 export default Header;
