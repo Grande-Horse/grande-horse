@@ -11,7 +11,7 @@ interface InfoHeaderProps {
   title?: string;
 }
 
-const defaultContent: React.FC<CurrencyProps> = ({ coin, foot }) => (
+const DefaultContent: React.FC<CurrencyProps> = ({ coin, foot }) => (
   <>
     <button className='cursor-pointer'>
       <BackIcon />
@@ -30,7 +30,7 @@ const defaultContent: React.FC<CurrencyProps> = ({ coin, foot }) => (
   </>
 );
 
-const infoContent: React.FC<InfoHeaderProps> = ({ title }) => (
+const InfoContent: React.FC<InfoHeaderProps> = ({ title }) => (
   <div className='flex w-full items-center justify-between'>
     <button className='cursor-pointer'>
       <BackIcon />
@@ -43,7 +43,7 @@ const infoContent: React.FC<InfoHeaderProps> = ({ title }) => (
   </div>
 );
 
-const waitingRoomContent: React.FC<InfoHeaderProps> = ({ title }) => (
+const WaitingRoomContent: React.FC<InfoHeaderProps> = ({ title }) => (
   <>
     <button className='cursor-pointer'>
       <BackIcon />
@@ -54,7 +54,7 @@ const waitingRoomContent: React.FC<InfoHeaderProps> = ({ title }) => (
   </>
 );
 
-const ranchContent: React.FC<CurrencyProps> = ({ coin, foot }) => (
+const RanchContent: React.FC<CurrencyProps> = ({ coin, foot }) => (
   <>
     <div className='w-16'></div>
     <div className='flex gap-6'>
@@ -70,4 +70,4 @@ const ranchContent: React.FC<CurrencyProps> = ({ coin, foot }) => (
   </>
 );
 
-export { defaultContent, infoContent, waitingRoomContent, ranchContent };
+export { DefaultContent, InfoContent, WaitingRoomContent, RanchContent };
