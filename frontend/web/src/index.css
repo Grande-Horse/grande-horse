@@ -1,5 +1,10 @@
 @import "tailwindcss";
 
+@font-face {
+  font-family: 'DungGeunMo';
+  src: url('/fonts/DungGeunMo.ttf');
+}
+
 @theme {
   --color-primary: #3D4B63;
   --color-secondary: #E0EEFF;
