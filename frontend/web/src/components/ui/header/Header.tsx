@@ -1,4 +1,4 @@
-import { DefaultContent, InfoContent, RanchContent, WaitingRoomContent } from './HeaderContent';
+import { DefaultContent, InfoContent, RanchContent, WaitingRoomContent } from '@/components/ui/header/HeaderContent';
 
 interface HeaderProps {
   variant?: 'default' | 'info' | 'waitingRoom' | 'ranch';
