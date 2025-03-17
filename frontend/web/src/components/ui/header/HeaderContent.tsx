@@ -37,7 +37,7 @@ const InfoContent: React.FC<InfoHeaderProps> = ({ title }) => (
     </button>
 
     <div className='flex'>
-      <p>{title}</p>
+      <p>{title ?? ''}</p>
     </div>
     <div className='w-16'></div>
   </div>
@@ -49,7 +49,7 @@ const WaitingRoomContent: React.FC<InfoHeaderProps> = ({ title }) => (
       <BackIcon />
     </button>
     <div className='bg-secondary ml-10 flex flex-1 justify-center overflow-hidden rounded-xl border-1 p-3 text-black'>
-      <p className='line-clamp-1'>{title}</p>
+      <p className='line-clamp-1'>{title ?? '방 제목을 입력하세요'}</p>
     </div>
   </>
 );

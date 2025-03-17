@@ -8,7 +8,7 @@ interface LayoutProps {
 const GlobalLayout: React.FC<LayoutProps> = ({ children }) => {
   return (
     <div className='bg-background max-w-base font-primary text-body2 m-auto min-h-screen flex-col text-white'>
-      <Header />
+      <Header variant='default' />
       {children}
     </div>
   );
