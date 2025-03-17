@@ -5,6 +5,11 @@
   src: url('/fonts/DungGeunMo.ttf');
 }
 
+@utility text-stroke {
+  -webkit-text-stroke: 2px black;
+  paint-order: stroke fill;
+}
+
 @theme {
   --color-primary: #3D4B63;
   --color-secondary: #E0EEFF;

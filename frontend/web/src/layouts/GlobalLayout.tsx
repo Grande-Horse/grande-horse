@@ -6,7 +6,7 @@ interface LayoutProps {
 
 const GlobalLayout: React.FC<LayoutProps> = ({ children }) => {
   return (
-    <div className='bg-background max-w-base font-primary text-body2 m-auto flex min-h-screen items-center justify-center text-white'>
+    <div className='bg-background max-w-base font-primary text-body2 m-auto flex min-h-screen text-white'>
       {children}
     </div>
   );
