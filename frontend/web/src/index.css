@@ -10,6 +10,14 @@
   paint-order: stroke fill;
 }
 
+@utility scrollbar-hide {
+  ::-webkit-scrollbar {
+    display: none;
+  }
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
 @theme {
   --color-primary: #3D4B63;
   --color-secondary: #E0EEFF;
@@ -33,7 +41,10 @@
   --text-heading4: 1.8rem;
   --text-body1: 1.6rem;
   --text-body2: 1.4rem;
-  --text-detail: 1.2rem;
+  --text-detail1: 1.2rem;
+  --text-detail2: 1rem;
+  --text-detail3: 0.8rem;
+  --text-detail4: 0.6rem;
 
   --font-primary: 'DungGeunMo';
   --container-base: 480px;
