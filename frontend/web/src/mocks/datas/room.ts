@@ -4,7 +4,7 @@ export const roomMockData: RoomData[] = [
   {
     id: 1,
     title: '오늘은 내가 1등~!',
-    rank: 'common',
+    rank: 'normal',
     batting: 100,
     players: 2,
     maxPlayers: 4,
@@ -37,7 +37,7 @@ export const roomMockData: RoomData[] = [
   {
     id: 3,
     title: '죽어도 1등!~!',
-    rank: 'legendary',
+    rank: 'legend',
     batting: 10000,
     players: 4,
     maxPlayers: 4,
