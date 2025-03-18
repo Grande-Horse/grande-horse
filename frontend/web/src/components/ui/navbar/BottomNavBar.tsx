@@ -8,7 +8,7 @@ interface BottomNavBarProps {
 const BottomNavBar: React.FC<BottomNavBarProps> = ({ variant }) => {
   return (
     <>
-      <nav className='sticky bottom-0 flex w-full items-center justify-around'>
+      <nav className='bg-background sticky bottom-0 flex w-full items-center justify-around'>
         {bottomNavBarIcon[variant].map((content, index) => {
           return (
             <Link
