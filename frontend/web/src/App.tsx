@@ -5,13 +5,13 @@ import HomePage from '@/pages';
 
 function App() {
   return (
-    <GlobalLayout>
-      <BrowserRouter>
+    <BrowserRouter>
+      <GlobalLayout>
         <Routes>
           <Route path='/' element={<HomePage />} />
         </Routes>
-      </BrowserRouter>
-    </GlobalLayout>
+      </GlobalLayout>
+    </BrowserRouter>
   );
 }
 
