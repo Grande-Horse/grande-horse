@@ -13,10 +13,10 @@ const BottomNavBar: React.FC<BottomNavBarProps> = ({ variant }) => {
           <Link
             key={index}
             to={{ pathname: '/' }}
-            className='hover:bg-primary flex w-full flex-col items-center justify-between'
+            className='hover:bg-primary flex w-full flex-col items-center justify-between py-2'
           >
             <content.icon className='size-14' />
-            <p className='text-stroke text-xl'>{content.text}</p>
+            <p className='text-stroke text-detail2'>{content.text}</p>
           </Link>
         );
       })}
