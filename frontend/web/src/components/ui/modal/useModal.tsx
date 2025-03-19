@@ -1,6 +1,6 @@
 import { ReactNode, useCallback } from 'react';
 import Modal from './Modal';
-import { MenuButton } from '../Button';
+import { Button } from '../Button';
 import { useModalDispatchContext } from './ModalProvider';
 
 interface ModalOptions {
@@ -27,7 +27,7 @@ const useModal = () => {
             <div>{content}</div>
 
             <div className='mt-4 flex gap-2'>
-              <MenuButton
+              <Button
                 variant='secondary'
                 onClick={() => {
                   if (onCancel) onCancel();
@@ -35,15 +35,15 @@ const useModal = () => {
                 }}
               >
                 {cancelText}
-              </MenuButton>
-              <MenuButton
+              </Button>
+              <Button
                 onClick={() => {
                   if (onConfirm) onConfirm();
                   close(id);
                 }}
               >
                 {confirmText}
-              </MenuButton>
+              </Button>
             </div>
           </>
         ),
