@@ -1,11 +1,6 @@
 import { createContext, useContext, useMemo, useState } from 'react';
-import * as types from './types';
+import Modals from './Modals';
 
-export const ModalStateContext = createContext<types.Modal[]>([]);
-export const ModalDispatchContext = createContext({
-  open: (_Component: React.Component, _props: types.ModalProps) => {},
-  close: (_Component: React.Component) => {},
-});
 export interface Modal {
   id: string;
   Component: React.ComponentType<ModalProps>;
@@ -19,22 +14,34 @@ export interface ModalProps {
   children?: React.ReactNode;
 }
 
+interface ModalDispatch {
+  open: (Component: React.ComponentType<ModalProps>, props: ModalProps) => string;
+  close: (id: string) => void;
+}
+
+export const ModalsStateContext = createContext<Modal[]>([]);
+export const ModalDispatchContext = createContext<ModalDispatch | null>(null);
+
 // Modal을 열고 닫을 때 Context내부의 모든 Modal을 리렌더링하지 않도록 열려있는 Modal의 상태와 모달 이벤트를 별도로 관리
-export const useModalStateContext = () => useContext(ModalStateContext);
-export const useModalDispatchContext = () => useContext(ModalDispatchContext);
+export const useModalsStateContext = () => useContext(ModalsStateContext);
+export const useModalDispatchContext = () => {
+  const context = useContext(ModalDispatchContext);
+  if (!context) throw new Error('useModalDispatchContext must be used within a ModalProvider');
+  return context;
+};
 
-function ModalProvider({ children }: { children: React.ReactNode }) {
-  const [openedModals, setOpenedModals] = useState<types.Modal[]>([]);
+const ModalProvider = ({ children }: { children: React.ReactNode }) => {
+  const [openedModals, setOpenedModals] = useState<Modal[]>([]);
 
-  const open = (Component: React.Component, props: types.ModalProps) => {
-    setOpenedModals((modals) => [...modals, { Component, props }]);
+  const open = (Component: React.ComponentType<ModalProps>, props: ModalProps) => {
+    const id = crypto.randomUUID();
+    setOpenedModals((modals) => [...modals, { id, Component, props }]);
+    return id;
   };
 
-  const close = (Component: React.Component) => {
+  const close = (id: string) => {
     setOpenedModals((modals) => {
-      return modals.filter((modal) => {
-        return modal.Component !== Component;
-      });
+      return modals.filter((modal) => modal.id !== id);
     });
   };
 
@@ -42,9 +49,13 @@ function ModalProvider({ children }: { children: React.ReactNode }) {
   const dispatch = useMemo(() => ({ open, close }), []);
 
   return (
-    <ModalStateContext.Provider value={openedModals}>
-      <ModalDispatchContext.Provider value={dispatch}>{children}</ModalDispatchContext.Provider>
-    </ModalStateContext.Provider>
+    <ModalsStateContext.Provider value={openedModals}>
+      <ModalDispatchContext.Provider value={dispatch}>
+        {children}
+        <Modals />
+      </ModalDispatchContext.Provider>
+    </ModalsStateContext.Provider>
   );
-}
+};
+
 export default ModalProvider;
