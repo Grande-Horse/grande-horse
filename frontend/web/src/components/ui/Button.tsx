@@ -1,10 +1,11 @@
-export interface MenuButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
+export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   children: React.ReactNode;
   variant?: 'primary' | 'secondary' | 'warning';
 }
 
-export const MenuButton: React.FC<MenuButtonProps> = ({ children, disabled, variant = 'primary' }: MenuButtonProps) => {
+export const Button: React.FC<ButtonProps> = ({ children, disabled, variant = 'primary', ...rest }: ButtonProps) => {
   const variants: Record<string, string> = {
+    primary: 'text-white bg-primary text-stroke cursor-pointer',
     secondary: 'text-white bg-secondary text-stroke cursor-pointer',
     warning: 'text-white bg-warning text-stroke cursor-pointer',
     disabled: 'text-darkgray bg-gray border-darkgray cursor-not-allowed',
@@ -16,6 +17,7 @@ export const MenuButton: React.FC<MenuButtonProps> = ({ children, disabled, vari
     <button
       className={`items-center justify-center rounded-sm border border-black px-16 py-4 ${currentStyle}`}
       disabled={disabled}
+      {...rest}
     >
       {children}
     </button>
