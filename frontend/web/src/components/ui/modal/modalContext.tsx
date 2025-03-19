@@ -6,6 +6,18 @@ export const ModalDispatchContext = createContext({
   open: (_Component: React.Component, _props: types.ModalProps) => {},
   close: (_Component: React.Component) => {},
 });
+export interface Modal {
+  id: string;
+  Component: React.ComponentType<ModalProps>;
+  props: ModalProps;
+}
+
+export interface ModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  id?: string;
+  children?: React.ReactNode;
+}
 
 // Modal을 열고 닫을 때 Context내부의 모든 Modal을 리렌더링하지 않도록 열려있는 Modal의 상태와 모달 이벤트를 별도로 관리
 export const useModalStateContext = () => useContext(ModalStateContext);
