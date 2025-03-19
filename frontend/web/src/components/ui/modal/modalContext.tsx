@@ -1,5 +1,5 @@
 import { createContext, useContext, useMemo, useState } from 'react';
-import Modals from './Modals';
+import ContextModals from './ContextModals';
 
 export interface Modal {
   id: string;
@@ -52,7 +52,7 @@ const ModalProvider = ({ children }: { children: React.ReactNode }) => {
     <ModalsStateContext.Provider value={openedModals}>
       <ModalDispatchContext.Provider value={dispatch}>
         {children}
-        <Modals />
+        <ContextModals />
       </ModalDispatchContext.Provider>
     </ModalsStateContext.Provider>
   );
