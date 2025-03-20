@@ -1,11 +1,9 @@
 import React from 'react';
-import { MenuButton } from './Button';
 
 interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
   label?: string;
   className?: string;
   variant?: 'default' | 'button';
-  onSubmit?: (event: React.FormEvent<HTMLFormElement>) => void;
 }
 
 const Input: React.FC<InputProps> = ({ label, className, variant = 'default', ...rest }) => {
@@ -24,7 +22,6 @@ const Input: React.FC<InputProps> = ({ label, className, variant = 'default', ..
             className={`w-full min-w-38 items-center justify-between rounded-sm border border-black bg-white p-4 text-black focus:outline-none ${className}`}
             {...rest}
           />
-          {variant === 'button' && <MenuButton>Submit</MenuButton>}
         </div>
       </div>
     </form>
