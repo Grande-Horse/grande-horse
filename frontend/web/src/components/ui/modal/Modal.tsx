@@ -1,4 +1,4 @@
-import { ModalProps } from './ModalProvider';
+import { ModalProps } from '@/components/ui/modal/ModalProvider';
 
 const Modal: React.FC<ModalProps> = ({ children }) => {
   return (

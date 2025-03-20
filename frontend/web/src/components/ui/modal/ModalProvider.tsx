@@ -1,5 +1,5 @@
 import { createContext, useContext, useMemo, useState } from 'react';
-import ContextModals from './ContextModals';
+import ContextModals from '@/components/ui/modal/ContextModals';
 
 export interface Modal {
   id: string;

@@ -1,5 +1,5 @@
 import { useContext } from 'react';
-import { ModalsStateContext } from './ModalProvider';
+import { ModalsStateContext } from '@/components/ui/modal/ModalProvider';
 
 // 앱 내의 Modal리스트를 전역 상태로 관리 및 실제 화면에 렌더링
 const ContextModals = () => {
