@@ -48,5 +48,6 @@
 
   --font-primary: 'DungGeunMo';
   --container-base: 480px;
+  --container-modal: 320px;
   --radius-sm: 1rem;
 }
