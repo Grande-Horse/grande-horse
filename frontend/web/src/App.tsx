@@ -3,15 +3,18 @@ import '@/App.css';
 import GlobalLayout from '@/layouts/GlobalLayout';
 import HomePage from '@/pages';
 import StallPage from '@/pages/stall';
+import ModalProvider from './components/ui/modal/ModalProvider.tsx';
 
 function App() {
   return (
     <BrowserRouter>
       <GlobalLayout>
-        <Routes>
-          <Route path='/' element={<HomePage />} />
-          <Route path='/stall' element={<StallPage />} />
-        </Routes>
+        <ModalProvider>
+          <Routes>
+            <Route path='/' element={<HomePage />} />
+            <Route path='/stall' element={<StallPage />} />
+          </Routes>
+        </ModalProvider>
       </GlobalLayout>
     </BrowserRouter>
   );
