@@ -49,7 +49,9 @@
   --font-primary: 'DungGeunMo';
   --container-base: 480px;
   --container-modal: 320px;
+  --container-modal: 320px;
   --radius-sm: 1rem;
 
   --inset-shadow-xs: inset 0 0 4px rgba(1, 1, 1, 0.25); 
 }
+
