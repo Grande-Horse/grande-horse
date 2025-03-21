@@ -1,10 +1,10 @@
 import { ReactNode, useCallback } from 'react';
 import Modal from '@/components/ui/modal/Modal';
-import { Button } from '@/components/ui/button';
+import { Button } from '@/components/ui/Button';
 import { useModalDispatchContext } from '@/components/ui/modal/ModalProvider';
 
 interface ModalOptions {
-  title?: string;
+  title?: ReactNode;
   content: ReactNode;
   onConfirm?: () => void;
   onCancel?: () => void;
@@ -22,7 +22,7 @@ const useModal = () => {
         onClose: () => close(id),
         children: (
           <>
-            {title && <h2 className='mb-4 text-lg font-bold'>{title}</h2>}
+            {title && <div className='mb-4 text-lg font-bold'>{title}</div>}
 
             <div>{content}</div>
 
