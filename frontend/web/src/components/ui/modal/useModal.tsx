@@ -24,9 +24,9 @@ const useModal = () => {
           <>
             {title && <div className='mb-4 text-lg font-bold'>{title}</div>}
 
-            <div>{content}</div>
+            <div className='w-full'>{content}</div>
 
-            <div className='mt-4 flex gap-2'>
+            <div className='flex gap-2 pt-10'>
               <Button
                 variant='secondary'
                 onClick={() => {
