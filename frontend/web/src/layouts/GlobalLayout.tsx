@@ -9,7 +9,7 @@ interface LayoutProps {
 const GlobalLayout: React.FC<LayoutProps> = ({ children }) => (
   <div className='bg-background max-w-base font-primary text-body2 m-auto flex min-h-screen flex-col justify-between text-white'>
     <Header />
-    <main className='flex-1 overflow-auto'>{children}</main>
+    <main className='scrollbar-hide h-[calc(100vh-12rem)] overflow-x-hidden'>{children}</main>
     <BottomNavBar variant='default' />
   </div>
 );
