@@ -16,10 +16,10 @@ const TradingPanel: React.FC = () => {
 
   return (
     <div className='divide-y-1 divide-black'>
-      <div className='bg-primary p-4'>
+      <section className='bg-primary p-4'>
         <Dropdown options={Object.values(RankMap)} value={rank} onChange={setRank} placeholder='등급 선택' />
         {/* TODO: Search Input */}
-      </div>
+      </section>
 
       <section className='p-4'>
         <PriceChart priceHistory={priceHistory} />

@@ -24,7 +24,7 @@ const HorseCard: React.FC<HorseCardProps> = ({
     { icon: <WeightIcon />, label: '체중', value: weight + 'kg' },
     { icon: <SpeedIcon />, label: '속도', value: speed + 'km/h' },
     { icon: <AccelerationIcon />, label: '가속도', value: acceleration + 'km/s' },
-    { icon: <StaminaIcon />, label: '체력', value: stamina + '%' },
+    { icon: <StaminaIcon />, label: '지구력', value: stamina + '%' },
   ];
 
   const horseImageSrc = getDynamicImgSrc('horses', coatColor + 'Horse');
@@ -34,8 +34,8 @@ const HorseCard: React.FC<HorseCardProps> = ({
       <div
         className={`${cardImageClass[rank as keyof typeof cardImageClass]} relative flex aspect-[320/492] w-[34.2rem] flex-col items-center justify-between bg-contain bg-center bg-no-repeat pt-14`}
       >
-        <p className='text-heading4 text-stroke absolute top-17 z-20'>{name}</p>
-        <img src={Ribbon} alt='ribbon' className='absolute top-10 z-10' />
+        <p className='text-heading4 text-stroke absolute top-17 z-2'>{name}</p>
+        <img src={Ribbon} alt='ribbon' className='absolute top-10 z-1' />
         <div
           className={`${bgImageClass[rank as keyof typeof bgImageClass]} relative aspect-[256/270] w-[25.6rem] bg-cover`}
         >
