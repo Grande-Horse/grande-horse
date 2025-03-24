@@ -1,13 +1,18 @@
-FROM openjdk:17-jdk
+FROM openjdk:17-jdk-alpine
 
+WORKDIR /app
 
-COPY ./backend/build.gradle ./backend/settings.gradle ./
-COPY ./backend/src ./src
+COPY gradlew .
+COPY gradle/ gradle/
 
-RUN ./gradlew build -x test
+RUN chmod +x gradlew
 
-COPY ./backend/build/libs/*.jar app.jar
+COPY . .
 
-EXPOSE 8080
+RUN ./gradlew clean build -x test
 
-CMD ["java", "-jar", "/app/app.jar"]
+RUN cp build/libs/*SNAPSHOT.jar app.jar
+
+ENV SPRING_PROFILES_ACTIVE=prod
+
+ENTRYPOINT ["java", "-jar", "app.jar"]
