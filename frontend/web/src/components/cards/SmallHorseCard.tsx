@@ -24,7 +24,7 @@ const SmallHorseCard: React.FC<SmallHorseCardProps> = ({
     { icon: <WeightIcon width={10} height={10} />, label: '체중', value: weight + 'kg' },
     { icon: <SpeedIcon width={10} height={10} />, label: '속도', value: speed + 'km/h' },
     { icon: <AccelerationIcon width={10} height={10} />, label: '가속도', value: acceleration + 'km/s' },
-    { icon: <StaminaIcon width={10} height={10} />, label: '체력', value: stamina + '%' },
+    { icon: <StaminaIcon width={10} height={10} />, label: '지구력', value: stamina + '%' },
   ];
 
   const horseImageSrc = getDynamicImgSrc('horses', coatColor + 'Horse');
@@ -32,17 +32,17 @@ const SmallHorseCard: React.FC<SmallHorseCardProps> = ({
   return (
     <div>
       <div
-        className={`${cardImageClass[rank as keyof typeof cardImageClass]} relative flex aspect-[320/492] w-[11.6rem] flex-col items-center justify-between bg-contain bg-center bg-no-repeat pt-5 pb-7.5`}
+        className={`${cardImageClass[rank as keyof typeof cardImageClass]} relative flex aspect-[320/492] w-[11rem] flex-col items-center justify-between bg-contain bg-center bg-no-repeat pt-5 pb-6.5`}
       >
-        <p className='text-detail3 text-stroke absolute top-6 z-20'>{name}</p>
-        <img src={Ribbon} alt='ribbon' className='absolute top-4 z-10' />
+        <p className='text-detail3 text-stroke absolute top-5.5 z-2'>{name}</p>
+        <img src={Ribbon} alt='ribbon' className='absolute top-4 z-1' />
         <div
-          className={`${bgImageClass[rank as keyof typeof bgImageClass]} relative aspect-[256/270] w-[8.4rem] bg-cover`}
+          className={`${bgImageClass[rank as keyof typeof bgImageClass]} relative aspect-[256/270] w-[8rem] bg-cover`}
         >
           <img src={horseImageSrc} className='absolute bottom-0' />
         </div>
 
-        <ul className='flex w-full flex-col px-8.5'>
+        <ul className='flex w-full flex-col px-7.5'>
           {horseStats.map((stat) => (
             <li key={stat.label} className='flex items-center justify-between'>
               <div className='flex items-center'>
