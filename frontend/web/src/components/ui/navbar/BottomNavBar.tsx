@@ -1,22 +1,18 @@
 import { Link } from 'react-router-dom';
-import { bottomNavBarIcon } from '@/constants/bottomNavBarIcon';
+import { bottomNavBarItem } from '@/constants/bottomNavBarIcon';
 
-interface BottomNavBarProps {
-  variant: 'default' | 'stall' | 'horseDeal';
-}
-
-const BottomNavBar: React.FC<BottomNavBarProps> = ({ variant }) => {
+const BottomNavBar: React.FC = () => {
   return (
-    <nav className='bg-background sticky bottom-0 flex h-24 w-full items-center justify-around'>
-      {bottomNavBarIcon[variant].map((content, index) => {
+    <nav className='bg-background z-bottomnavbar sticky bottom-0 flex h-24 w-full items-center justify-around'>
+      {bottomNavBarItem.map((item, index) => {
         return (
           <Link
             key={index}
-            to={{ pathname: '/' }}
+            to={item.pathname}
             className='hover:bg-primary flex w-full flex-col items-center justify-between py-2'
           >
-            <content.icon className='size-14' />
-            <p className='text-stroke text-detail2'>{content.text}</p>
+            <item.icon className='size-14' />
+            <p className='text-stroke text-detail2'>{item.text}</p>
           </Link>
         );
       })}
