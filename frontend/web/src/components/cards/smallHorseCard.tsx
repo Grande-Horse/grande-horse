@@ -1,4 +1,4 @@
-import { HorseType, RankMap } from '@/types/horse';
+import { HorseType } from '@/types/horse';
 import RankIcon from '@/assets/icons/rankIcon.svg?react';
 import WeightIcon from '@/assets/icons/weightIcon.svg?react';
 import SpeedIcon from '@/assets/icons/speedIcon.svg?react';
@@ -6,51 +6,50 @@ import AccelerationIcon from '@/assets/icons/accelerationIcon.svg?react';
 import StaminaIcon from '@/assets/icons/staminaIcon.svg?react';
 import Ribbon from '@/assets/images/ribbon.png';
 import { getDynamicImgSrc } from '@/utils/image';
+import { RankMap } from '@/constants/horse';
 
-interface HorseCardProps {
+interface SmallHorseCardProps {
   horse: HorseType;
-  size?: 'lg' | 'sm';
 }
 
-const HorseCard: React.FC<HorseCardProps> = ({
+const SmallHorseCard: React.FC<SmallHorseCardProps> = ({
   horse: { name, coatColor, rank, weight, speed, acceleration, stamina },
-  size = 'lg',
 }) => {
   const horseStats = [
     {
-      icon: <RankIcon />,
+      icon: <RankIcon width={10} height={10} />,
       label: '등급',
       value: RankMap[rank as keyof typeof RankMap],
     },
-    { icon: <WeightIcon />, label: '체중', value: weight + 'kg' },
-    { icon: <SpeedIcon />, label: '속도', value: speed + 'km/h' },
-    { icon: <AccelerationIcon />, label: '가속도', value: acceleration + 'km/s' },
-    { icon: <StaminaIcon />, label: '체력', value: stamina + '%' },
+    { icon: <WeightIcon width={10} height={10} />, label: '체중', value: weight + 'kg' },
+    { icon: <SpeedIcon width={10} height={10} />, label: '속도', value: speed + 'km/h' },
+    { icon: <AccelerationIcon width={10} height={10} />, label: '가속도', value: acceleration + 'km/s' },
+    { icon: <StaminaIcon width={10} height={10} />, label: '체력', value: stamina + '%' },
   ];
 
   const horseImageSrc = getDynamicImgSrc('horses', coatColor + 'Horse');
 
   return (
-    <div className={size === 'sm' ? 'scale-25' : ''}>
+    <div>
       <div
-        className={`${cardImageClass[rank as keyof typeof cardImageClass]} relative flex aspect-[320/492] w-[34.2rem] flex-col items-center justify-between bg-contain bg-center bg-no-repeat pt-14`}
+        className={`${cardImageClass[rank as keyof typeof cardImageClass]} relative flex aspect-[320/492] w-[11.6rem] flex-col items-center justify-between bg-contain bg-center bg-no-repeat pt-5 pb-7.5`}
       >
-        <p className='text-heading4 text-stroke absolute top-17 z-20'>{name}</p>
-        <img src={Ribbon} alt='ribbon' className='absolute top-10 z-10' />
+        <p className='text-detail3 text-stroke absolute top-6 z-20'>{name}</p>
+        <img src={Ribbon} alt='ribbon' className='absolute top-4 z-10' />
         <div
-          className={`${bgImageClass[rank as keyof typeof bgImageClass]} relative aspect-[256/270] w-[25.6rem] bg-cover`}
+          className={`${bgImageClass[rank as keyof typeof bgImageClass]} relative aspect-[256/270] w-[8.4rem] bg-cover`}
         >
           <img src={horseImageSrc} className='absolute bottom-0' />
         </div>
 
-        <ul className='flex w-full flex-col gap-2 pr-24 pb-22 pl-22'>
+        <ul className='flex w-full flex-col px-8.5'>
           {horseStats.map((stat) => (
             <li key={stat.label} className='flex items-center justify-between'>
               <div className='flex items-center'>
                 <span>{stat.icon}</span>
-                <p className='text-black'>{stat.label}</p>
+                <p className='text-detail4 text-black'>{stat.label}</p>
               </div>
-              <p className='text-stroke'>{stat.value}</p>
+              <p className='text-detail4 text-black'>{stat.value}</p>
             </li>
           ))}
         </ul>
@@ -59,7 +58,7 @@ const HorseCard: React.FC<HorseCardProps> = ({
   );
 };
 
-export default HorseCard;
+export default SmallHorseCard;
 
 const cardImageClass = {
   normal: `bg-[url(@/assets/images/cards/normalCard.png)]`,
