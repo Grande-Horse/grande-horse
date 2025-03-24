@@ -1,14 +1,10 @@
 import { Link } from 'react-router-dom';
 import { bottomNavBarIcon } from '@/constants/bottomNavBarIcon';
 
-interface BottomNavBarProps {
-  variant: 'default' | 'stall' | 'horseDeal';
-}
-
-const BottomNavBar: React.FC<BottomNavBarProps> = ({ variant }) => {
+const BottomNavBar: React.FC = () => {
   return (
-    <nav className='bg-background sticky bottom-0 flex h-24 w-full items-center justify-around'>
-      {bottomNavBarIcon[variant].map((content, index) => {
+    <nav className='bg-background z-bottomnavbar sticky bottom-0 flex h-24 w-full items-center justify-around'>
+      {bottomNavBarIcon.map((content, index) => {
         return (
           <Link
             key={index}
