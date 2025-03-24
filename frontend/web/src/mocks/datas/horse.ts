@@ -6,7 +6,9 @@ export const horseMockData: HorseType = {
   coatColor: 'gray',
   rank: 'epic',
   weight: 100,
-  speed: 70,
-  acceleration: 45,
-  stamina: 50,
+  speed: 100,
+  acceleration: 220,
+  stamina: 160,
 };
+
+export const horseListMockData: HorseType[] = Array.from({ length: 20 }, () => horseMockData);

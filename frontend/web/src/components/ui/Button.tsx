@@ -15,7 +15,7 @@ export const Button: React.FC<ButtonProps> = ({ children, disabled, variant = 'p
 
   return (
     <button
-      className={`items-center justify-center rounded-sm border border-black px-16 py-2 ${currentStyle}`}
+      className={`items-center justify-center rounded-sm border border-black px-4 py-2 ${currentStyle}`}
       disabled={disabled}
       {...rest}
     >
