@@ -11,7 +11,7 @@ const Tabs: React.FC<TabsProps> = ({ tabList, tabPanels }) => {
 
   return (
     <>
-      <div className='bg-primary flex w-full cursor-pointer divide-x divide-black border-t border-b border-black'>
+      <div className='bg-primary z-tab sticky top-0 flex w-full cursor-pointer divide-x divide-black border-t border-b border-black'>
         {tabList.map(({ tabId, tabName }) => (
           <div
             key={tabId}

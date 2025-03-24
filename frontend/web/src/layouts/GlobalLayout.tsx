@@ -1,5 +1,6 @@
-import BottomNavBar from '@/components/ui/navbar/BottomNavBar';
 import { ReactNode } from 'react';
+import Header from '@/components/ui/header/Header';
+import BottomNavBar from '@/components/ui/navbar/BottomNavBar';
 
 interface LayoutProps {
   children: ReactNode;
@@ -7,7 +8,8 @@ interface LayoutProps {
 
 const GlobalLayout: React.FC<LayoutProps> = ({ children }) => (
   <div className='bg-background max-w-base font-primary text-body2 m-auto flex min-h-screen flex-col justify-between text-white'>
-    <main className='flex-1 overflow-auto'>{children}</main>
+    <Header />
+    <main className='scrollbar-hide overflow-x-hidden'>{children}</main>
     <BottomNavBar variant='default' />
   </div>
 );

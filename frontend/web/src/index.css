@@ -10,6 +10,43 @@
   paint-order: stroke fill;
 }
 
+@utility scrollbar-hide {
+  ::-webkit-scrollbar {
+    display: none;
+  }
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+@utility bg-gradient {
+  box-shadow: 
+    inset 5px 5px 10px rgba(255, 255, 255, 0.1),
+    inset -5px 5px 10px rgba(255, 255, 255, 0.1),
+    inset 5px -5px 10px rgba(255, 255, 255, 0.1),
+    inset -5px -5px 10px rgba(255, 255, 255, 0.1);
+  background-blend-mode: multiply;
+  background-image:
+    linear-gradient(to left, rgba(217, 217, 217, 0.1), rgba(255, 255, 255, 0.1), rgba(217, 217, 217, 0.1)),
+    linear-gradient(to top, rgba(217, 217, 217, 0.1), rgba(255, 255, 255, 0.1), rgba(217, 217, 217, 0.1));
+}
+
+/* z-index 관련 */
+@utility z-dropdown {
+  z-index: 1000;
+}
+
+@utility z-modal {
+  z-index: 100;
+}
+
+@utility z-tab {
+  z-index: 20;
+}
+
+@utility z-header {
+  z-index: 10;
+}
+
 @theme {
   --color-primary: #3D4B63;
   --color-secondary: #E0EEFF;
@@ -33,9 +70,13 @@
   --text-heading4: 1.8rem;
   --text-body1: 1.6rem;
   --text-body2: 1.4rem;
-  --text-detail: 1.2rem;
+  --text-detail1: 1.2rem;
+  --text-detail2: 1rem;
+  --text-detail3: 0.8rem;
+  --text-detail4: 0.6rem;
 
   --font-primary: 'DungGeunMo';
   --container-base: 480px;
+  --container-modal: 320px;
   --radius-sm: 1rem;
 }

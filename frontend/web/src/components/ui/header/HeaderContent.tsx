@@ -54,7 +54,7 @@ const WaitingRoomContent: React.FC<InfoHeaderProps> = ({ title }) => (
   </>
 );
 
-const RanchContent: React.FC<CurrencyProps> = ({ coin, foot }) => (
+const PastureContent: React.FC<CurrencyProps> = ({ coin, foot }) => (
   <>
     <div className='w-16'></div>
     <div className='flex gap-6'>
@@ -70,4 +70,4 @@ const RanchContent: React.FC<CurrencyProps> = ({ coin, foot }) => (
   </>
 );
 
-export { DefaultContent, InfoContent, WaitingRoomContent, RanchContent };
+export { DefaultContent, InfoContent, WaitingRoomContent, PastureContent };
