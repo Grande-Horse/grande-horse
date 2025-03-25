@@ -45,7 +45,7 @@ const StallContent: React.FC<TitleContentProps> = ({ title }) => {
       </button>
 
       <div className='flex'>
-        <p className='text-heading1'>{title ?? ''}</p>
+        <p className='text-heading3'>{title ?? ''}</p>
       </div>
       <div className='w-16'></div>
     </div>
