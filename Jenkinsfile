@@ -67,8 +67,8 @@ pipeline {
 
         stage('Deploy with Docker Compose') {
             steps {
-                sh 'docker compose --env-file .env -f ./docker-compose.yml down || true'
-                sh 'docker compose --env-file .env -f ./docker-compose.yml up -d --build'
+                sh 'docker-compose --env-file .env -f ./docker-compose.yml down || true'
+                sh 'docker-compose --env-file .env -f ./docker-compose.yml up -d --build'
             }
         }
     }
