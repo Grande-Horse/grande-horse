@@ -44,6 +44,10 @@
 }
 
 @utility z-header {
+  z-index: 30;
+}
+
+@utility z-bottomnavbar {
   z-index: 10;
 }
 
