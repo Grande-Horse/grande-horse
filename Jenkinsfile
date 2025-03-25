@@ -76,6 +76,7 @@ pipeline {
         stage('Deploy with Docker Compose') {
             steps {
                 script {
+                    sh 'chmod +x ./backend/gradlew'
                     sh 'docker-compose --env-file .env -f ./docker-compose.yml down || true'
                     sh 'docker-compose --env-file .env -f ./docker-compose.yml up -d --build'
                 }
