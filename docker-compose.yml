@@ -32,7 +32,7 @@ services:
     image: mysql:8.0.40
     container_name: grande-horse-mysql
     environment:
-      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
+      DB_PASSWORD: ${DB_PASSWORD}
       MYSQL_DATABASE: ${DB_NAME}
     ports:
       - "3306:3306"
