@@ -73,6 +73,7 @@ pipeline {
                     sh 'docker rm -f grande-horse-server || true'
                     sh 'docker rm -f grande-horse || true'
 
+                    sh 'chmod +x ./backend/gradlew'
                     sh 'docker-compose --env-file .env -f ./docker-compose.yml down --remove-orphans'
                     sh 'docker-compose --env-file .env -f ./docker-compose.yml up -d --build'
                 }
