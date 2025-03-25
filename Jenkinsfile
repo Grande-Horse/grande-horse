@@ -47,14 +47,6 @@ pipeline {
             }
         }
 
-        stage('Check .env File') {
-            steps {
-                script {
-                    sh 'cat .env'
-                }
-            }
-        }
-
         stage('Docker Build & Push') {
             when {
                 branch 'infra/develop'
@@ -64,9 +56,9 @@ pipeline {
                     sh """
                         echo \$DOCKER_PASS | docker login -u \$DOCKER_USER --password-stdin
                         docker build -t imkm/grandehorse:backend-latest ./backend
-                        docker push imkm/grandehorse:backend-latest
-
                         docker build -t imkm/grandehorse:frontend-latest ./frontend/web
+
+                        docker push imkm/grandehorse:backend-latest
                         docker push imkm/grandehorse:frontend-latest
 
                         docker logout
@@ -78,8 +70,10 @@ pipeline {
         stage('Deploy with Docker Compose') {
             steps {
                 script {
-                    sh 'chmod +x ./backend/gradlew'
-                    sh 'docker-compose --env-file .env -f ./docker-compose.yml down || true'
+                    sh 'docker rm -f grande-horse-server || true'
+                    sh 'docker rm -f grande-horse || true'
+
+                    sh 'docker-compose --env-file .env -f ./docker-compose.yml down --remove-orphans'
                     sh 'docker-compose --env-file .env -f ./docker-compose.yml up -d --build'
                 }
             }
