@@ -1,73 +1,70 @@
 import BackIcon from '@/assets/icons/backArrowIcon.svg?react';
 import CoinIcon from '@/assets/icons/coinIcon.svg?react';
 import FootIcon from '@/assets/icons/footIcon.svg?react';
+import useInternalRouter from '@/hooks/useInternalRouter';
 
-interface CurrencyProps {
+interface MarketContentProps {
   coin: number;
   foot: number;
 }
 
-interface InfoHeaderProps {
-  title?: string;
+interface TitleContentProps {
+  title: string;
 }
 
-const DefaultContent: React.FC<CurrencyProps> = ({ coin, foot }) => (
-  <>
-    <button className='cursor-pointer'>
-      <BackIcon />
-    </button>
+const MarketContent: React.FC<MarketContentProps> = ({ coin, foot }) => {
+  const { goBack } = useInternalRouter();
 
-    <div className='flex gap-6'>
-      <div className='flex items-center justify-center gap-3'>
-        <CoinIcon />
-        <p className='text-stroke'>{coin.toLocaleString()}</p>
+  return (
+    <>
+      <button className='cursor-pointer' onClick={goBack}>
+        <BackIcon />
+      </button>
+
+      <div className='flex gap-6'>
+        <div className='flex items-center justify-center gap-3'>
+          <CoinIcon />
+          <p className='text-stroke'>{coin.toLocaleString()}</p>
+        </div>
+        <div className='flex items-center justify-center gap-3'>
+          <FootIcon />
+          <p className='text-stroke'>{foot.toLocaleString()}</p>
+        </div>
       </div>
-      <div className='flex items-center justify-center gap-3'>
-        <FootIcon />
-        <p className='text-stroke'>{foot.toLocaleString()}</p>
+    </>
+  );
+};
+
+const StallContent: React.FC<TitleContentProps> = ({ title }) => {
+  const { goBack } = useInternalRouter();
+
+  return (
+    <div className='flex w-full items-center justify-between'>
+      <button className='cursor-pointer' onClick={goBack}>
+        <BackIcon />
+      </button>
+
+      <div className='flex'>
+        <p className='text-heading1'>{title ?? ''}</p>
       </div>
+      <div className='w-16'></div>
     </div>
-  </>
-);
+  );
+};
 
-const InfoContent: React.FC<InfoHeaderProps> = ({ title }) => (
-  <div className='flex w-full items-center justify-between'>
-    <button className='cursor-pointer'>
-      <BackIcon />
-    </button>
+const RaceTrackContent: React.FC<TitleContentProps> = ({ title }) => {
+  const { goBack } = useInternalRouter();
 
-    <div className='flex'>
-      <p>{title ?? ''}</p>
-    </div>
-    <div className='w-16'></div>
-  </div>
-);
-
-const WaitingRoomContent: React.FC<InfoHeaderProps> = ({ title }) => (
-  <>
-    <button className='cursor-pointer'>
-      <BackIcon />
-    </button>
-    <div className='bg-secondary ml-10 flex flex-1 justify-center overflow-hidden rounded-xl border-1 p-3 text-black'>
-      <p className='line-clamp-1'>{title ?? '방 제목을 입력하세요'}</p>
-    </div>
-  </>
-);
-
-const PastureContent: React.FC<CurrencyProps> = ({ coin, foot }) => (
-  <>
-    <div className='w-16'></div>
-    <div className='flex gap-6'>
-      <div className='flex items-center justify-center gap-3'>
-        <CoinIcon />
-        <p className='text-stroke'>{coin.toLocaleString()}</p>
+  return (
+    <>
+      <button className='cursor-pointer' onClick={goBack}>
+        <BackIcon />
+      </button>
+      <div className='bg-secondary ml-10 flex flex-1 justify-center overflow-hidden rounded-xl border-1 p-3 text-black'>
+        <p className='line-clamp-1'>{title}</p>
       </div>
-      <div className='flex items-center justify-center gap-3'>
-        <FootIcon />
-        <p className='text-stroke'>{foot.toLocaleString()}</p>
-      </div>
-    </div>
-  </>
-);
+    </>
+  );
+};
 
-export { DefaultContent, InfoContent, WaitingRoomContent, PastureContent };
+export { MarketContent, StallContent, RaceTrackContent };

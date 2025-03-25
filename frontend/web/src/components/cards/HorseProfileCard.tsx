@@ -1,5 +1,5 @@
 import { CoatColorType, RankType } from '@/types/horse';
-import Ribbon from '@/assets/images/ribbon.png';
+import Ribbon from '@/assets/images/ribbon.webp';
 import { getDynamicImgSrc } from '@/utils/image';
 
 interface HorseProfileCardProps {
@@ -27,9 +27,9 @@ const HorseProfileCard: React.FC<HorseProfileCardProps> = ({ name, rank, coatCol
 export default HorseProfileCard;
 
 const bgImageClass = {
-  normal: `bg-[url(@/assets/images/backgrounds/normalBg.png)]`,
-  rare: `bg-[url(@/assets/images/backgrounds/rareBg.png)]`,
-  epic: `bg-[url(@/assets/images/backgrounds/epicBg.png)]`,
-  unique: `bg-[url(@/assets/images/backgrounds/uniqueBg.png)]`,
-  legend: `bg-[url(@/assets/images/backgrounds/legendBg.png)]`,
+  normal: `bg-[url(@/assets/images/backgrounds/normalBg.webp)]`,
+  rare: `bg-[url(@/assets/images/backgrounds/rareBg.webp)]`,
+  epic: `bg-[url(@/assets/images/backgrounds/epicBg.webp)]`,
+  unique: `bg-[url(@/assets/images/backgrounds/uniqueBg.webp)]`,
+  legend: `bg-[url(@/assets/images/backgrounds/legendBg.webp)]`,
 } as const;
