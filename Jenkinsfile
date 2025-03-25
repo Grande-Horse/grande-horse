@@ -6,10 +6,8 @@ pipeline {
         TARGET_BRANCH = 'infra/develop'
         DB_USERNAME = credentials('DB_USERNAME')
         DB_PASSWORD = credentials('DB_PASSWORD')
-        DB_VOLUME = credentials('DB_VOLUME')
         DB_NAME = credentials('DB_NAME')
         REDIS_PASSWORD = credentials('REDIS_PASSWORD')
-        REDIS_VOLUME = credentials('REDIS_VOLUME')
     }
 
     stages {
@@ -37,8 +35,6 @@ pipeline {
                 script {
                     def envContent = """
                         ACCESS_TOKEN=${env.ACCESS_TOKEN}
-                        DB_VOLUME=${env.DB_VOLUME}
-                        REDIS_VOLUME=${env.REDIS_VOLUME}
                         DB_PASSWORD=${env.DB_PASSWORD}
                         REDIS_PASSWORD=${env.REDIS_PASSWORD}
                         DB_NAME=${env.DB_NAME}
