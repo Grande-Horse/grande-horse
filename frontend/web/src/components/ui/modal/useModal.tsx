@@ -1,6 +1,6 @@
 import { ReactNode, useCallback } from 'react';
 import Modal from '@/components/ui/modal/Modal';
-import { Button } from '@/components/ui/button';
+import { Button } from '@/components/ui/Button';
 import { useModalDispatchContext } from '@/components/ui/modal/ModalProvider';
 
 interface ModalOptions {
