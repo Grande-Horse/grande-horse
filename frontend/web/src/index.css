@@ -5,6 +5,10 @@
   src: url('/fonts/DungGeunMo.ttf');
 }
 
+@utility h-body {
+  height: calc(100vh - 12rem);
+}
+
 @utility text-stroke {
   -webkit-text-stroke: 2px black;
   paint-order: stroke fill;
@@ -40,7 +44,7 @@
 }
 
 @utility z-tab {
-  z-index: 20;
+  z-index: 10;
 }
 
 @utility z-header {

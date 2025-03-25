@@ -16,11 +16,11 @@ ChartJS.defaults.font.size = 10;
 ChartJS.defaults.font.family = 'DungGeunMo';
 ChartJS.defaults.color = 'white';
 
-interface PriceChartProps {
+interface PriceLineChartProps {
   priceHistory: PriceHistoryType[];
 }
 
-const PriceChart: React.FC<PriceChartProps> = ({ priceHistory }) => {
+const PriceLineChart: React.FC<PriceLineChartProps> = ({ priceHistory }) => {
   const chartData = {
     labels: priceHistory.map((history) => history.date),
     datasets: [
@@ -45,7 +45,16 @@ const PriceChart: React.FC<PriceChartProps> = ({ priceHistory }) => {
     ],
   };
 
-  return <Line data={chartData} />;
+  const options = {
+    responsive: true,
+    maintainAspectRatio: false,
+  };
+
+  return (
+    <div className='flex h-full w-full items-center justify-center p-4'>
+      <Line data={chartData} options={options} />
+    </div>
+  );
 };
 
-export default PriceChart;
+export default PriceLineChart;
