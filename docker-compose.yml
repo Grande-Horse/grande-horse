@@ -19,7 +19,6 @@ services:
     environment:
       SPRING_PROFILES_ACTIVE: prod
       DB_NAME: ${DB_NAME}
-      DB_USERNAME: ${DB_USERNAME}
       DB_PASSWORD: ${DB_PASSWORD}
       REDIS_PASSWORD: ${REDIS_PASSWORD}
     networks:
