@@ -25,12 +25,12 @@ pipeline {
         }
 
         stage('Clone Repository') {
-                checkout scmGit(
-                    branches: [[name: "${TARGET_BRANCH}"]],
-                    extensions: [submodule(parentCredentials: true, trackingSubmodules: true)],
-                    userRemoteConfigs: [[credentialsId: "ACCESS_TOKEN", url: 'https://lab.ssafy.com/s12-bigdata-dist-sub1/S12P21A606.git']]
-                )
+            steps {
+                git branch: "${TARGET_BRANCH}",
+                    credentialsId: 'ACCESS_TOKEN',
+                    url: 'https://lab.ssafy.com/s12-bigdata-dist-sub1/S12P21A606.git'
             }
+        }
 
         stage('Generate .env File') {
             steps {
