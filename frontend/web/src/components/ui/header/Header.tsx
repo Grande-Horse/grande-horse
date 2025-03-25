@@ -1,4 +1,4 @@
-import { MarketContent, StallContent, RaceTrackContent } from '@/components/ui/header/HeaderContent';
+import { DefaultContent, StallContent, RaceTrackContent } from '@/components/ui/header/HeaderContent';
 import { useLocation, useSearchParams } from 'react-router-dom';
 
 const commonStyle = 'flex items-center justify-between p-5 h-24 sticky top-0 z-header w-full bg-background';
@@ -12,10 +12,11 @@ const Header: React.FC = () => {
   const foot = 100000;
 
   const contentMap = [
-    { path: '/market', component: <MarketContent coin={coin} foot={foot} /> },
+    { path: '/market', component: <DefaultContent coin={coin} foot={foot} /> },
+    { path: '/racetrack', component: <DefaultContent coin={coin} foot={foot} /> },
     { path: '/stall', component: <StallContent title='마구간' /> },
     {
-      path: '/racetrack',
+      path: '/racetrack/room',
       component: <RaceTrackContent title={searchParams.get('title') || '방 제목을 입력해주세요.'} />,
     },
   ];
