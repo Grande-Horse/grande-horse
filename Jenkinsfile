@@ -34,15 +34,15 @@ pipeline {
 
         stage('Generate .env File') {
             steps {
-                writeFile file: '.env', text: """
-                    ACCESS_TOKEN=${ACCESS_TOKEN}
-                    DB_VOLUME=${DB_VOLUME}
-                    REDIS_VOLUME=${REDIS_VOLUME}
-                    DB_PASSWORD=${DB_PASSWORD}
-                    REDIS_PASSWORD=${REDIS_PASSWORD}
-                    DB_NAME=${DB_NAME}
-                    DB_USERNAME=${DB_USERNAME}
+                def envContent = """
+                    DB_VOLUME=${env.DB_VOLUME}
+                    DB_NAME=${env.DB_NAME}
+                    DB_USERNAME=${env.DB_USERNAME}
+                    DB_PASSWORD=${env.DB_PASSWORD}
+                    REDIS_PASSWORD=${env.REDIS_PASSWORD}
+                    ACCESS_TOKEN=${env.ACCESS_TOKEN}
                 """
+                writeFile(file: '.env', text: envContent)
             }
         }
 
