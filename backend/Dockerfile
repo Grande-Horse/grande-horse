@@ -6,7 +6,7 @@ COPY . .
 
 RUN ./gradlew clean build
 
-COPY build/libs/*SNAPSHOT.jar app.jar
+RUN find /app -name "*SNAPSHOT.jar" -exec cp {} /app/app.jar \;
 
 ENV SPRING_PROFILES_ACTIVE=prod
 
