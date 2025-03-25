@@ -1,4 +1,4 @@
-import RoomCard from '@/components/raceTrack/RoomCard';
+import RoomCard from '@/components/racetrack/RoomCard';
 import { Button } from '@/components/ui/Button';
 import Input from '@/components/ui/Input';
 
