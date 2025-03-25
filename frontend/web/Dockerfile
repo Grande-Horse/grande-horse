@@ -2,13 +2,10 @@ FROM node:22
 
 WORKDIR /app
 
-COPY package*.json pnpm-lock.yaml ./
-
-RUN npm install -g pnpm
-RUN pnpm install
-
 COPY . .
 
-RUN pnpm run build
+RUN npm install
 
-CMD ["pnpm", "run", "preview"]
+RUN npm run build
+
+CMD ["npm", "run", "preview", "--", "--host", "0.0.0.0"]
