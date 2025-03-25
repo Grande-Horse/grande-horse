@@ -1,5 +1,6 @@
 services:
   frontend:
+    container_name: grande-horse
     build:
       context: ./frontend/web
       dockerfile: Dockerfile
@@ -9,6 +10,7 @@ services:
       - app-network
 
   backend:
+    container_name: grande-horse-server
     build:
       context: ./backend
       dockerfile: Dockerfile
@@ -25,3 +27,4 @@ services:
 
 networks:
   app-network:
+    driver: bridge
