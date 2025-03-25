@@ -1,5 +1,4 @@
 import { CoatColorType, RankType } from '@/types/horse';
-import Ribbon from '@/assets/images/ribbon.webp';
 import { getDynamicImgSrc } from '@/utils/image';
 
 interface HorseProfileCardProps {
@@ -12,19 +11,23 @@ const HorseProfileCard: React.FC<HorseProfileCardProps> = ({ name, rank, coatCol
   const horseImageSrc = getDynamicImgSrc('horses', coatColor + 'Horse');
 
   return (
-    <div className='relative flex w-[18rem] justify-center'>
-      <p className='text-body2 text-stroke absolute top-0.5 z-2'>{name}</p>
-      <img src={Ribbon} alt='ribbon' className='absolute top-[-4px] z-1' />
+    <div className='relative mx-3 flex aspect-square h-full w-full flex-col items-center'>
       <div
-        className={`${bgImageClass[rank as keyof typeof bgImageClass]} relative aspect-[256/270] w-[14rem] bg-cover`}
+        className={`${bgRibbonClass} absolute z-1 flex h-1/3 w-full scale-120 items-center justify-center bg-contain bg-center bg-no-repeat`}
+      ></div>
+      <p className='text-body2 text-stroke absolute z-2'>{name}</p>
+      <div
+        className={`${bgImageClass[rank as keyof typeof bgImageClass]} relative h-full w-full bg-contain bg-center bg-no-repeat`}
       >
-        <img src={horseImageSrc} className='absolute bottom-0' />
+        <img src={horseImageSrc} className='absolute bottom-0 h-full w-full object-contain pt-8' />
       </div>
     </div>
   );
 };
 
 export default HorseProfileCard;
+
+const bgRibbonClass = 'bg-[url(@/assets/images/ribbon.webp)]';
 
 const bgImageClass = {
   normal: `bg-[url(@/assets/images/backgrounds/normalBg.webp)]`,

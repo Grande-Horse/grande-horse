@@ -7,11 +7,15 @@ import StatBar from '@/components/charts/StatBar';
 interface TradingItemProps {
   horse: HorseType;
   price: number;
+  isPriceHistoryOpen?: boolean;
+  onPriceHistoryClick?: () => void;
 }
 
 const TradingItem: React.FC<TradingItemProps> = ({
   horse: { id, name, coatColor, rank, speed, acceleration, stamina },
   price,
+  isPriceHistoryOpen = false,
+  onPriceHistoryClick,
 }) => {
   return (
     <div className='flex gap-5 p-5'>
@@ -35,7 +39,13 @@ const TradingItem: React.FC<TradingItemProps> = ({
 
         <div className='flex gap-4 self-end'>
           {/* TODO: API 연동 */}
-          <Button onClick={() => {}}>변동 시세 보기</Button>
+          {isPriceHistoryOpen ? (
+            <Button onClick={onPriceHistoryClick} variant='secondary'>
+              변동 시세 닫기
+            </Button>
+          ) : (
+            <Button onClick={onPriceHistoryClick}>변동 시세 보기</Button>
+          )}
           <Button onClick={() => {}}>구매하기</Button>
         </div>
       </div>
