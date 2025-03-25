@@ -3,7 +3,7 @@ import CoinIcon from '@/assets/icons/coinIcon.svg?react';
 import FootIcon from '@/assets/icons/footIcon.svg?react';
 import useInternalRouter from '@/hooks/useInternalRouter';
 
-interface MarketContentProps {
+interface DefaultContentProps {
   coin: number;
   foot: number;
 }
@@ -12,7 +12,7 @@ interface TitleContentProps {
   title: string;
 }
 
-const MarketContent: React.FC<MarketContentProps> = ({ coin, foot }) => {
+const DefaultContent: React.FC<DefaultContentProps> = ({ coin, foot }) => {
   const { goBack } = useInternalRouter();
 
   return (
@@ -45,7 +45,7 @@ const StallContent: React.FC<TitleContentProps> = ({ title }) => {
       </button>
 
       <div className='flex'>
-        <p className='text-heading1'>{title ?? ''}</p>
+        <p className='text-heading3'>{title ?? ''}</p>
       </div>
       <div className='w-16'></div>
     </div>
@@ -67,4 +67,4 @@ const RaceTrackContent: React.FC<TitleContentProps> = ({ title }) => {
   );
 };
 
-export { MarketContent, StallContent, RaceTrackContent };
+export { DefaultContent, StallContent, RaceTrackContent };
