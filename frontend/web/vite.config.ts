@@ -13,4 +13,8 @@ export default defineConfig({
   resolve: {
     alias: [{ find: '@', replacement: path.resolve(__dirname, 'src') }],
   },
+  preview: {
+    port: 4173,
+    allowedHosts: ['j12a606.p.ssafy.io']
+  }
 });
