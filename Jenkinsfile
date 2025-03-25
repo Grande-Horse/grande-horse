@@ -34,15 +34,18 @@ pipeline {
 
         stage('Generate .env File') {
             steps {
-                def envContent = """
-                    DB_VOLUME=${env.DB_VOLUME}
-                    DB_NAME=${env.DB_NAME}
-                    DB_USERNAME=${env.DB_USERNAME}
-                    DB_PASSWORD=${env.DB_PASSWORD}
-                    REDIS_PASSWORD=${env.REDIS_PASSWORD}
-                    ACCESS_TOKEN=${env.ACCESS_TOKEN}
-                """
-                writeFile(file: '.env', text: envContent)
+                script {
+                    def envContent = """
+                        ACCESS_TOKEN=${env.ACCESS_TOKEN}
+                        DB_VOLUME=${env.DB_VOLUME}
+                        REDIS_VOLUME=${env.REDIS_VOLUME}
+                        DB_PASSWORD=${env.DB_PASSWORD}
+                        REDIS_PASSWORD=${env.REDIS_PASSWORD}
+                        DB_NAME=${env.DB_NAME}
+                        DB_USERNAME=${env.DB_USERNAME}
+                    """
+                    writeFile file: '.env', text: envContent
+                }
             }
         }
 
@@ -52,23 +55,26 @@ pipeline {
             }
             steps {
                 withCredentials([usernamePassword(credentialsId: 'DockerHub_Login', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
-                    sh "echo \$DOCKER_PASS | docker login -u \$DOCKER_USER --password-stdin"
+                    sh """
+                        echo \$DOCKER_PASS | docker login -u \$DOCKER_USER --password-stdin
+                        docker build -t imkm/grandehorse:backend-latest ./backend
+                        docker push imkm/grandehorse:backend-latest
 
-                    sh "docker build -t imkm/grandehorse:backend-latest ./backend"
-                    sh "docker push imkm/grandehorse:backend-latest"
+                        docker build -t imkm/grandehorse:frontend-latest ./frontend/web
+                        docker push imkm/grandehorse:frontend-latest
 
-                    sh "docker build -t imkm/grandehorse:frontend-latest ./frontend/web"
-                    sh "docker push imkm/grandehorse:frontend-latest"
-
-                    sh "docker logout"
+                        docker logout
+                    """
                 }
             }
         }
 
         stage('Deploy with Docker Compose') {
             steps {
-                sh 'docker-compose --env-file .env -f ./docker-compose.yml down || true'
-                sh 'docker-compose --env-file .env -f ./docker-compose.yml up -d --build'
+                script {
+                    sh 'docker-compose --env-file .env -f ./docker-compose.yml down || true'
+                    sh 'docker-compose --env-file .env -f ./docker-compose.yml up -d --build'
+                }
             }
         }
     }

@@ -5,6 +5,8 @@ services:
       dockerfile: Dockerfile
     ports:
       - "4173:4173"
+    networks:
+      - app-network
 
   backend:
     build:
@@ -21,6 +23,8 @@ services:
       DB_USERNAME: ${DB_USERNAME}
       DB_PASSWORD: ${DB_PASSWORD}
       REDIS_PASSWORD: ${REDIS_PASSWORD}
+    networks:
+      - app-network
 
   mysql:
     image: mysql:8.0.40
@@ -31,6 +35,8 @@ services:
       - "3306:3306"
     volumes:
       - ${DB_VOLUME}:/var/lib/mysql
+    networks:
+      - app-network
 
   redis:
     image: redis:latest
@@ -39,3 +45,8 @@ services:
       - "6379:6379"
     volumes:
       - ${REDIS_VOLUME}:/data
+    networks:
+      - app-network
+
+networks:
+  app-network:
