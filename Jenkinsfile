@@ -8,6 +8,7 @@ pipeline {
         DB_PASSWORD = credentials('DB_PASSWORD')
         DB_NAME = credentials('DB_NAME')
         REDIS_PASSWORD = credentials('REDIS_PASSWORD')
+        DB_URL = credentials('DB_URL')
     }
 
     stages {
@@ -39,6 +40,7 @@ pipeline {
                         REDIS_PASSWORD=${env.REDIS_PASSWORD}
                         DB_NAME=${env.DB_NAME}
                         DB_USERNAME=${env.DB_USERNAME}
+                        DB_URL=${env.DB_URL}
                     """
                     writeFile file: '.env', text: envContent
                 }

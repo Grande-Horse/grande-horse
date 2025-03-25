@@ -20,4 +20,5 @@ services:
       DB_NAME: ${DB_NAME}
       DB_PASSWORD: ${DB_PASSWORD}
       REDIS_PASSWORD: ${REDIS_PASSWORD}
+      DB_URL: ${DB_URL}
     network_mode: host
