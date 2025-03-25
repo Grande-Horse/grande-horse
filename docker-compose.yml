@@ -14,9 +14,6 @@ services:
       dockerfile: Dockerfile
     ports:
       - "8080:8080"
-    depends_on:
-      - mysql
-      - redis
     environment:
       SPRING_PROFILES_ACTIVE: prod
       DB_NAME: ${DB_NAME}
