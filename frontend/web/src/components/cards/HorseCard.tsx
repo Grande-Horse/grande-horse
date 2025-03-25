@@ -4,7 +4,7 @@ import WeightIcon from '@/assets/icons/weightIcon.svg?react';
 import SpeedIcon from '@/assets/icons/speedIcon.svg?react';
 import AccelerationIcon from '@/assets/icons/accelerationIcon.svg?react';
 import StaminaIcon from '@/assets/icons/staminaIcon.svg?react';
-import Ribbon from '@/assets/images/ribbon.png';
+import Ribbon from '@/assets/images/ribbon.webp';
 import { getDynamicImgSrc } from '@/utils/image';
 import { RankMap } from '@/constants/horse';
 
@@ -61,17 +61,17 @@ const HorseCard: React.FC<HorseCardProps> = ({
 export default HorseCard;
 
 const cardImageClass = {
-  normal: `bg-[url(@/assets/images/cards/normalCard.png)]`,
-  rare: `bg-[url(@/assets/images/cards/rareCard.png)]`,
-  epic: `bg-[url(@/assets/images/cards/epicCard.png)]`,
-  unique: `bg-[url(@/assets/images/cards/uniqueCard.png)]`,
-  legend: `bg-[url(@/assets/images/cards/legendCard.png)]`,
+  normal: `bg-[url(@/assets/images/cards/normalCard.webp)]`,
+  rare: `bg-[url(@/assets/images/cards/rareCard.webp)]`,
+  epic: `bg-[url(@/assets/images/cards/epicCard.webp)]`,
+  unique: `bg-[url(@/assets/images/cards/uniqueCard.webp)]`,
+  legend: `bg-[url(@/assets/images/cards/legendCard.webp)]`,
 } as const;
 
 const bgImageClass = {
-  normal: `bg-[url(@/assets/images/backgrounds/normalBg.png)]`,
-  rare: `bg-[url(@/assets/images/backgrounds/rareBg.png)]`,
-  epic: `bg-[url(@/assets/images/backgrounds/epicBg.png)]`,
-  unique: `bg-[url(@/assets/images/backgrounds/uniqueBg.png)]`,
-  legend: `bg-[url(@/assets/images/backgrounds/legendBg.png)]`,
+  normal: `bg-[url(@/assets/images/backgrounds/normalBg.webp)]`,
+  rare: `bg-[url(@/assets/images/backgrounds/rareBg.webp)]`,
+  epic: `bg-[url(@/assets/images/backgrounds/epicBg.webp)]`,
+  unique: `bg-[url(@/assets/images/backgrounds/uniqueBg.webp)]`,
+  legend: `bg-[url(@/assets/images/backgrounds/legendBg.webp)]`,
 } as const;
