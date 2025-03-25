@@ -6,8 +6,7 @@ services:
       dockerfile: Dockerfile
     ports:
       - "4173:4173"
-    networks:
-      - app-network
+    network_mode: host
 
   backend:
     container_name: grande-horse-server
@@ -21,9 +20,4 @@ services:
       DB_NAME: ${DB_NAME}
       DB_PASSWORD: ${DB_PASSWORD}
       REDIS_PASSWORD: ${REDIS_PASSWORD}
-    networks:
-      - app-network
-
-networks:
-  app-network:
-    driver: bridge
+    network_mode: host
