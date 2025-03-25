@@ -34,12 +34,10 @@ services:
     environment:
       MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
       MYSQL_DATABASE: ${DB_NAME}
-      MYSQL_USER: root
-      MYSQL_PASSWORD: ${DB_PASSWORD}
     ports:
       - "3306:3306"
     volumes:
-      - /home/ubuntu/datas/mysql-db:/var/lib/mysql  # EC2의 데이터 디렉터리와 매핑
+      - /home/ubuntu/datas/mysql-db:/var/lib/mysql
     networks:
       - app-network
 
@@ -51,7 +49,7 @@ services:
     ports:
       - "6379:6379"
     volumes:
-      - /home/ubuntu/datas/redis-db:/data  # EC2의 데이터 디렉터리와 매핑
+      - /home/ubuntu/datas/redis-db:/data
     networks:
       - app-network
 
