@@ -3,9 +3,9 @@ FROM openjdk:17-jdk-alpine
 WORKDIR /app
 
 COPY gradlew .
-COPY gradle/ gradle/
-
 RUN chmod +x gradlew
+
+COPY gradle/ gradle/
 
 COPY . .
 
