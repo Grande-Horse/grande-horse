@@ -49,6 +49,14 @@ pipeline {
             }
         }
 
+        stage('Check .env File') {
+            steps {
+                script {
+                    sh 'cat .env'
+                }
+            }
+        }
+
         stage('Docker Build & Push') {
             when {
                 branch 'infra/develop'
