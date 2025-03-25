@@ -39,7 +39,7 @@ public class CommonResponse<T> {
 	) {
 		return ResponseEntity
 			.status(HttpStatus.OK)
-			.body(new CommonResponse<>(null, new DataWrapper<>(items, false, null)));
+			.body(new CommonResponse<>(null, items));
 	}
 
 	/**
@@ -53,7 +53,7 @@ public class CommonResponse<T> {
 	public static <T> ResponseEntity<CommonResponse<List<T>>> pagedSuccess(
 		List<T> items,
 		boolean hasNextItems,
-		Long nextCursorId
+		int nextCursorId
 	) {
 		return ResponseEntity
 			.status(HttpStatus.OK)
@@ -79,8 +79,8 @@ public class CommonResponse<T> {
 	@Getter
 	@AllArgsConstructor
 	public static class DataWrapper<T> {
-		private final T items;
+		private final List<T> items;
 		private final Boolean hasNextItems;
-		private final Long nextCursorId;
+		private final int nextCursorId;
 	}
 }

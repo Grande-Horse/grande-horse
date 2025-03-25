@@ -7,6 +7,7 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.persistence.Id;
+import jakarta.persistence.Index;
 import jakarta.persistence.Table;
 
 import lombok.AllArgsConstructor;
@@ -17,7 +18,9 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "horse")
+@Table(name = "horse", indexes = {
+	@Index(name = "idx_horse_rank", columnList = "horse_rank")
+})
 public class HorseEntity {
 	@Id
 	@Column(length = 7, nullable = false)

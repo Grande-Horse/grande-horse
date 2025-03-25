@@ -9,7 +9,6 @@ import lombok.Getter;
  * 정의하고자 하는 커스텀 에러의 종류에 맞추어 주석 아래에 에러코드를 순차적으로 작성해주시면 됩니다. (A1, A2, A3 ...)
  * 팀원간의 커밋 충돌이 나지 않도록 주의합시다!
  */
-
 @Getter
 public enum CustomError {
 	// 공통 에러
@@ -22,7 +21,7 @@ public enum CustomError {
 
 	// 유저 관련 에러
 	USER_DUPLICATE_NICKNAME(HttpStatus.BAD_REQUEST, "U1", "중복되는 유저 닉네임입니다."),
-	USER_NOT_ENOUGH_COIN(HttpStatus.BAD_REQUEST, "U2", "유저의 코인이 부족합니다.");
+	USER_NOT_ENOUGH_COIN(HttpStatus.BAD_REQUEST, "U2", "유저의 코인이 부족합니다."),
 
 	// 말 관련 에러
 
@@ -31,6 +30,9 @@ public enum CustomError {
 	// 상품 관련 에러
 
 	// 카드 관련 에러
+	USER_NOT_OWNER_OF_CARD(HttpStatus.BAD_REQUEST, "C1", "유저의 말카드가 아닙니다."),
+	CARD_SALE_RESTRICTED(HttpStatus.BAD_REQUEST, "C2", "판매할 수 없는 말카드 입니다."),
+	CARD_NOT_EXISTED(HttpStatus.BAD_REQUEST, "C3", "존재하지 않는 말카드입니다.");
 
 	// 경마 관련 에러
 
