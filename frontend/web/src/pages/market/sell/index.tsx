@@ -10,11 +10,35 @@ import CoinIcon from '@/assets/icons/coinIcon.svg?react';
 import PriceBarChart from '@/components/charts/PriceBarChart';
 import { PriceHistoryType } from '@/types/trading';
 import { priceHistoryMockData } from '@/mocks/datas/trading';
+import { cancelHorseSelling, sellHorse } from '@/services/trading';
 
 const SellPage: React.FC = () => {
   const [horse, setHorse] = useState<HorseType>(horseMockData);
   const [horseTradingHistory, setHorseTradingHistory] = useState<HorseType[]>(horseListMockData);
   const [priceHistory, setPriceHistory] = useState<PriceHistoryType[]>(priceHistoryMockData);
+
+  const handleCancelHorseSelling = async () => {
+    const tradeId = 3;
+
+    try {
+      await cancelHorseSelling(tradeId);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  const handleSellHorse = async () => {
+    try {
+      await sellHorse({
+        horseId: '0058000',
+        cardId: 2,
+        sellerId: 2,
+        price: 500,
+      });
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   return (
     <div className='h-body flex flex-col'>
@@ -30,8 +54,12 @@ const SellPage: React.FC = () => {
 
           {/* TODO: 버튼 반응형 구현 */}
           <div className='flex w-full justify-center gap-5 p-2'>
-            <Button className='w-full'>말 변경</Button>
-            <Button className='w-full'>판매</Button>
+            <Button onClick={handleCancelHorseSelling} className='w-full'>
+              말 변경
+            </Button>
+            <Button onClick={handleSellHorse} className='w-full'>
+              판매
+            </Button>
           </div>
         </div>
       </section>
