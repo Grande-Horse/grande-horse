@@ -23,6 +23,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "card_trade", indexes = {
+	@Index(name = "idx_id_status", columnList = "id, status"),
 	@Index(name = "idx_status_seller_id_id", columnList = "status, seller_id, id desc")
 })
 public class CardTradeEntity {
@@ -36,7 +37,7 @@ public class CardTradeEntity {
 	@Column(name = "card_id", nullable = false)
 	private int cardId;
 
-	@Column(name = "seller_id", nullable = false)
+	@Column(name = "seller_id", updatable = false, nullable = false)
 	private int sellerId;
 
 	@Column(name = "buyer_id")

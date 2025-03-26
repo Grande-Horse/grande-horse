@@ -22,10 +22,14 @@ public enum CustomError {
 	// 유저 관련 에러
 	USER_DUPLICATE_NICKNAME(HttpStatus.BAD_REQUEST, "U1", "중복되는 유저 닉네임입니다."),
 	USER_NOT_ENOUGH_COIN(HttpStatus.BAD_REQUEST, "U2", "유저의 코인이 부족합니다."),
+	USER_NOT_EXISTED(HttpStatus.BAD_REQUEST, "U3", "존재하지 않는 유저입니다."),
 
 	// 말 관련 에러
 
 	// 거래 관련 에러
+	CARD_NOT_FOR_SALE(HttpStatus.BAD_REQUEST, "T1", "판매중인 말이 아닙니다."),
+	CANNOT_PURCHASE_OWN_CARD(HttpStatus.BAD_REQUEST, "T2", "자신의 카드를 구매할 수 없습니다."),
+	CANNOT_CANCEL_TRADE_PERMISSION(HttpStatus.BAD_REQUEST, "T3", "거래(판매) 취소에 대한 권한이 없습니다."),
 
 	// 상품 관련 에러
 

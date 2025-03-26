@@ -4,6 +4,8 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Slice;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -16,80 +18,60 @@ import com.example.grandehorse.domain.trading.controller.response.TradeCardRespo
 import com.example.grandehorse.domain.trading.entity.CardTradeEntity;
 import com.example.grandehorse.domain.trading.entity.CardTradeStatus;
 import com.example.grandehorse.domain.trading.repository.CardTradingJpaRepository;
+import com.example.grandehorse.domain.user.service.UserService;
+import com.example.grandehorse.global.exception.CustomError;
+import com.example.grandehorse.global.exception.TradingException;
 import com.example.grandehorse.global.response.CommonResponse;
 
 import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 
-@Slf4j
 @Service
 @AllArgsConstructor
 public class TradingService {
 	private final HorseService horseService;
 	private final CardService cardService;
+	private final UserService userService;
 
 	private final CardTradingJpaRepository cardTradingJpaRepository;
 
 	@Transactional
 	public ResponseEntity<CommonResponse<Void>> createCardTrade(CreateCardTradeDto createTradeDto) {
-		/* TODO
-		    1. 유저의 말인지 체크 (일부 완료 -> 유저 토큰에서 유저아이디 꺼내와야함)
-		    2. 판매가능한 말인지 체크 (완료)
-			3. 유저가 소유한 카드 상태 판매마로 변경 (완료)
-			4. 경매장에 카드 등록 (완료)
-		 */
-		cardService.isUserOwnsCard(1, createTradeDto.getCardId());
-
-		cardService.isCardAvailableForSale(createTradeDto.getCardId());
+		cardService.validateCardOwnedByUser(2, createTradeDto.getCardId());
+		cardService.validateCardAvailableForSale(createTradeDto.getCardId());
 
 		cardService.updateCardStatusToSell(createTradeDto.getCardId());
 
-		CardTradeEntity cardTradeEntity = CardTradeEntity.builder()
-			.horseId(createTradeDto.getHorseId())
-			.cardId(createTradeDto.getCardId())
-			.sellerId(createTradeDto.getSellerId())
-			.status(CardTradeStatus.REGISTERED)
-			.price(createTradeDto.getPrice())
-			.registeredAt(LocalDateTime.now())
-			.build();
-
-		cardTradingJpaRepository.save(cardTradeEntity);
+		registerCardTrade(createTradeDto);
 
 		return CommonResponse.success(null);
 	}
 
 	@Transactional
 	public ResponseEntity<CommonResponse<Void>> purchaseCard(int cardTradeId) {
-		/* TODO
-			1. 판매중인 말인지 체크
-			2. 카드의 주인인지 체크
-			2. 말 카드 주인 변경, 전적 초기화, 획득 방법 변경, 획득 일시 변경
-			3. 카드 기록에 저장
-			4. 카드 판매 처리 (완료)
-		 */
-
 		CardTradeEntity cardTradeEntity = findCardTradeByCardTradeId(cardTradeId);
 
-		int horseId = horseService.findHorseDataIdByHorseId(cardTradeEntity.getHorseId());
-		cardTradeEntity.purchase(horseId); // 카드가 판매된 시점의 카드 스탯, 등급 등 저장
+		validateCardForSale(cardTradeId);
+		validateCardPurchasability(cardTradeEntity.getSellerId(), 2);
 
-		cardTradingJpaRepository.save(cardTradeEntity);
+		userService.purchaseCard(2, cardTradeEntity.getSellerId(), cardTradeEntity.getPrice());
+
+		cardService.changeCardOwner(cardTradeEntity.getCardId(), 2, cardTradeId);
+
+		processCardSale(cardTradeEntity);
 
 		return CommonResponse.success(null);
 	}
 
 	@Transactional
 	public ResponseEntity<CommonResponse<Void>> cancelCardTrade(int cardTradeId) {
-		/* TODO
-			1. 판매중인 말인지 체크
-			2. 카드의 주인인지 체크
-			4. 말카드 상태 변경
-			4. 카드 취소 처리 (완료)
-		 */
-
 		CardTradeEntity cardTradeEntity = findCardTradeByCardTradeId(cardTradeId);
-		cardTradeEntity.cancel();
 
+		validateCardForSale(cardTradeId);
+		validateCardTradeCancellation(cardTradeEntity.getSellerId(), 2);
+
+		cardService.updateCardStatusToReady(cardTradeEntity.getCardId());
+
+		cardTradeEntity.cancel();
 		cardTradingJpaRepository.save(cardTradeEntity);
 
 		return CommonResponse.success(null);
@@ -101,16 +83,18 @@ public class TradingService {
 		String search,
 		int limit
 	) {
-		List<TradeCardResponse> tradeCards = findTradeCardsByCursor(
+		Slice<TradeCardResponse> tradeCardSlice = findTradeCardsByCursor(
 			cursorId,
 			rank,
 			search,
 			limit
 		);
-		boolean hasNextItems = hasNextPage(tradeCards, limit);
-		int nextCursorId = getNextCursorId(hasNextItems, cursorId);
 
-		return CommonResponse.pagedSuccess(tradeCards, hasNextItems, nextCursorId);
+		boolean hasNextItems = tradeCardSlice.hasNext();
+
+		int nextCursorId = getNextCursorId(hasNextItems, cursorId, limit);
+
+		return CommonResponse.pagedSuccess(tradeCardSlice.getContent(), hasNextItems, nextCursorId);
 	}
 
 	public ResponseEntity<CommonResponse<List<RegisteredCardResponse>>> getRegisteredCards(
@@ -120,60 +104,99 @@ public class TradingService {
 		String search,
 		int limit
 	) {
-		List<RegisteredCardResponse> registeredCards = findRegisteredCardsByCursor(
+		Slice<RegisteredCardResponse> registeredCardSlice = findRegisteredCardsByCursor(
 			sellerId,
 			cursorId,
 			rank,
 			search,
 			limit
 		);
-		boolean hasNextItems = hasNextPage(registeredCards, limit);
-		int nextCursorId = getNextCursorId(hasNextItems, cursorId + limit);
 
-		return CommonResponse.pagedSuccess(registeredCards, hasNextItems, nextCursorId);
+		boolean hasNextItems = registeredCardSlice.hasNext();
+
+		int nextCursorId = getNextCursorId(hasNextItems, cursorId, limit);
+
+		return CommonResponse.pagedSuccess(registeredCardSlice.getContent(), hasNextItems, nextCursorId);
+	}
+
+	private void registerCardTrade(CreateCardTradeDto createTradeDto) {
+		CardTradeEntity cardTradeEntity = CardTradeEntity.builder()
+			.horseId(createTradeDto.getHorseId())
+			.cardId(createTradeDto.getCardId())
+			.sellerId(createTradeDto.getSellerId())
+			.status(CardTradeStatus.REGISTERED)
+			.price(createTradeDto.getPrice())
+			.registeredAt(LocalDateTime.now())
+			.build();
+
+		cardTradingJpaRepository.save(cardTradeEntity);
 	}
 
 	private CardTradeEntity findCardTradeByCardTradeId(int cardTradeId) {
 		return cardTradingJpaRepository.findCardTradeById(cardTradeId);
 	}
 
-	private List<TradeCardResponse> findTradeCardsByCursor(
+	private void validateCardForSale(int cardTradeId) {
+		if (!cardTradingJpaRepository.existsByIdAndStatus(cardTradeId, CardTradeStatus.REGISTERED)) {
+			throw new TradingException(CustomError.CARD_NOT_FOR_SALE);
+		}
+	}
+
+	private void validateCardPurchasability(int sellerId, int userId) {
+		if (sellerId == userId) {
+			throw new TradingException(CustomError.CANNOT_PURCHASE_OWN_CARD);
+		}
+	}
+
+	private void processCardSale(CardTradeEntity cardTradeEntity) {
+		int horseId = horseService.findHorseDataIdByHorseId(cardTradeEntity.getHorseId());
+		cardTradeEntity.purchase(horseId); // 카드가 판매된 시점의 카드 스탯, 등급 등 저장
+		cardTradingJpaRepository.save(cardTradeEntity);
+	}
+
+	private void validateCardTradeCancellation(int sellerId, int userId) {
+		if (sellerId != userId) {
+			throw new TradingException(CustomError.CANNOT_CANCEL_TRADE_PERMISSION);
+		}
+	}
+
+	private Slice<TradeCardResponse> findTradeCardsByCursor(
 		int cursorId,
 		String rank,
 		String search,
 		int limit
 	) {
+		Pageable pageable = PageRequest.of(cursorId / limit, limit);
+
 		return cardTradingJpaRepository.findTradeCardsByCursor(
 			cursorId,
 			rank,
 			search,
-			PageRequest.of(0, limit)
+			pageable
 		);
 	}
 
-	private List<RegisteredCardResponse> findRegisteredCardsByCursor(
+	private Slice<RegisteredCardResponse> findRegisteredCardsByCursor(
 		int sellerId,
 		int cursorId,
 		String rank,
 		String search,
 		int limit
 	) {
+		Pageable pageable = PageRequest.of(cursorId / limit, limit);
+
 		return cardTradingJpaRepository.findRegisteredCardsByCursor(
 			sellerId,
 			cursorId,
 			rank,
 			search,
-			PageRequest.of(0, limit)
+			pageable
 		);
 	}
 
-	private boolean hasNextPage(List<?> cards, int limit) {
-		return cards.size() == limit;
-	}
-
-	private int getNextCursorId(boolean hasNextPage, int cursorId) {
+	private int getNextCursorId(boolean hasNextPage, int cursorId, int limit) {
 		if (hasNextPage) {
-			return cursorId;
+			return cursorId + limit;
 		}
 
 		return -1;
