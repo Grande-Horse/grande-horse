@@ -4,7 +4,7 @@ import { getRandomDirection, getRandomPosition } from '@/components/pastureHorse
 import { HorseType, PastureHorseStatusType } from '@/types/horse';
 import { useHorseMovement } from '@/components/pastureHorse/useHorseMovement';
 import { horseListMockData } from '@/mocks/datas/horse';
-import InfoPanel from '@/pages/pasture/InfoPanel';
+import InfoPanel from '@/components/pastureHorse/InfoPanel';
 
 const GRID_SIZE = 6;
 const CELL_SIZE = 80;
