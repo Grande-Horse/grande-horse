@@ -29,7 +29,7 @@ public class RedisConfig {
 	}
 
 	@Bean
-	@Qualifier("tokenBrackListRedisTemplate")
+	@Qualifier("tokenBlackListRedisTemplate")
 	public RedisTemplate<String, Object> userRedisTemplate(RedisConnectionFactory redisConnectionFactory) {
 		RedisTemplate<String, Object> template = new RedisTemplate<>();
 		template.setConnectionFactory(redisConnectionFactory);

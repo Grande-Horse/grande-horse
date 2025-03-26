@@ -22,12 +22,6 @@ public class JwtTokenProvider {
 	@Value("${JWT_SECRETKEY}")
 	private String secretKey;
 
-	/**
-	 * JWT 발급 메서드
-	 * @param id 페이로드에 저장할 id 값
-	 * @param expiration 유효 시간(분)
-	 * @return 새로운 JWT 토큰
-	 */
 	public String generateJwt(String id, int expiration) {
 		return Jwts.builder()
 			.setHeaderParam(Header.TYPE, Header.JWT_TYPE)
@@ -37,71 +31,46 @@ public class JwtTokenProvider {
 			.compact();
 	}
 
-	/**
-	 * JWT Token 검증 메서드
-	 * @param token JWT 토큰
-	 * @throws AuthException 유효하지 않은 토큰일 경우 발생
-	 */
 	public void validateToken(String token) {
 		try {
-			Jwts.parserBuilder().setSigningKey(secretKey).build().parseClaimsJws(token);
+			Jwts.parserBuilder()
+				.setSigningKey(secretKey)
+				.build()
+				.parseClaimsJws(token);
 		} catch (Exception e) {
 			throw new AuthException(CustomError.INVALID_TOKEN);
 		}
 	}
 
-	/**
-	 * JWT Token Claims(페이로드) 정보 파싱 메서드
-	 * @param token
-	 * @return JWT 토큰의 페이로드
-	 */
 	private Claims getClaims(String token) {
-		return Jwts.parserBuilder().setSigningKey(secretKey).build().parseClaimsJws(token).getBody();
+		return Jwts.parserBuilder()
+			.setSigningKey(secretKey)
+			.build()
+			.parseClaimsJws(token)
+			.getBody();
 	}
 
-	/**
-	 * JWT Token Claims(페이로드) 정보에서 id 값 추출 메서드
-	 * @param token
-	 * @return 페이로드에서 추출한 id 값
-	 */
 	public String getIdFromToken(String token) {
 		Claims claims = getClaims(token);
 		return claims.get("id", String.class);
 	}
 
-	/**
-	 * 토큰에서 만료 시간을 추출
-	 * @param token JWT 토큰
-	 * @return 만료 시간 (밀리초)
-	 */
 	public long getExpiration(String token) {
-		Claims claims = Jwts.parser().setSigningKey(secretKey).parseClaimsJws(token).getBody();
+		Claims claims = Jwts.parser()
+			.setSigningKey(secretKey)
+			.parseClaimsJws(token)
+			.getBody();
 		return claims.getExpiration().getTime();
 	}
 
-	/**
-	 * accessToken 생성
-	 * @param id
-	 * @return jwt 토큰
-	 */
 	public String generateAccessToken(String id) {
 		return generateJwt(id, ACCESSTOKEN_EXPIRATION);
 	}
 
-	/**
-	 * refreshToken 생성
-	 * @param id
-	 * @return jwt 토큰
-	 */
 	public String generateRefreshToken(String id) {
 		return generateJwt(id, REFRESHTOKEN_EXPIRATION);
 	}
 
-	/**
-	 * socialToken 생성
-	 * @param id
-	 * @return jwt 토큰
-	 */
 	public String generateSocialToken(String id) {
 		return generateJwt(id, SOCIALTOKEN_EXPIRATION);
 	}
