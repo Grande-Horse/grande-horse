@@ -54,4 +54,16 @@ public class UserEntity {
 
 	@Column(name = "deleted_at")
 	private LocalDateTime deletedAt;
+
+	public void increaseCoin(int price) {
+		coin.increaseCoin(price);
+	}
+
+	public void validateCoin(int price) {
+		coin.validateCoin(price);
+	}
+
+	public void decreaseCoin(int price) {
+		coin.decreaseCoin(price);
+	}
 }

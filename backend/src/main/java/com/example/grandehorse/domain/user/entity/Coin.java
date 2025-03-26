@@ -6,7 +6,10 @@ import jakarta.persistence.Embeddable;
 import com.example.grandehorse.global.exception.CustomError;
 import com.example.grandehorse.global.exception.UserException;
 
+import lombok.NoArgsConstructor;
+
 @Embeddable
+@NoArgsConstructor
 public class Coin {
 	@Column(name = "coin", nullable = false)
 	private int value;
@@ -15,16 +18,16 @@ public class Coin {
 		this.value = value;
 	}
 
-	public void decreaseCoin(int amount) {
-		this.value = this.value - amount;
+	public void decreaseCoin(int price) {
+		this.value = this.value - price;
 	}
 
-	public void increaseCoin(int amount) {
-		this.value = this.value + amount;
+	public void increaseCoin(int price) {
+		this.value = this.value + price;
 	}
 
-	private void validateCoin(int amount) {
-		if (this.value - amount < 0) {
+	public void validateCoin(int price) {
+		if (this.value - price < 0) {
 			throw new UserException(CustomError.USER_NOT_ENOUGH_COIN);
 		}
 	}
