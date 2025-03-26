@@ -4,3 +4,10 @@ export interface PriceHistoryType {
   highestPrice: number | null;
   lowestPrice: number | null;
 }
+
+export interface SellHorseType {
+  horseId: string;
+  cardId: number;
+  sellerId: number;
+  price: number;
+}

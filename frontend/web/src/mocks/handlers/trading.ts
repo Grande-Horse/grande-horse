@@ -10,4 +10,30 @@ const priceHistoryHandler = (): StrictResponse<ApiResponseType<PriceHistoryType[
   });
 };
 
-export const handlers: RequestHandler[] = [http.get('/api/v1/horses/:horseId/price-history', priceHistoryHandler)];
+const sellHorseHandler = (): StrictResponse<ApiResponseType<null>> => {
+  return HttpResponse.json({
+    errorCode: null,
+    data: null,
+  });
+};
+
+const purchaseHorseHandler = (): StrictResponse<ApiResponseType<null>> => {
+  return HttpResponse.json({
+    errorCode: null,
+    data: null,
+  });
+};
+
+const cancelHorseSellingHandler = (): StrictResponse<ApiResponseType<null>> => {
+  return HttpResponse.json({
+    errorCode: null,
+    data: null,
+  });
+};
+
+export const handlers: RequestHandler[] = [
+  http.get('/horses/:horseId/price-history', priceHistoryHandler),
+  http.post('/trading', sellHorseHandler),
+  http.put('/trading/:tradeId', purchaseHorseHandler),
+  http.delete('/trading/:tradeId', cancelHorseSellingHandler),
+];

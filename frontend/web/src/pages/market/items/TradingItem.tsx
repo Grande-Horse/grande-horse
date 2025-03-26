@@ -3,6 +3,7 @@ import { HorseType } from '@/types/horse';
 import { RankMap } from '@/constants/horse';
 import CoinIcon from '@/assets/icons/coinIcon.svg?react';
 import StatBar from '@/components/charts/StatBar';
+import { purchaseHorse } from '@/services/trading';
 
 interface TradingItemProps {
   horse: HorseType;
@@ -17,6 +18,15 @@ const TradingItem: React.FC<TradingItemProps> = ({
   isPriceHistoryOpen = false,
   onPriceHistoryClick,
 }) => {
+  const handlePurchaseHorse = async () => {
+    const tradeId = 1;
+    try {
+      await purchaseHorse(tradeId);
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   return (
     <div className='flex gap-5 p-5'>
       {/* TODO: 말 카드 */}
@@ -46,7 +56,7 @@ const TradingItem: React.FC<TradingItemProps> = ({
           ) : (
             <Button onClick={onPriceHistoryClick}>변동 시세 보기</Button>
           )}
-          <Button onClick={() => {}}>구매하기</Button>
+          <Button onClick={handlePurchaseHorse}>구매하기</Button>
         </div>
       </div>
     </div>

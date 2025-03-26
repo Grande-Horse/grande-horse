@@ -8,12 +8,12 @@ export const apiGet = async <U>(url: string, params?: Record<string, any>): Prom
   return await apiRequest<null, U>('GET', url, null, params);
 };
 
-export const apiPost = async <T, U>(url: string, data: T): Promise<U> => {
-  return await apiRequest<T, U>('POST', url, data);
+export const apiPost = async <T>(url: string, data: T) => {
+  await apiRequest<T, null>('POST', url, data);
 };
 
-export const apiPut = async <T, U>(url: string, data: T): Promise<U> => {
-  return await apiRequest<T, U>('PUT', url, data);
+export const apiPut = async <T>(url: string, data: T) => {
+  await apiRequest<T, null>('PUT', url, data);
 };
 
 export const apiDelete = async <U>(url: string, params?: Record<string, any>): Promise<U> => {
