@@ -29,6 +29,41 @@ public class GlobalExceptionHandler {
 		return CommonResponse.error(ex.getStatus(), ex.getErrorCode());
 	}
 
+	@ExceptionHandler(CardException.class)
+	public ResponseEntity<CommonResponse<Object>> cardExceptionHandler(CardException ex) {
+		log.error("CommonException Occurred. Error Code: {}, Status: {}, Message: {}",
+			ex.getErrorCode(), ex.getStatus(), ex.getMessage(), ex);
+		return CommonResponse.error(ex.getStatus(), ex.getErrorCode());
+	}
+
+	@ExceptionHandler(HorseException.class)
+	public ResponseEntity<CommonResponse<Object>> horseExceptionHandler(HorseException ex) {
+		log.error("CommonException Occurred. Error Code: {}, Status: {}, Message: {}",
+			ex.getErrorCode(), ex.getStatus(), ex.getMessage(), ex);
+		return CommonResponse.error(ex.getStatus(), ex.getErrorCode());
+	}
+
+	@ExceptionHandler(ProductException.class)
+	public ResponseEntity<CommonResponse<Object>> productExceptionHandler(ProductException ex) {
+		log.error("CommonException Occurred. Error Code: {}, Status: {}, Message: {}",
+			ex.getErrorCode(), ex.getStatus(), ex.getMessage(), ex);
+		return CommonResponse.error(ex.getStatus(), ex.getErrorCode());
+	}
+
+	@ExceptionHandler(RaceException.class)
+	public ResponseEntity<CommonResponse<Object>> raceExceptionHandler(RaceException ex) {
+		log.error("CommonException Occurred. Error Code: {}, Status: {}, Message: {}",
+			ex.getErrorCode(), ex.getStatus(), ex.getMessage(), ex);
+		return CommonResponse.error(ex.getStatus(), ex.getErrorCode());
+	}
+
+	@ExceptionHandler(TradingException.class)
+	public ResponseEntity<CommonResponse<Object>> tradingExceptionHandler(TradingException ex) {
+		log.error("CommonException Occurred. Error Code: {}, Status: {}, Message: {}",
+			ex.getErrorCode(), ex.getStatus(), ex.getMessage(), ex);
+		return CommonResponse.error(ex.getStatus(), ex.getErrorCode());
+	}
+
 	@ExceptionHandler(UserException.class)
 	public ResponseEntity<CommonResponse<Object>> userExceptionHandler(UserException ex) {
 		log.error("CommonException Occurred. Error Code: {}, Status: {}, Message: {}",

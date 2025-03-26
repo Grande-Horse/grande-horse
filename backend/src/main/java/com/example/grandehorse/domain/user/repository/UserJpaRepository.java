@@ -1,4 +1,19 @@
 package com.example.grandehorse.domain.user.repository;
 
-public class UserJpaRepository {
+import java.util.Optional;
+
+import jakarta.persistence.LockModeType;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Lock;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.stereotype.Repository;
+
+import com.example.grandehorse.domain.user.entity.UserEntity;
+
+@Repository
+public interface UserJpaRepository extends JpaRepository<UserEntity, Integer> {
+	@Lock(LockModeType.PESSIMISTIC_WRITE)
+	@Query("SELECT u FROM UserEntity u WHERE u.id = :userId")
+	Optional<UserEntity> findByIdWithPessimisticLock(int userId);
 }

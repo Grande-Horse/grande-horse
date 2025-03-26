@@ -35,14 +35,14 @@ public class TradingController {
 		return tradingService.createCardTrade(createTradeDto);
 	}
 
-	@PutMapping("")
+	@PutMapping("/{tradeId}")
 	public ResponseEntity<CommonResponse<Void>> purchaseCard(
 		@PathVariable(name = "tradeId") int tradeId
 	) {
 		return tradingService.purchaseCard(tradeId);
 	}
 
-	@DeleteMapping("")
+	@DeleteMapping("/{tradeId}")
 	public ResponseEntity<CommonResponse<Void>> cancelCardTrade(
 		@PathVariable(name = "tradeId") int tradeId
 	) {
