@@ -3,7 +3,7 @@ import Input from '@/components/ui/Input';
 
 import { rankMap, rankNameMap } from '@/constants/rank';
 import { RoomData } from '@/types/room';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 
 const PARTICIPANT_NUMBERS = ['2', '3', '4', '5', '6'];
 
@@ -31,15 +31,25 @@ const RoomCreateModalContent: React.FC<RoomCreateModalContent> = ({ newRoom, set
     });
   };
 
-  const handleChange = (e) => {
-    setNewRoom((prev) => {
-      return { ...prev, title: e.target.value };
+  const handleOnChange = (e: any) => {
+    setRoomData((prev) => {
+      return { ...prev, [e.target.id]: e.target.value };
+    });
+
+    setNewRoom(() => {
+      return { ...roomData, [e.target.id]: e.target.value };
     });
   };
 
   return (
     <div className='flex w-full flex-col gap-3'>
-      <Input placeholder='제목' className='text-detail1 placeholder:text-black' onChange={handleChange} />
+      <Input
+        placeholder='제목'
+        id='title'
+        className='text-detail1 placeholder:text-black'
+        value={roomData.title}
+        onChange={handleOnChange}
+      />
       <Dropdown
         className='text-detail1'
         options={PARTICIPANT_NUMBERS}
@@ -54,7 +64,14 @@ const RoomCreateModalContent: React.FC<RoomCreateModalContent> = ({ newRoom, set
         value={roomData.rank ? `${rankMap[roomData.rank]}` : ''}
         onChange={(value) => handleDropDownOnChange(value, 'rank')}
       />
-      <Input placeholder='배팅 코인' className='text-detail1 placeholder:text-black' onChange={() => {}} />
+      <Input
+        placeholder='배팅 코인'
+        id='batting'
+        type='number'
+        value={roomData.batting === 0 ? '' : roomData.batting}
+        className='text-detail1 placeholder:text-black'
+        onChange={handleOnChange}
+      />
     </div>
   );
 };

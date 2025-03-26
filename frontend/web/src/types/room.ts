@@ -5,6 +5,6 @@ export interface RoomData {
   title: string;
   rank: RankType | '';
   batting: number;
-  players: number;
+  players?: number;
   maxPlayers: number;
 }

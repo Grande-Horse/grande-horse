@@ -5,7 +5,7 @@ import { RoomCreateModalContent, RoomCreateModalTitle } from '@/components/racet
 
 import { RoomData } from '@/types/room';
 import { roomMockData } from '@/mocks/datas/room';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 
 const RacetrackPage = () => {
   const { openModal } = useModal();
@@ -16,21 +16,18 @@ const RacetrackPage = () => {
   const [newRoom, setNewRoom] = useState<RoomData>({
     batting: 0,
     maxPlayers: 0,
-    players: 0,
     rank: '',
     title: '',
   });
 
-  const handleConfirm = async () => {
-    // 서버에 전송할 데이터
-
+  const handleConfirm = async (updatedRoom) => {
     try {
       const response = await fetch('/api/rooms', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify(newRoom), // 새로운 방 데이터를 JSON으로 전송
+        body: JSON.stringify(updatedRoom), // 새로운 방 데이터를 JSON으로 전송
       });
 
       if (!response.ok) {
@@ -39,15 +36,6 @@ const RacetrackPage = () => {
 
       const data = await response.json();
       console.log('방 생성 성공:', data);
-
-      // 방 생성 후 상태 초기화
-      setNewRoom({
-        batting: 0,
-        maxPlayers: 0,
-        players: 0,
-        rank: '',
-        title: '',
-      });
     } catch (error) {
       console.error('에러 발생:', error);
     }
@@ -58,7 +46,20 @@ const RacetrackPage = () => {
       title: <RoomCreateModalTitle />,
       confirmText: '생성',
       content: <RoomCreateModalContent newRoom={newRoom} setNewRoom={setNewRoom} />,
-      onConfirm: handleConfirm,
+      onConfirm: () => {
+        setNewRoom((prevNewRoom) => {
+          const updatedRoom = { ...prevNewRoom };
+          handleConfirm(updatedRoom);
+          return updatedRoom;
+        });
+        setNewRoom({
+          batting: 0,
+          maxPlayers: 0,
+          players: 0,
+          rank: '',
+          title: '',
+        });
+      },
       onCancel: () => {
         setNewRoom({
           batting: 0,
