@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { PastureHorse } from '@/components/pastureHorse/PastureHorse';
 import { getRandomDirection, getRandomPosition } from '@/components/pastureHorse/horsePositionUtils';
 import { HorseType, PastureHorseStatusType } from '@/types/horse';
-import { useHorseMovement } from '@/components/pastureHorse/useHorseMovement';
+import { useHorseMovement } from '@/hooks/useHorseMovement';
 import { horseListMockData } from '@/mocks/datas/horse';
 import InfoPanel from '@/components/pastureHorse/InfoPanel';
 
