@@ -22,15 +22,16 @@ import lombok.RequiredArgsConstructor;
 @Component
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
-	private final JwtTokenProvider jwtProvider;
-	private final TokenBlacklistService tokenBlacklistService;
-
 	private static final List<String> EXCLUDED_URLS = List.of(
 		"/api/v1/auth/test",
 		"/api/v1/auth/login-kakao",
 		"/api/v1/auth/login-ssafy",
 		"/api/v1/users"
 	);
+
+	private final JwtTokenProvider jwtProvider;
+	private final TokenBlacklistService tokenBlacklistService;
+
 
 	@Override
 	protected boolean shouldNotFilter(HttpServletRequest request) {
