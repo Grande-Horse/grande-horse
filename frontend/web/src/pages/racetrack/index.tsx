@@ -1,26 +1,73 @@
-import RoomList from '@/components/racetrack/RoomList';
 import { Button } from '@/components/ui/Button';
-import Dropdown from '@/components/ui/dropdown/Dropdown';
-import Input from '@/components/ui/Input';
 import useModal from '@/components/ui/modal/useModal';
-import { rankMap } from '@/constants/rank';
+import RoomList from '@/components/racetrack/RoomList';
+import { RoomCreateModalContent, RoomCreateModalTitle } from '@/components/racetrack/RoomCreateModal';
+
+import { RoomData } from '@/types/room';
 import { roomMockData } from '@/mocks/datas/room';
+import { useEffect, useState } from 'react';
 
 const RacetrackPage = () => {
-  const { openModal, closeModal } = useModal();
+  const { openModal } = useModal();
+
+  // useQuery으로 변경예정
+  const [roomList, setRoomList] = useState(roomMockData);
+
+  const [newRoom, setNewRoom] = useState<RoomData>({
+    batting: 0,
+    maxPlayers: 0,
+    players: 0,
+    rank: '',
+    title: '',
+  });
+
+  const handleConfirm = async () => {
+    // 서버에 전송할 데이터
+
+    try {
+      const response = await fetch('/api/rooms', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(newRoom), // 새로운 방 데이터를 JSON으로 전송
+      });
+
+      if (!response.ok) {
+        throw new Error('방 생성에 실패했습니다.');
+      }
+
+      const data = await response.json();
+      console.log('방 생성 성공:', data);
+
+      // 방 생성 후 상태 초기화
+      setNewRoom({
+        batting: 0,
+        maxPlayers: 0,
+        players: 0,
+        rank: '',
+        title: '',
+      });
+    } catch (error) {
+      console.error('에러 발생:', error);
+    }
+  };
 
   const handleClick = () => {
     openModal({
-      title: <div className='text-heading4 text-stroke font-normal'>방 생성</div>,
+      title: <RoomCreateModalTitle />,
       confirmText: '생성',
-      content: (
-        <div className='flex flex-col gap-3'>
-          <Input placeholder='제목' className='text-detail1 placeholder:text-black' />
-          <Dropdown options={Object.values(rankMap)} value='인원수' onChange={() => {}} />
-          <Dropdown options={Object.values(rankMap)} value='등급제한' onChange={() => {}} />
-          <Input placeholder='배팅 코인' className='text-detail1 placeholder:text-black' />
-        </div>
-      ),
+      content: <RoomCreateModalContent newRoom={newRoom} setNewRoom={setNewRoom} />,
+      onConfirm: handleConfirm,
+      onCancel: () => {
+        setNewRoom({
+          batting: 0,
+          maxPlayers: 0,
+          players: 0,
+          rank: '',
+          title: '',
+        });
+      },
     });
   };
 
@@ -32,7 +79,7 @@ const RacetrackPage = () => {
         </Button>
       </div>
       <div className='flex-1 overflow-auto'>
-        <RoomList rooms={roomMockData} />
+        <RoomList rooms={roomList} />
       </div>
     </div>
   );

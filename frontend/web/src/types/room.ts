@@ -1,7 +1,9 @@
+import { RankType } from '@/types/horse';
+
 export interface RoomData {
-  id: number;
+  id?: number;
   title: string;
-  rank: 'normal' | 'rare' | 'epic' | 'unique' | 'legend';
+  rank: RankType | '';
   batting: number;
   players: number;
   maxPlayers: number;

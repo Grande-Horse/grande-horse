@@ -14,4 +14,12 @@ const rankMap = {
   legend: '레전드',
 } as const;
 
-export { rankTextColor, rankMap };
+const rankNameMap = {
+  노멀: 'normal',
+  레어: 'rare',
+  에픽: 'epic',
+  유니크: 'unique',
+  레전드: 'legend',
+} as const;
+
+export { rankTextColor, rankMap, rankNameMap };
