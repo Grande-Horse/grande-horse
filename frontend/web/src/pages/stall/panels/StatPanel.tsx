@@ -31,19 +31,18 @@ const StatPanel: React.FC = () => {
   ];
 
   return (
-    <div className='flex flex-col divide-y-1 divide-black'>
-      <section className='flex py-5 pr-5'>
-        <div>
+    <div className='flex h-full flex-col'>
+      <section className='my-5 flex gap-4'>
+        <div className='flex-1'>
           <HorseProfileCard name={selectedHorse.name} rank={selectedHorse.rank} coatColor={selectedHorse.coatColor} />
         </div>
 
-        <div className='bg-gradient flex flex-1 items-center justify-center rounded-sm'>
-          {/* TODO: 캐러셀 구현 */}
-          {/* <section className='max-h-56 p-2'>
+        <div className='bg-gradient mr-8 flex flex-3 items-center rounded-sm p-2'>
+          {/* <div className='m-auto w-7/8'>
             <RaceRecordChart raceRecord={raceRecordMockData} />
-          </section> */}
+          </div> */}
 
-          <ul className='flex h-full w-full flex-col p-3 pr-4'>
+          <ul className='flex h-full w-full flex-col justify-center pr-3 pl-2'>
             {horseStats.map((stat) => (
               <li key={stat.label} className='flex flex-1 items-center justify-between'>
                 <div className='flex items-center'>
@@ -57,12 +56,11 @@ const StatPanel: React.FC = () => {
         </div>
       </section>
 
-      <section className='bg-primary p-4'>
+      <section className='bg-primary border-t border-b border-black p-4'>
         <Dropdown options={Object.values(RankMap)} value={rank} onChange={setRank} placeholder='등급 선택' />
-        {/* TODO: Search Input */}
       </section>
 
-      <section className='flex flex-wrap justify-evenly p-4'>
+      <section className='grid grid-cols-3 place-items-center py-2'>
         {horseList.map((horse) => (
           <SmallHorseCard horse={horse} />
         ))}

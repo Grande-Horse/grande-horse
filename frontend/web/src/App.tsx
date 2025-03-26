@@ -5,6 +5,7 @@ import HomePage from '@/pages';
 import StallPage from '@/pages/stall';
 import ModalProvider from '@/components/ui/modal/ModalProvider.tsx';
 import MarketPage from '@/pages/market/index.tsx';
+import SellPage from '@/pages/market/sell';
 import RacetrackPage from '@/pages/racetrack';
 
 function App() {
@@ -16,6 +17,7 @@ function App() {
             <Route path='/' element={<HomePage />} />
             <Route path='/stall' element={<StallPage />} />
             <Route path='/market' element={<MarketPage />} />
+            <Route path='/market/sell' element={<SellPage />} />
             <Route path='/racetrack' element={<RacetrackPage />} />
           </Routes>
         </ModalProvider>

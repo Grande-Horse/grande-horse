@@ -8,9 +8,10 @@ interface DropdownProps {
   value: string;
   onChange: (value: string) => void;
   placeholder?: string;
+  className?: string;
 }
 
-const Dropdown: React.FC<DropdownProps> = ({ options, value, onChange, placeholder }) => {
+const Dropdown: React.FC<DropdownProps> = ({ options, value, onChange, placeholder, className }) => {
   const [isOpen, setIsOpen] = useState(false);
   const ref = useClickOutsideRef<HTMLDivElement>(() => setIsOpen(false));
 
@@ -20,7 +21,7 @@ const Dropdown: React.FC<DropdownProps> = ({ options, value, onChange, placehold
   };
 
   return (
-    <div className='relative min-w-38' ref={ref}>
+    <div className={`relative min-w-38 ${className}`} ref={ref}>
       <button
         onClick={() => setIsOpen((prev) => !prev)}
         className='flex w-full cursor-pointer items-center justify-between rounded-sm border border-black bg-white'

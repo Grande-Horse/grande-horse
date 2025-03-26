@@ -11,4 +11,4 @@ export const horseMockData: HorseType = {
   stamina: 160,
 };
 
-export const horseListMockData: HorseType[] = Array.from({ length: 20 }, () => horseMockData);
+export const horseListMockData: HorseType[] = Array.from({ length: 22 }, () => horseMockData);
