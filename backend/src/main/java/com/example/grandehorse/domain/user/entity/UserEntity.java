@@ -15,6 +15,7 @@ import jakarta.persistence.Table;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
@@ -24,6 +25,7 @@ import lombok.NoArgsConstructor;
 @Table(name = "user", indexes = {
 	@Index(name = "idx_social_provider_social_id", columnList = "social_provider, social_id")
 })
+@Getter
 public class UserEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)

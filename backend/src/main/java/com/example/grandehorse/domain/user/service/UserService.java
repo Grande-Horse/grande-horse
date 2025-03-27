@@ -1,9 +1,11 @@
 package com.example.grandehorse.domain.user.service;
 
+import java.util.Optional;
+
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.example.grandehorse.domain.user.entity.Coin;
+import com.example.grandehorse.domain.auth.controller.response.SocialUserResponse;
 import com.example.grandehorse.domain.user.entity.UserEntity;
 import com.example.grandehorse.domain.user.repository.UserJpaRepository;
 import com.example.grandehorse.global.exception.CustomError;
@@ -37,5 +39,12 @@ public class UserService {
 
 		user.increaseCoin(price);
 		userJpaRepository.save(user);
+	}
+
+	public Optional<UserEntity> findUserBySocialInfo(SocialUserResponse socialUserResponse) {
+		return userJpaRepository.findBySocialProviderAndSocialId(
+			socialUserResponse.getSocialProvider(),
+			socialUserResponse.getSocialId()
+		);
 	}
 }

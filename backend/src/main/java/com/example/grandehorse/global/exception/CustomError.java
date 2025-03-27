@@ -40,6 +40,9 @@ public enum CustomError {
 
 	// 경마 관련 에러
 
+	// 외부 API 관련 에러
+	EXTERNAL_SERVICE_PARSE_ERROR(HttpStatus.BAD_REQUEST, "E1", "외부 API 응답 처리 중 오류가 발생했습니다.");
+
 	private final HttpStatus httpStatus;
 	private final String errorCode;
 	private final String errorMessage;
