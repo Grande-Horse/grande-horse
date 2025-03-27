@@ -2,7 +2,7 @@ FROM openjdk:17-jdk-alpine
 
 WORKDIR /app
 
-COPY ./backend .
+COPY . .
 
 RUN ./gradlew clean build -x test
 
