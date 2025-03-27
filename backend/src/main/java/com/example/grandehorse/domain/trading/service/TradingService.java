@@ -14,6 +14,7 @@ import com.example.grandehorse.domain.card.service.CardService;
 import com.example.grandehorse.domain.horse.service.HorseService;
 import com.example.grandehorse.domain.trading.controller.request.CreateCardTradeDto;
 import com.example.grandehorse.domain.trading.controller.response.RegisteredCardResponse;
+import com.example.grandehorse.domain.trading.controller.response.SoldCardResponse;
 import com.example.grandehorse.domain.trading.controller.response.TradeCardResponse;
 import com.example.grandehorse.domain.trading.entity.CardTradeEntity;
 import com.example.grandehorse.domain.trading.entity.CardTradeStatus;
@@ -119,6 +120,20 @@ public class TradingService {
 		return CommonResponse.pagedSuccess(registeredCardSlice.getContent(), hasNextItems, nextCursorId);
 	}
 
+	public ResponseEntity<CommonResponse<List<SoldCardResponse>>> getSoldCards(
+		String horseId,
+		int cursorId,
+		int limit
+	) {
+		Slice<SoldCardResponse> soldCardsSlice = findSoldCardsByCursor(horseId, cursorId, limit);
+
+		boolean hasNextItems = soldCardsSlice.hasNext();
+
+		int nextCursorId = getNextCursorId(hasNextItems, cursorId, limit);
+
+		return CommonResponse.pagedSuccess(soldCardsSlice.getContent(), hasNextItems, nextCursorId);
+	}
+
 	private void registerCardTrade(CreateCardTradeDto createTradeDto) {
 		CardTradeEntity cardTradeEntity = CardTradeEntity.builder()
 			.horseId(createTradeDto.getHorseId())
@@ -194,11 +209,24 @@ public class TradingService {
 		);
 	}
 
+	private Slice<SoldCardResponse> findSoldCardsByCursor(
+		String horseId,
+		int cursorId,
+		int limit
+	) {
+		Pageable pageable = PageRequest.of(cursorId / limit, limit);
+
+		return cardTradingJpaRepository.findSoldCardsByCursor(
+			horseId,
+			cursorId,
+			pageable
+		);
+	}
+
 	private int getNextCursorId(boolean hasNextPage, int cursorId, int limit) {
 		if (hasNextPage) {
 			return cursorId + limit;
 		}
-
 		return -1;
 	}
 }
