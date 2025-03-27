@@ -16,7 +16,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.grandehorse.domain.trading.controller.request.CreateCardTradeDto;
+import com.example.grandehorse.domain.trading.controller.response.PriceHistoryResponse;
 import com.example.grandehorse.domain.trading.controller.response.RegisteredCardResponse;
+import com.example.grandehorse.domain.trading.controller.response.SoldCardResponse;
 import com.example.grandehorse.domain.trading.controller.response.TradeCardResponse;
 import com.example.grandehorse.domain.trading.service.TradingService;
 import com.example.grandehorse.global.response.CommonResponse;
@@ -24,7 +26,7 @@ import com.example.grandehorse.global.response.CommonResponse;
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping("/trading")
+@RequestMapping("/tradings")
 @RequiredArgsConstructor
 public class TradingController {
 	private final TradingService tradingService;
@@ -60,13 +62,26 @@ public class TradingController {
 	}
 
 	@GetMapping("/registered-cards")
-	public ResponseEntity<CommonResponse<List<RegisteredCardResponse>>> getRegisteredTradeCards(
-		@RequestParam(name = "sellerId") int sellerId,
+	public ResponseEntity<CommonResponse<List<RegisteredCardResponse>>> getRegisteredCards(
 		@RequestParam(name = "cursorId") int cursorId,
-		@RequestParam(name = "rank") String rank,
-		@RequestParam(name = "search") String search,
 		@RequestParam(name = "limit") int limit
 	) {
-		return tradingService.getRegisteredCards(sellerId, cursorId, rank, search, limit);
+		return tradingService.getRegisteredCards(cursorId, limit);
+	}
+
+	@GetMapping("/sold-cards")
+	public ResponseEntity<CommonResponse<List<SoldCardResponse>>> getSoldCards(
+		@RequestParam(name = "horseId") String horseId,
+		@RequestParam(name = "cursorId") int cursorId,
+		@RequestParam(name = "limit") int limit
+	) {
+		return tradingService.getSoldCards(horseId, cursorId, limit);
+	}
+
+	@GetMapping("{horseId}/price-history")
+	public ResponseEntity<CommonResponse<List<PriceHistoryResponse>>> getPriceHistory(
+		@PathVariable(name = "horseId") String horseId
+	) {
+		return tradingService.getPriceHistory(horseId);
 	}
 }

@@ -34,9 +34,9 @@ public enum CustomError {
 	// 상품 관련 에러
 
 	// 카드 관련 에러
-	USER_NOT_OWNER_OF_CARD(HttpStatus.BAD_REQUEST, "C1", "유저의 말카드가 아닙니다."),
-	CARD_SALE_RESTRICTED(HttpStatus.BAD_REQUEST, "C2", "판매할 수 없는 말카드 입니다."),
-	CARD_NOT_EXISTED(HttpStatus.BAD_REQUEST, "C3", "존재하지 않는 말카드입니다."),
+	USER_NOT_OWNER_OF_CARD(HttpStatus.BAD_REQUEST, "CA1", "유저의 말카드가 아닙니다."),
+	CARD_SALE_RESTRICTED(HttpStatus.BAD_REQUEST, "CA2", "판매할 수 없는 말카드 입니다."),
+	CARD_NOT_EXISTED(HttpStatus.BAD_REQUEST, "CA3", "존재하지 않는 말카드입니다.");
 
 	// 경마 관련 에러
 

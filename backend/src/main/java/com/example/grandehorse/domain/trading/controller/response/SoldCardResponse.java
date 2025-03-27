@@ -3,14 +3,12 @@ package com.example.grandehorse.domain.trading.controller.response;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
 @NoArgsConstructor
-public class RegisteredCardResponse {
+public class SoldCardResponse {
 	private int tradeId;
 
 	private int horseId;
@@ -29,9 +27,9 @@ public class RegisteredCardResponse {
 
 	private double stamina;
 
-	private LocalDate registeredAt;
+	private LocalDate soldAt;
 
-	public RegisteredCardResponse(
+	public SoldCardResponse(
 		int tradeId,
 		int horseId,
 		String coatColor,
@@ -40,8 +38,7 @@ public class RegisteredCardResponse {
 		int price,
 		double speed,
 		double acceleration,
-		double stamina,
-		LocalDateTime registeredAt
+		double stamina, LocalDateTime soldAt
 	) {
 		this.tradeId = tradeId;
 		this.horseId = horseId;
@@ -52,6 +49,6 @@ public class RegisteredCardResponse {
 		this.speed = speed;
 		this.acceleration = acceleration;
 		this.stamina = stamina;
-		this.registeredAt = registeredAt.toLocalDate();
+		this.soldAt = soldAt.toLocalDate();
 	}
 }
