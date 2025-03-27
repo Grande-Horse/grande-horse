@@ -2,7 +2,7 @@ FROM openjdk:17-jdk-alpine
 
 WORKDIR /app
 
-COPY ./backend/src/main/resources/application-secret.yml ./application-secret.yml  # 수정됨
+COPY ./backend/src/main/resources/application-secret.yml ./application-secret.yml
 COPY ./backend .
 
 RUN ./gradlew clean build -x test
