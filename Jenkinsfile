@@ -30,12 +30,12 @@ pipeline {
                 parallel(
                     BackendCredentials: {
                         withCredentials([file(credentialsId: 'BACKEND_SECRET_YML', variable: 'BACKEND_SECRET')]) {
-                            sh 'cp $BACKEND_SECRET ./backend/src/main/resources/application-secret.yml'
+                            sh 'cp $BACKEND_SECRET backend/src/main/resources/application-secret.yml'
                         }
                     },
                     FrontendCredentials: {
                         withCredentials([file(credentialsId: 'FRONTEND_ENV', variable: 'FRONTEND_ENV_FILE')]) {
-                            sh 'cp $FRONTEND_ENV_FILE ./frontend/web/.env'
+                            sh 'cp $FRONTEND_ENV_FILE frontend/web/.env'
                         }
                     }
                 )
@@ -50,10 +50,10 @@ pipeline {
                 withCredentials([usernamePassword(credentialsId: 'DockerHub_Login', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
                     sh """
                         echo \$DOCKER_PASS | docker login -u \$DOCKER_USER --password-stdin
-                        docker build -t imkm/grandehorse:backend-latest -f ./backend/Dockerfile .
+                        docker build -t imkm/grandehorse:backend-latest ./backend
                         docker push imkm/grandehorse:backend-latest
 
-                        docker build -t imkm/grandehorse:frontend-latest -f ./frontend/web
+                        docker build -t imkm/grandehorse:frontend-latest ./frontend/web
                         docker push imkm/grandehorse:frontend-latest
 
                         docker logout
