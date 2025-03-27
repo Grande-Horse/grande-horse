@@ -13,15 +13,15 @@ const Header: React.FC = () => {
 
   const contentMap = [
     { path: '/market', component: <DefaultContent coin={coin} foot={foot} /> },
-    { path: '/racetrack', component: <DefaultContent coin={coin} foot={foot} /> },
-    { path: '/stall', component: <StallContent title='마구간' /> },
     {
       path: '/racetrack/room',
       component: <RaceTrackContent title={searchParams.get('title') || '방 제목을 입력해주세요.'} />,
     },
+    { path: '/racetrack', component: <DefaultContent coin={coin} foot={foot} /> },
+    { path: '/stall', component: <StallContent title='마구간' /> },
   ];
 
-  const content = contentMap.find((item) => pathname.startsWith(item.path))?.component;
+  const content = contentMap.find((item) => pathname === item.path || pathname.startsWith(item.path))?.component;
 
   return content && <header className={commonStyle}>{content}</header>;
 };
