@@ -29,6 +29,8 @@ stage('Load .env File') {
     steps {
         configFileProvider([configFile(fileId: 'env-file', targetLocation: '.env')]) {
             sh 'echo .env file loaded'
+            sh 'cp .env ./backend/.env'
+            sh 'cp .env ./frontend/web/.env'
         }
     }
 }
