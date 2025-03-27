@@ -21,7 +21,7 @@ services:
       DB_NAME: ${DB_NAME}
       DB_PASSWORD: ${DB_PASSWORD}
       REDIS_PASSWORD: ${REDIS_PASSWORD}
-      DB_URL: mysql  # MySQL 컨테이너 이름으로 설정
+      DB_URL: jdbc:mysql://grande-horse-mysql:3306/${DB_NAME}?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC&characterEncoding=UTF-8
     depends_on:
       - mysql
       - redis
@@ -32,7 +32,7 @@ services:
     image: mysql:8.0.40
     container_name: grande-horse-mysql
     environment:
-      DB_PASSWORD: ${DB_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${DB_PASSWORD}
       MYSQL_DATABASE: ${DB_NAME}
     ports:
       - "3306:3306"
