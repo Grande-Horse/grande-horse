@@ -5,6 +5,10 @@
   src: url('/fonts/DungGeunMo.ttf');
 }
 
+@utility h-body {
+  height: calc(100vh - 12rem);
+}
+
 @utility text-stroke {
   -webkit-text-stroke: 2px black;
   paint-order: stroke fill;
@@ -40,7 +44,7 @@
 }
 
 @utility z-tab {
-  z-index: 20;
+  z-index: 10;
 }
 
 @utility z-header {
@@ -71,7 +75,7 @@
   --color-rare: #00AAFF;
   --color-epic: #A100FF;
   --color-unique: #FFEA00;
-  --color-legendary: #00FF2A;
+  --color-legend: #00FF2A;
   --color-warning: #E5002C;
 
   --text-heading1: 2.4rem;
@@ -92,6 +96,8 @@
   
   --animate-moveCloudUpper: moveCloudUpper 300s linear infinite;
   --animate-moveCloudLower: moveCloudLower 2000s linear infinite;
+
+  --inset-shadow-xs: inset 0 0 4px rgba(1, 1, 1, 0.25); 
 
   @keyframes moveCloudLower {
     from {
