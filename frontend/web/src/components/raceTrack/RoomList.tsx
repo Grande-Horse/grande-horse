@@ -1,5 +1,5 @@
 import { RoomData } from '@/types/room';
-import RoomItem from './RoomItem';
+import RoomItem from '@/components/racetrack/RoomItem';
 
 interface RoomListProps {
   rooms: RoomData[];

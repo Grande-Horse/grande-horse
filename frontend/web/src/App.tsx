@@ -7,6 +7,7 @@ import ModalProvider from '@/components/ui/modal/ModalProvider.tsx';
 import MarketPage from '@/pages/market/index.tsx';
 import SellPage from '@/pages/market/sell';
 import RacetrackPage from '@/pages/racetrack';
+import RacetrackRoomPage from './pages/racetrack/room';
 
 function App() {
   return (
@@ -19,6 +20,7 @@ function App() {
             <Route path='/market' element={<MarketPage />} />
             <Route path='/market/sell' element={<SellPage />} />
             <Route path='/racetrack' element={<RacetrackPage />} />
+            <Route path='/racetrack/room/:roomid' element={<RacetrackRoomPage />} />
           </Routes>
         </ModalProvider>
       </GlobalLayout>

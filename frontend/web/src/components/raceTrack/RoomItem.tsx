@@ -11,12 +11,14 @@ interface RoomItemProps {
 const RoomItem: React.FC<RoomItemProps> = ({ room }) => {
   return (
     <Link
-      to={'/'}
+      to={`./room/${room.id}?title=${room.title}`}
       className='flex items-center justify-between gap-5 rounded-xl bg-white/10 p-9 inset-shadow-xs inset-shadow-white/30 hover:bg-white/20 active:bg-white/30'
     >
       <p className='flex-1 truncate'>{room.title}</p>
       <div className='text-stroke flex items-center gap-3'>
-        <p className={`${rankTextColor[room.rank]}`}>{rankMap[room.rank]} ↓</p>
+        <p className={`${rankTextColor[room.rank === '' ? 'normal' : room.rank]}`}>
+          {rankMap[room.rank === '' ? 'normal' : room.rank]} ↓
+        </p>
         <div className='flex items-center gap-2'>
           <CoinIcon className='size-6' />
           <p className='flex w-12 justify-end'>{room.batting}</p>
