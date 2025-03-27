@@ -5,6 +5,7 @@ import HomePage from '@/pages';
 import StallPage from '@/pages/stall';
 import ModalProvider from '@/components/ui/modal/ModalProvider.tsx';
 import MarketPage from '@/pages/market/index.tsx';
+import AuthPage from './pages/auth';
 
 function App() {
   return (
@@ -15,6 +16,7 @@ function App() {
             <Route path='/' element={<HomePage />} />
             <Route path='/stall' element={<StallPage />} />
             <Route path='/market' element={<MarketPage />} />
+            <Route path='/auth' element={<AuthPage />} />
           </Routes>
         </ModalProvider>
       </GlobalLayout>

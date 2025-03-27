@@ -1,3 +1,6 @@
+import kakaoLogo from '@/assets/images/kakao-logo.png';
+import ssafyLogo from '@/assets/images/ssafy-logo.png';
+
 const AuthPage: React.FC = () => {
   const landscapeSrc = 'src/assets/images/backgrounds/loginBgLandscape.png';
   const upperCloudSrc = 'src/assets/images/backgrounds/loginBgCloudUpper.png';
@@ -16,10 +19,27 @@ const AuthPage: React.FC = () => {
       style={{ backgroundImage: `url(${lowerCloudSrc})` }}
     />
   );
+  const loginButton = (logo: string, text: string) => (
+    <div
+      className={`relative flex w-sm items-center justify-center rounded-md p-4 text-black ${text === '카카오' ? 'bg-kakao' : 'bg-ssafy'}`}
+    >
+      <img className='absolute left-5 min-h-8 w-8' alt={`${text} 로그인`} src={logo} />
+      <span className='flex w-full justify-center'>{text} 로그인</span>
+    </div>
+  );
 
-  const KakaoLogin = () => <button className='bg-kakao w-sm rounded-sm p-4 text-black'>카카오 로그인</button>;
-
-  const SsafyLogin = () => <button className='bg-ssafy w-sm rounded-sm p-4 text-black'>SSAFY 로그인</button>;
+  const TitlePanel = () => {
+    return (
+      <div className='absolute top-0 left-1/2 aspect-300/278 w-2/3 -translate-x-1/2 transform bg-[url("src/assets/images/appTitleBg.png")] bg-contain bg-center bg-no-repeat'>
+        <div className='absolute right-0 bottom-[18%] left-0'>
+          <h1 className='text-stroke text-heading1 flex flex-col items-center justify-center px-40 text-nowrap'>
+            <span className='w-full text-start'>그런데</span>
+            <span className='w-full text-end'>말입니다</span>
+          </h1>
+        </div>
+      </div>
+    );
+  };
 
   return (
     <div
@@ -28,17 +48,10 @@ const AuthPage: React.FC = () => {
     >
       <UpperCloud />
       <LowerCloud />
-
-      <div className='min-h-1/3 min-w-1/2 flex-col items-center justify-center bg-[url("src/assets/images/appTitleBg.png")] bg-contain bg-center bg-no-repeat p-6'>
-        <h1 className='text-stroke text-heading1 flex w-full flex-col items-center justify-center p-20 text-nowrap'>
-          <span className='w-full text-left'>그런데</span>
-          <span className='w-full text-right'>말입니다</span>
-        </h1>
-      </div>
-
-      <div className='absolute bottom-0 flex w-full flex-col items-center justify-center'>
-        <KakaoLogin />
-        <SsafyLogin />
+      <TitlePanel />
+      <div className='absolute bottom-[20%] flex flex-col items-center justify-center gap-4'>
+        {loginButton(kakaoLogo, '카카오')}
+        {loginButton(ssafyLogo, 'SSAFY')}
       </div>
     </div>
   );
