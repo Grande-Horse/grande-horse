@@ -2,12 +2,7 @@ pipeline {
     agent any
 
     environment {
-        ACCESS_TOKEN = credentials('ACCESS_TOKEN')
         TARGET_BRANCH = 'infra/develop'
-        DB_USERNAME = credentials('DB_USERNAME')
-        DB_PASSWORD = credentials('DB_PASSWORD')
-        DB_NAME = credentials('DB_NAME')
-        REDIS_PASSWORD = credentials('REDIS_PASSWORD')
     }
 
     stages {
@@ -30,20 +25,13 @@ pipeline {
             }
         }
 
-        stage('Generate .env File') {
-            steps {
-                script {
-                    def envContent = """
-                        ACCESS_TOKEN=${env.ACCESS_TOKEN}
-                        DB_PASSWORD=${env.DB_PASSWORD}
-                        REDIS_PASSWORD=${env.REDIS_PASSWORD}
-                        DB_NAME=${env.DB_NAME}
-                        DB_USERNAME=${env.DB_USERNAME}
-                    """
-                    writeFile file: '.env', text: envContent
-                }
-            }
+stage('Load .env File') {
+    steps {
+        configFileProvider([configFile(fileId: 'env-file', targetLocation: '.env')]) {
+            sh 'echo .env file loaded'
         }
+    }
+}
 
         stage('Docker Build & Push') {
             when {
