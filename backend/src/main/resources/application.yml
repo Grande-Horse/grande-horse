@@ -1,9 +1,10 @@
+server:
+  servlet:
+    context-path: /api/v1
+
 spring:
   config:
     import: classpath:/application-secret.yml
-
-  servlet:
-    context-path: /api/v1
 
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
