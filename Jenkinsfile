@@ -25,15 +25,20 @@ pipeline {
             }
         }
 
-stage('Load .env File') {
-    steps {
-        configFileProvider([configFile(fileId: 'env-file', targetLocation: '.env')]) {
-            sh 'echo .env file loaded'
-            sh 'cp .env ./backend/.env'
-            sh 'cp .env ./frontend/web/.env'
+        stage('Prepare Credentials') {
+            parallel(
+                BackendCredentials: {
+                    withCredentials([file(credentialsId: 'BACKEND_SECRET_YML', variable: 'BACKEND_SECRET')]) {
+                        sh 'cp $BACKEND_SECRET backend/src/main/resources/application-secret.yml'
+                    }
+                },
+                FrontendCredentials: {
+                    withCredentials([file(credentialsId: 'FRONTEND_ENV', variable: 'FRONTEND_ENV_FILE')]) {
+                        sh 'cp $FRONTEND_ENV_FILE frontend/web/.env'
+                    }
+                }
+            )
         }
-    }
-}
 
         stage('Docker Build & Push') {
             when {
