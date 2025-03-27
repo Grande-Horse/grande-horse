@@ -50,10 +50,10 @@ pipeline {
                 withCredentials([usernamePassword(credentialsId: 'DockerHub_Login', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
                     sh """
                         echo \$DOCKER_PASS | docker login -u \$DOCKER_USER --password-stdin
-                        docker build -t imkm/grandehorse:backend-latest ./backend
+                        docker build -t imkm/grandehorse:backend-latest -f ./backend/Dockerfile .
                         docker push imkm/grandehorse:backend-latest
 
-                        docker build -t imkm/grandehorse:frontend-latest ./frontend/web
+                        docker build -t imkm/grandehorse:frontend-latest -f ./frontend/web
                         docker push imkm/grandehorse:frontend-latest
 
                         docker logout

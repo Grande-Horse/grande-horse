@@ -2,13 +2,16 @@ FROM openjdk:17-jdk-alpine
 
 WORKDIR /app
 
-COPY ./backend/src/main/resources/application-secret.yml ./application-secret.yml
-COPY ./backend .
+COPY ./backend /app/backend
+
+COPY ./backend/src/main/resources/application-secret.yml /app/backend/src/main/resources/application-secret.yml
+
+WORKDIR /app/backend
 
 RUN ./gradlew clean build -x test
 
-RUN find /app -name "*SNAPSHOT.jar" -exec cp {} /app/app.jar \;
+RUN find /app/backend/build/libs/ -name "*SNAPSHOT.jar" -exec cp {} /app/app.jar \;
 
 ENV SPRING_PROFILES_ACTIVE=prod
 
-ENTRYPOINT ["java", "-jar", "app.jar"]
+ENTRYPOINT ["java", "-jar", "/app/app.jar"]
