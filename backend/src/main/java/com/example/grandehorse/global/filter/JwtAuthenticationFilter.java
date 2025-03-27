@@ -26,7 +26,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 		"/api/v1/auth/test",
 		"/api/v1/auth/login-kakao",
 		"/api/v1/auth/login-ssafy",
-		"/api/v1/users"
+		"/api/v1/users",
+		"/api/v1/auth/"
 	);
 
 	private final JwtTokenProvider jwtProvider;
@@ -48,8 +49,8 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 		String accessToken = getAccessToken(request, response);
 		validateToken(accessToken);
 
-		String userId = jwtProvider.getIdFromToken(accessToken);
-		request.setAttribute("userId", userId);
+		int id = jwtProvider.getIdFromToken(accessToken);
+		request.setAttribute("userId", id);
 
 		filterChain.doFilter(request, response);
 	}
@@ -65,7 +66,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
 		validateToken(refreshToken);
 
-		String id = jwtProvider.getIdFromToken(refreshToken);
+		int id = jwtProvider.getIdFromToken(refreshToken);
 		String newAccessToken = jwtProvider.generateAccessToken(id);
 		CookieUtil.createAccessTokenCookie(response, newAccessToken);
 
