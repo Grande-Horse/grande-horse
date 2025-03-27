@@ -31,6 +31,7 @@ public interface CardTradingJpaRepository extends JpaRepository<CardTradeEntity,
 	@Query("""
 			SELECT new com.example.grandehorse.domain.trading.controller.response.TradeCardResponse(
 				t.id,
+				h.id,
 				h.coatColor,
 				h.name,
 				h.horseRank,
@@ -62,6 +63,7 @@ public interface CardTradingJpaRepository extends JpaRepository<CardTradeEntity,
 	@Query("""
 			SELECT new com.example.grandehorse.domain.trading.controller.response.RegisteredCardResponse(
 				t.id,
+				h.id,
 				h.coatColor,
 				h.name,
 				h.horseRank,
@@ -72,31 +74,29 @@ public interface CardTradingJpaRepository extends JpaRepository<CardTradeEntity,
 				t.registeredAt
 			)
 			FROM CardTradeEntity t
-			JOIN HorseEntity h ON t.horseId = h.id
+			JOIN HorseEntity h ON h.id = t.horseId
 			WHERE t.status = 'REGISTERED'
 			AND t.sellerId = :sellerId
 			AND t.id > :cursorId
-			AND h.horseRank = :horseRank
-			AND h.name LIKE CONCAT('%', :search, '%')
 			ORDER BY t.id DESC
 		""")
 	Slice<RegisteredCardResponse> findRegisteredCardsByCursor(
 		@Param("sellerId") int sellerId,
 		@Param("cursorId") int cursorId,
-		@Param("horseRank") String horseRank,
-		@Param("search") String search,
 		Pageable pageable
 	);
 
 	@Query("""
 			SELECT new com.example.grandehorse.domain.trading.controller.response.SoldCardResponse(
+				t.id,
+				h.id,
 				h.coatColor,
 				h.name,
 				h.horseRank,
+				t.price,
 				d.speed,
 				d.acceleration,
 				d.stamina,
-				t.price,
 				t.soldAt
 			)
 			FROM CardTradeEntity t

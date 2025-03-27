@@ -64,11 +64,9 @@ public class TradingController {
 	@GetMapping("/registered-cards")
 	public ResponseEntity<CommonResponse<List<RegisteredCardResponse>>> getRegisteredCards(
 		@RequestParam(name = "cursorId") int cursorId,
-		@RequestParam(name = "rank") String rank,
-		@RequestParam(name = "search") String search,
 		@RequestParam(name = "limit") int limit
 	) {
-		return tradingService.getRegisteredCards(cursorId, rank, search, limit);
+		return tradingService.getRegisteredCards(cursorId, limit);
 	}
 
 	@GetMapping("/sold-cards")
@@ -80,9 +78,9 @@ public class TradingController {
 		return tradingService.getSoldCards(horseId, cursorId, limit);
 	}
 
-	@GetMapping("/price-history")
+	@GetMapping("{horseId}/price-history")
 	public ResponseEntity<CommonResponse<List<PriceHistoryResponse>>> getPriceHistory(
-		@RequestParam(name = "horseId") String horseId
+		@PathVariable(name = "horseId") String horseId
 	) {
 		return tradingService.getPriceHistory(horseId);
 	}

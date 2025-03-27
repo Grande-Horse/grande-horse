@@ -1,17 +1,18 @@
 package com.example.grandehorse.domain.trading.controller.response;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
-@Builder
 @NoArgsConstructor
-@AllArgsConstructor
 public class SoldCardResponse {
+	private int tradeId;
+
+	private int horseId;
+
 	private String coatColor;
 
 	private String name;
@@ -26,5 +27,28 @@ public class SoldCardResponse {
 
 	private double stamina;
 
-	private LocalDateTime soldAt;
+	private LocalDate soldAt;
+
+	public SoldCardResponse(
+		int tradeId,
+		int horseId,
+		String coatColor,
+		String name,
+		String horseRank,
+		int price,
+		double speed,
+		double acceleration,
+		double stamina, LocalDateTime soldAt
+	) {
+		this.tradeId = tradeId;
+		this.horseId = horseId;
+		this.coatColor = coatColor.toLowerCase();
+		this.name = name;
+		this.horseRank = horseRank.toLowerCase();
+		this.price = price;
+		this.speed = speed;
+		this.acceleration = acceleration;
+		this.stamina = stamina;
+		this.soldAt = soldAt.toLocalDate();
+	}
 }

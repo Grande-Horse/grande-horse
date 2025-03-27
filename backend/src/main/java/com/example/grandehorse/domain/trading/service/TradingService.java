@@ -85,6 +85,10 @@ public class TradingService {
 		String search,
 		int limit
 	) {
+		if ("ALL".equals(rank)) {
+			rank = null;
+		}
+
 		Slice<TradeCardResponse> tradeCardSlice = findTradeCardsByCursor(
 			cursorId,
 			rank,
@@ -101,15 +105,11 @@ public class TradingService {
 
 	public ResponseEntity<CommonResponse<List<RegisteredCardResponse>>> getRegisteredCards(
 		int cursorId,
-		String rank,
-		String search,
 		int limit
 	) {
 		Slice<RegisteredCardResponse> registeredCardSlice = findRegisteredCardsByCursor(
 			1,
 			cursorId,
-			rank,
-			search,
 			limit
 		);
 
@@ -207,8 +207,6 @@ public class TradingService {
 	private Slice<RegisteredCardResponse> findRegisteredCardsByCursor(
 		int sellerId,
 		int cursorId,
-		String rank,
-		String search,
 		int limit
 	) {
 		Pageable pageable = PageRequest.of(cursorId / limit, limit);
@@ -216,8 +214,6 @@ public class TradingService {
 		return cardTradingJpaRepository.findRegisteredCardsByCursor(
 			sellerId,
 			cursorId,
-			rank,
-			search,
 			pageable
 		);
 	}

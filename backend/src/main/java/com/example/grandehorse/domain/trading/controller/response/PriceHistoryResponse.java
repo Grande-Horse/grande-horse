@@ -1,16 +1,13 @@
 package com.example.grandehorse.domain.trading.controller.response;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
-import lombok.AllArgsConstructor;
-import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
-@Builder
 @NoArgsConstructor
-@AllArgsConstructor
 public class PriceHistoryResponse {
 	private int highestPrice;
 
@@ -18,5 +15,17 @@ public class PriceHistoryResponse {
 
 	private int lowestPrice;
 
-	private LocalDateTime soldAt;
+	private LocalDate date;
+
+	public PriceHistoryResponse(
+		int highestPrice,
+		int averagePrice,
+		int lowestPrice,
+		LocalDateTime date
+	) {
+		this.highestPrice = highestPrice;
+		this.averagePrice = averagePrice;
+		this.lowestPrice = lowestPrice;
+		this.date = date.toLocalDate();
+	}
 }
