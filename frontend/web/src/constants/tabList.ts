@@ -9,7 +9,8 @@ export const stableTabList: TabType<StableTabNameType>[] = [
 export const marketTabList: TabType<MarketTabNameType>[] = [
   { tabId: 0, tabName: '카드팩' },
   { tabId: 1, tabName: '코인' },
-  { tabId: 2, tabName: '거래' },
+  { tabId: 2, tabName: '말 구매' },
+  { tabId: 3, tabName: '말 판매' },
 ];
 
 export const sellTabList: TabType<sellTabNameType>[] = [
