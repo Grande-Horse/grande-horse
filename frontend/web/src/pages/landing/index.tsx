@@ -1,10 +1,10 @@
 import kakaoLogo from '@/assets/images/kakao-logo.png';
 import ssafyLogo from '@/assets/images/ssafy-logo.png';
 
-const AuthPage: React.FC = () => {
-  const landscapeSrc = 'src/assets/images/backgrounds/loginBgLandscape.png';
-  const upperCloudSrc = 'src/assets/images/backgrounds/loginBgCloudUpper.png';
-  const lowerCloudSrc = 'src/assets/images/backgrounds/loginBgCloudLower.png';
+const LandingPage: React.FC = () => {
+  const landscapeSrc = 'src/assets/images/backgrounds/landingBgLandscape.png';
+  const upperCloudSrc = 'src/assets/images/backgrounds/landingBgCloudUpper.png';
+  const lowerCloudSrc = 'src/assets/images/backgrounds/landingBgCloudLower.png';
 
   const UpperCloud = () => (
     <div
@@ -57,4 +57,4 @@ const AuthPage: React.FC = () => {
   );
 };
 
-export default AuthPage;
+export default LandingPage;
