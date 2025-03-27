@@ -92,3 +92,16 @@
   --inset-shadow-xs: inset 0 0 4px rgba(1, 1, 1, 0.25); 
 }
 
+@layer utilities {
+  @keyframes dot-animation {
+    0% { content: '.'; }
+    30% { content: '..'; }
+    60% { content: '...'; }
+  }
+
+  .dot-animation::after {
+    content: '.';
+    animation: dot-animation 2s infinite steps(1);
+  }
+
+}
