@@ -26,18 +26,20 @@ pipeline {
         }
 
         stage('Prepare Credentials') {
-            parallel(
-                BackendCredentials: {
-                    withCredentials([file(credentialsId: 'BACKEND_SECRET_YML', variable: 'BACKEND_SECRET')]) {
-                        sh 'cp $BACKEND_SECRET backend/src/main/resources/application-secret.yml'
+            steps {
+                parallel(
+                    BackendCredentials: {
+                        withCredentials([file(credentialsId: 'BACKEND_SECRET_YML', variable: 'BACKEND_SECRET')]) {
+                            sh 'cp $BACKEND_SECRET backend/src/main/resources/application-secret.yml'
+                        }
+                    },
+                    FrontendCredentials: {
+                        withCredentials([file(credentialsId: 'FRONTEND_ENV', variable: 'FRONTEND_ENV_FILE')]) {
+                            sh 'cp $FRONTEND_ENV_FILE frontend/web/.env'
+                        }
                     }
-                },
-                FrontendCredentials: {
-                    withCredentials([file(credentialsId: 'FRONTEND_ENV', variable: 'FRONTEND_ENV_FILE')]) {
-                        sh 'cp $FRONTEND_ENV_FILE frontend/web/.env'
-                    }
-                }
-            )
+                )
+            }
         }
 
         stage('Docker Build & Push') {
