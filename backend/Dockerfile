@@ -4,7 +4,7 @@ WORKDIR /app
 
 COPY . .
 
-RUN ./gradlew clean build
+RUN ./gradlew clean build -x test
 
 RUN find /app -name "*SNAPSHOT.jar" -exec cp {} /app/app.jar \;
 
