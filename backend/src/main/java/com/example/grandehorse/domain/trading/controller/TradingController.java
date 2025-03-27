@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.grandehorse.domain.trading.controller.request.CreateCardTradeDto;
+import com.example.grandehorse.domain.trading.controller.response.PriceHistoryResponse;
 import com.example.grandehorse.domain.trading.controller.response.RegisteredCardResponse;
 import com.example.grandehorse.domain.trading.controller.response.SoldCardResponse;
 import com.example.grandehorse.domain.trading.controller.response.TradeCardResponse;
@@ -62,13 +63,12 @@ public class TradingController {
 
 	@GetMapping("/registered-cards")
 	public ResponseEntity<CommonResponse<List<RegisteredCardResponse>>> getRegisteredCards(
-		@RequestParam(name = "sellerId") int sellerId,
 		@RequestParam(name = "cursorId") int cursorId,
 		@RequestParam(name = "rank") String rank,
 		@RequestParam(name = "search") String search,
 		@RequestParam(name = "limit") int limit
 	) {
-		return tradingService.getRegisteredCards(sellerId, cursorId, rank, search, limit);
+		return tradingService.getRegisteredCards(cursorId, rank, search, limit);
 	}
 
 	@GetMapping("/sold-cards")
@@ -78,5 +78,12 @@ public class TradingController {
 		@RequestParam(name = "limit") int limit
 	) {
 		return tradingService.getSoldCards(horseId, cursorId, limit);
+	}
+
+	@GetMapping("/price-history")
+	public ResponseEntity<CommonResponse<List<PriceHistoryResponse>>> getPriceHistory(
+		@RequestParam(name = "horseId") String horseId
+	) {
+		return tradingService.getPriceHistory(horseId);
 	}
 }

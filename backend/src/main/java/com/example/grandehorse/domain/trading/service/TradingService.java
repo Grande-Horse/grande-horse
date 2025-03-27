@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.example.grandehorse.domain.card.service.CardService;
 import com.example.grandehorse.domain.horse.service.HorseService;
 import com.example.grandehorse.domain.trading.controller.request.CreateCardTradeDto;
+import com.example.grandehorse.domain.trading.controller.response.PriceHistoryResponse;
 import com.example.grandehorse.domain.trading.controller.response.RegisteredCardResponse;
 import com.example.grandehorse.domain.trading.controller.response.SoldCardResponse;
 import com.example.grandehorse.domain.trading.controller.response.TradeCardResponse;
@@ -99,14 +100,13 @@ public class TradingService {
 	}
 
 	public ResponseEntity<CommonResponse<List<RegisteredCardResponse>>> getRegisteredCards(
-		int sellerId,
 		int cursorId,
 		String rank,
 		String search,
 		int limit
 	) {
 		Slice<RegisteredCardResponse> registeredCardSlice = findRegisteredCardsByCursor(
-			sellerId,
+			1,
 			cursorId,
 			rank,
 			search,
@@ -132,6 +132,19 @@ public class TradingService {
 		int nextCursorId = getNextCursorId(hasNextItems, cursorId, limit);
 
 		return CommonResponse.pagedSuccess(soldCardsSlice.getContent(), hasNextItems, nextCursorId);
+	}
+
+	/* TODO
+		스케줄링 돌려서 매일 밤 12시에 데이터 들고와서 레디스에 올려놓는 방식으로 리팩토링하기 (성능 개선)
+	 */
+	public ResponseEntity<CommonResponse<List<PriceHistoryResponse>>> getPriceHistory(String horseId) {
+		LocalDateTime now = LocalDateTime.now();
+		LocalDateTime oneDayAgo = now.minusDays(1);
+		LocalDateTime sevenDaysAgo = now.minusDays(7);
+		List<PriceHistoryResponse> priceHistories = cardTradingJpaRepository.findPriceHistory(horseId, oneDayAgo,
+			sevenDaysAgo);
+
+		return CommonResponse.listSuccess(priceHistories);
 	}
 
 	private void registerCardTrade(CreateCardTradeDto createTradeDto) {

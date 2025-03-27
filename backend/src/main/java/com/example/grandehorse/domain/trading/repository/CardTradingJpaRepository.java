@@ -1,11 +1,15 @@
 package com.example.grandehorse.domain.trading.repository;
 
+import java.time.LocalDateTime;
+import java.util.List;
+
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import com.example.grandehorse.domain.trading.controller.response.PriceHistoryResponse;
 import com.example.grandehorse.domain.trading.controller.response.RegisteredCardResponse;
 import com.example.grandehorse.domain.trading.controller.response.SoldCardResponse;
 import com.example.grandehorse.domain.trading.controller.response.TradeCardResponse;
@@ -107,5 +111,25 @@ public interface CardTradingJpaRepository extends JpaRepository<CardTradeEntity,
 		@Param("horseId") String horseId,
 		@Param("cursorId") int cursorId,
 		Pageable pageable
+	);
+
+	@Query("""
+			SELECT new com.example.grandehorse.domain.trading.controller.response.PriceHistoryResponse(
+				MAX(t.price) AS highestPrice,
+				AVG(t.price) AS averagePrice,
+				MIN(t.price) AS lowestPrice,
+				t.soldAt::date AS soldAt
+			)
+			FROM CardTradeEntity t
+			WHERE t.horseId = :horseId
+			AND t.status = 'SOLD'
+			AND t.soldAt BETWEEN :oneDayAgo AND :sevenDaysAgo
+			GROUP BY t.soldAt::date
+			ORDER BY t.soldAt DESC
+		""")
+	List<PriceHistoryResponse> findPriceHistory(
+		@Param("horseId") String horseId,
+		@Param("oneDayAgo") LocalDateTime oneDayAgo,
+		@Param("sevenDaysAgo") LocalDateTime sevenDaysAgo
 	);
 }
