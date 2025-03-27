@@ -19,64 +19,70 @@ import lombok.extern.slf4j.Slf4j;
 public class GlobalExceptionHandler {
 	@ExceptionHandler(CommonException.class)
 	public ResponseEntity<CommonResponse<Object>> commonExceptionHandler(CommonException ex) {
-		log.error("CommonException Occurred. Error Code: {}, Status: {}, Message: {}",
+		log.error("commonException Occurred. Error Code: {}, Status: {}, Message: {}",
 			ex.getErrorCode(), ex.getStatus(), ex.getMessage(), ex);
 		return CommonResponse.error(ex.getStatus(), ex.getErrorCode());
 	}
 
 	@ExceptionHandler(AuthException.class)
 	public ResponseEntity<CommonResponse<Object>> authExceptionHandler(AuthException ex) {
-		log.error("CommonException Occurred. Error Code: {}, Status: {}, Message: {}",
+		log.error("authException Occurred. Error Code: {}, Status: {}, Message: {}",
 			ex.getErrorCode(), ex.getStatus(), ex.getMessage(), ex);
 		return CommonResponse.error(ex.getStatus(), ex.getErrorCode());
 	}
 
 	@ExceptionHandler(CardException.class)
 	public ResponseEntity<CommonResponse<Object>> cardExceptionHandler(CardException ex) {
-		log.error("CommonException Occurred. Error Code: {}, Status: {}, Message: {}",
+		log.error("cardException Occurred. Error Code: {}, Status: {}, Message: {}",
 			ex.getErrorCode(), ex.getStatus(), ex.getMessage(), ex);
 		return CommonResponse.error(ex.getStatus(), ex.getErrorCode());
 	}
 
 	@ExceptionHandler(HorseException.class)
 	public ResponseEntity<CommonResponse<Object>> horseExceptionHandler(HorseException ex) {
-		log.error("CommonException Occurred. Error Code: {}, Status: {}, Message: {}",
+		log.error("horseException Occurred. Error Code: {}, Status: {}, Message: {}",
 			ex.getErrorCode(), ex.getStatus(), ex.getMessage(), ex);
 		return CommonResponse.error(ex.getStatus(), ex.getErrorCode());
 	}
 
 	@ExceptionHandler(ProductException.class)
 	public ResponseEntity<CommonResponse<Object>> productExceptionHandler(ProductException ex) {
-		log.error("CommonException Occurred. Error Code: {}, Status: {}, Message: {}",
+		log.error("productException Occurred. Error Code: {}, Status: {}, Message: {}",
 			ex.getErrorCode(), ex.getStatus(), ex.getMessage(), ex);
 		return CommonResponse.error(ex.getStatus(), ex.getErrorCode());
 	}
 
 	@ExceptionHandler(RaceException.class)
 	public ResponseEntity<CommonResponse<Object>> raceExceptionHandler(RaceException ex) {
-		log.error("CommonException Occurred. Error Code: {}, Status: {}, Message: {}",
+		log.error("raceException Occurred. Error Code: {}, Status: {}, Message: {}",
 			ex.getErrorCode(), ex.getStatus(), ex.getMessage(), ex);
 		return CommonResponse.error(ex.getStatus(), ex.getErrorCode());
 	}
 
 	@ExceptionHandler(TradingException.class)
 	public ResponseEntity<CommonResponse<Object>> tradingExceptionHandler(TradingException ex) {
-		log.error("CommonException Occurred. Error Code: {}, Status: {}, Message: {}",
+		log.error("tradingException Occurred. Error Code: {}, Status: {}, Message: {}",
 			ex.getErrorCode(), ex.getStatus(), ex.getMessage(), ex);
 		return CommonResponse.error(ex.getStatus(), ex.getErrorCode());
 	}
 
 	@ExceptionHandler(UserException.class)
 	public ResponseEntity<CommonResponse<Object>> userExceptionHandler(UserException ex) {
-		log.error("CommonException Occurred. Error Code: {}, Status: {}, Message: {}",
+		log.error("userException Occurred. Error Code: {}, Status: {}, Message: {}",
 			ex.getErrorCode(), ex.getStatus(), ex.getMessage(), ex);
 		return CommonResponse.error(ex.getStatus(), ex.getErrorCode());
 	}
 
 	@ExceptionHandler(ExternalApiException.class)
 	public ResponseEntity<CommonResponse<Object>> externalApiExceptionHandler(ExternalApiException ex) {
-		log.error("CommonException Occurred. Error Code: {}, Status: {}, Message: {}",
+		log.error("externalApiException Occurred. Error Code: {}, Status: {}, Message: {}",
 			ex.getErrorCode(), ex.getStatus(), ex.getMessage(), ex);
 		return CommonResponse.error(ex.getStatus(), ex.getErrorCode());
+	}
+
+	@ExceptionHandler(RuntimeException.class)
+	public ResponseEntity<CommonResponse<Object>> runTimeExceptionHandler (RuntimeException ex) {
+		log.error("runTimeException Occurred. Message: {}", ex.getMessage(), ex);
+		return CommonResponse.error(HttpStatus.INTERNAL_SERVER_ERROR, null);
 	}
 }
