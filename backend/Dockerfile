@@ -8,6 +8,8 @@ RUN ./gradlew clean build -x test
 
 RUN find /app -name "*SNAPSHOT.jar" -exec cp {} /app/app.jar \;
 
+COPY backend/src/main/resources/application-secret.yml /app/application-secret.yml
+
 ENV SPRING_PROFILES_ACTIVE=prod
 
 ENTRYPOINT ["java", "-jar", "app.jar"]
