@@ -9,7 +9,6 @@ import lombok.Getter;
  * 정의하고자 하는 커스텀 에러의 종류에 맞추어 주석 아래에 에러코드를 순차적으로 작성해주시면 됩니다. (A1, A2, A3 ...)
  * 팀원간의 커밋 충돌이 나지 않도록 주의합시다!
  */
-
 @Getter
 public enum CustomError {
 	// 공통 에러
@@ -22,17 +21,27 @@ public enum CustomError {
 
 	// 유저 관련 에러
 	USER_DUPLICATE_NICKNAME(HttpStatus.BAD_REQUEST, "U1", "중복되는 유저 닉네임입니다."),
-	USER_NOT_ENOUGH_COIN(HttpStatus.BAD_REQUEST, "U2", "유저의 코인이 부족합니다.");
+	USER_NOT_ENOUGH_COIN(HttpStatus.BAD_REQUEST, "U2", "유저의 코인이 부족합니다."),
+	USER_NOT_EXISTED(HttpStatus.BAD_REQUEST, "U3", "존재하지 않는 유저입니다."),
 
 	// 말 관련 에러
 
 	// 거래 관련 에러
+	CARD_NOT_FOR_SALE(HttpStatus.BAD_REQUEST, "T1", "판매중인 말이 아닙니다."),
+	CANNOT_PURCHASE_OWN_CARD(HttpStatus.BAD_REQUEST, "T2", "자신의 카드를 구매할 수 없습니다."),
+	CANNOT_CANCEL_TRADE_PERMISSION(HttpStatus.BAD_REQUEST, "T3", "거래(판매) 취소에 대한 권한이 없습니다."),
 
 	// 상품 관련 에러
 
 	// 카드 관련 에러
+	USER_NOT_OWNER_OF_CARD(HttpStatus.BAD_REQUEST, "C1", "유저의 말카드가 아닙니다."),
+	CARD_SALE_RESTRICTED(HttpStatus.BAD_REQUEST, "C2", "판매할 수 없는 말카드 입니다."),
+	CARD_NOT_EXISTED(HttpStatus.BAD_REQUEST, "C3", "존재하지 않는 말카드입니다."),
 
 	// 경마 관련 에러
+
+	// 외부 API 관련 에러
+	EXTERNAL_SERVICE_PARSE_ERROR(HttpStatus.BAD_REQUEST, "E1", "외부 API 응답 처리 중 오류가 발생했습니다.");
 
 	private final HttpStatus httpStatus;
 	private final String errorCode;

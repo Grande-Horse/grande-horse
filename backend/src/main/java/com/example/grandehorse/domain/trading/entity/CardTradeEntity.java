@@ -9,17 +9,23 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Index;
 import jakarta.persistence.Table;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
+@Getter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@Table(name = "card_trade")
+@Table(name = "card_trade", indexes = {
+	@Index(name = "idx_id_status", columnList = "id, status"),
+	@Index(name = "idx_status_seller_id_id", columnList = "status, seller_id, id desc")
+})
 public class CardTradeEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -31,7 +37,7 @@ public class CardTradeEntity {
 	@Column(name = "card_id", nullable = false)
 	private int cardId;
 
-	@Column(name = "seller_id", nullable = false)
+	@Column(name = "seller_id", updatable = false, nullable = false)
 	private int sellerId;
 
 	@Column(name = "buyer_id")
@@ -55,4 +61,15 @@ public class CardTradeEntity {
 
 	@Column(name = "horse_data_id")
 	private int horseDataId;
+
+	public void purchase(int horseDataId) {
+		status = CardTradeStatus.SOLD;
+		soldAt = LocalDateTime.now();
+		this.horseDataId = horseDataId;
+	}
+
+	public void cancel() {
+		status = CardTradeStatus.CANCELED;
+		soldAt = LocalDateTime.now();
+	}
 }
