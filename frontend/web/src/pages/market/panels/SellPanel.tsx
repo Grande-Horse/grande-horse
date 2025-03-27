@@ -1,18 +1,14 @@
 import HorseProfileCard from '@/components/cards/HorseProfileCard';
 import { Button } from '@/components/ui/Button';
-import Tabs from '@/components/ui/Tabs';
-import { sellTabList } from '@/constants/tabList';
 import { horseListMockData, horseMockData } from '@/mocks/datas/horse';
-import TradingItem from '@/pages/market/items/TradingItem';
 import { HorseType } from '@/types/horse';
 import { useState } from 'react';
 import CoinIcon from '@/assets/icons/coinIcon.svg?react';
-import PriceBarChart from '@/components/charts/PriceBarChart';
 import { PriceHistoryType } from '@/types/trading';
 import { priceHistoryMockData } from '@/mocks/datas/trading';
 import { cancelHorseSelling, sellHorse } from '@/services/trading';
 
-const SellPage: React.FC = () => {
+const SellPanel: React.FC = () => {
   const [horse, setHorse] = useState<HorseType>(horseMockData);
   const [horseTradingHistory, setHorseTradingHistory] = useState<HorseType[]>(horseListMockData);
   const [priceHistory, setPriceHistory] = useState<PriceHistoryType[]>(priceHistoryMockData);
@@ -41,7 +37,7 @@ const SellPage: React.FC = () => {
   };
 
   return (
-    <div className='h-body flex flex-col'>
+    <div className='flex h-full flex-col'>
       <section className='flex gap-4 py-5'>
         <div>
           <HorseProfileCard name={horse.name} rank={horse.rank} coatColor={horse.coatColor} />
@@ -63,23 +59,11 @@ const SellPage: React.FC = () => {
           </div>
         </div>
       </section>
-
-      <Tabs
-        tabList={sellTabList}
-        tabPanels={[
-          <PriceBarChart priceHistory={priceHistory} />,
-          <div className='divide-y-1 divide-black'>
-            {horseTradingHistory.map((horse) => (
-              <TradingItem key={horse.id} horse={horse} price={300} />
-            ))}
-          </div>,
-        ]}
-      />
     </div>
   );
 };
 
-export default SellPage;
+export default SellPanel;
 
 interface PriceProps {
   label: string;

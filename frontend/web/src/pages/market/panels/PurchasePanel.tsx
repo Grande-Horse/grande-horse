@@ -13,7 +13,7 @@ import { Button } from '@/components/ui/Button';
 import useInternalRouter from '@/hooks/useInternalRouter';
 import { getPriceHistory } from '@/services/trading';
 
-const TradingPanel: React.FC = () => {
+const PurchasePanel: React.FC = () => {
   const [keyword, setKeyword] = useState<string>('');
   const [rank, setRank] = useState<string>('');
 
@@ -63,7 +63,7 @@ const TradingPanel: React.FC = () => {
         ) : (
           <>
             <HorseDealIcon />
-            <Button onClick={() => push('/market/sell')}>말 판매</Button>
+            <p>말의 변동 시세를 확인해 보세요!</p>
           </>
         )}
       </section>
@@ -83,4 +83,4 @@ const TradingPanel: React.FC = () => {
   );
 };
 
-export default TradingPanel;
+export default PurchasePanel;
