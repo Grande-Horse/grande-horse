@@ -1,18 +1,21 @@
 import { ApiResponseType } from '@/types/service';
 import { http, HttpResponse, RequestHandler, StrictResponse } from 'msw';
-import { AutoLoginResponseType, KakaoLoginRequestType } from '@/types/auth';
+import { AutoLoginResponseType, KakaoLoginResponseType } from '@/types/auth';
 
-const autoLoginHandler = (): StrictResponse<ApiResponseType<AutoLoginResponseType>> => {
-  return HttpResponse.json({
-    errorCode: null,
-    data: null,
+const autoLoginHandler = () => {
+  return HttpResponse.json<ApiResponseType<AutoLoginResponseType>>({
+    data: {
+      errorCode: '',
+      data: null,
+    },
   });
 };
-
-const kakaoLoginHandler = (): StrictResponse<ApiResponseType<KakaoLoginRequestType>> => {
-  return HttpResponse.json({
-    errorCode: null,
-    data: null,
+const kakaoLoginHandler = () => {
+  return HttpResponse.json<ApiResponseType<KakaoLoginResponseType>>({
+    data: {
+      errorCode: 'A1',
+      data: null,
+    },
   });
 };
 
