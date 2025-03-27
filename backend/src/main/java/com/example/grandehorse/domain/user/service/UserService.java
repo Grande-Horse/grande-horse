@@ -18,6 +18,11 @@ import lombok.RequiredArgsConstructor;
 public class UserService {
 	private final UserJpaRepository userJpaRepository;
 
+	public UserEntity findUserById(int userId) {
+		return userJpaRepository.findById(userId)
+			.orElseThrow(() -> new UserException(CustomError.USER_NOT_EXISTED));
+	}
+
 	@Transactional
 	public void purchaseCard(int buyerId, int sellerId, int price) {
 		deductCoinForPurchase(buyerId, price);
