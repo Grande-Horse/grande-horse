@@ -8,14 +8,14 @@ const AuthPage: React.FC = () => {
 
   const UpperCloud = () => (
     <div
-      className='animate-moveCloudUpper absolute top-0 left-0 h-full w-full bg-[length:calc(2*100%)] bg-repeat-x'
+      className='animate-moveCloudUpper absolute top-0 left-0 h-screen w-full bg-cover bg-repeat-x'
       style={{ backgroundImage: `url(${upperCloudSrc})` }}
     />
   );
 
   const LowerCloud = () => (
     <div
-      className='animate-moveCloudLower absolute bottom-0 left-0 h-full w-full bg-[length:calc(2*100%)] bg-repeat-x'
+      className='animate-moveCloudLower absolute bottom-0 left-0 h-screen w-full bg-cover bg-repeat-x'
       style={{ backgroundImage: `url(${lowerCloudSrc})` }}
     />
   );
@@ -31,8 +31,8 @@ const AuthPage: React.FC = () => {
   const TitlePanel = () => {
     return (
       <div className='absolute top-0 left-1/2 aspect-300/278 w-2/3 -translate-x-1/2 transform bg-[url("src/assets/images/appTitleBg.png")] bg-contain bg-center bg-no-repeat'>
-        <div className='absolute right-0 bottom-[18%] left-0'>
-          <h1 className='text-stroke text-heading1 flex flex-col items-center justify-center px-40 text-nowrap'>
+        <div className='absolute top-[70%] right-0 left-0 -translate-y-1/2'>
+          <h1 className='text-stroke text-heading1 flex flex-col items-center justify-center px-20 text-nowrap'>
             <span className='w-full text-start'>그런데</span>
             <span className='w-full text-end'>말입니다</span>
           </h1>
@@ -43,13 +43,13 @@ const AuthPage: React.FC = () => {
 
   return (
     <div
-      className='relative flex h-screen w-full flex-col items-center justify-center overflow-hidden bg-[length:calc(2*100%)] bg-repeat-x'
+      className='relative flex h-screen w-full flex-col items-center justify-center overflow-hidden bg-cover bg-repeat-x'
       style={{ backgroundImage: `url(${landscapeSrc})` }}
     >
       <UpperCloud />
       <LowerCloud />
       <TitlePanel />
-      <div className='absolute bottom-[20%] flex flex-col items-center justify-center gap-4'>
+      <div className='absolute bottom-[15%] flex flex-col items-center justify-center gap-4'>
         {loginButton(kakaoLogo, '카카오')}
         {loginButton(ssafyLogo, 'SSAFY')}
       </div>
