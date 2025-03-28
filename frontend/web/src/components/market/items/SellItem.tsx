@@ -1,27 +1,26 @@
 import { Button } from '@/components/ui/Button';
 import { HorseType } from '@/types/horse';
-import { RankMap } from '@/constants/horse';
+import { rankMap } from '@/constants/rank';
 import CoinIcon from '@/assets/icons/coinIcon.svg?react';
 import StatBar from '@/components/charts/StatBar';
-import { purchaseHorse } from '@/services/trading';
+import { cancelHorseSelling } from '@/services/trading';
 
-interface TradingItemProps {
+interface SellItemProps {
   horse: HorseType;
   price: number;
-  isPriceHistoryOpen?: boolean;
-  onPriceHistoryClick?: () => void;
+  isSold?: boolean;
 }
 
-const TradingItem: React.FC<TradingItemProps> = ({
+const SellItem: React.FC<SellItemProps> = ({
   horse: { id, name, coatColor, rank, speed, acceleration, stamina },
   price,
-  isPriceHistoryOpen = false,
-  onPriceHistoryClick,
+  isSold: isCompleted = false,
 }) => {
-  const handlePurchaseHorse = async () => {
-    const tradeId = 1;
+  const handleCancelHorseSelling = async () => {
+    const tradeId = 3;
+
     try {
-      await purchaseHorse(tradeId);
+      await cancelHorseSelling(tradeId);
     } catch (error) {
       console.error(error);
     }
@@ -34,7 +33,7 @@ const TradingItem: React.FC<TradingItemProps> = ({
 
       <div className='flex grow flex-col justify-between'>
         <div className='flex items-center justify-between'>
-          <p>{RankMap[rank]}</p>
+          <p>{rankMap[rank]}</p>
           <span className='flex items-center gap-2'>
             <CoinIcon width={18} />
             <p>{price}</p>
@@ -47,20 +46,16 @@ const TradingItem: React.FC<TradingItemProps> = ({
           <StatBar type='stamina' stat={stamina} />
         </div>
 
-        <div className='flex gap-4 self-end'>
-          {/* TODO: API 연동 */}
-          {isPriceHistoryOpen ? (
-            <Button onClick={onPriceHistoryClick} variant='secondary'>
-              변동 시세 닫기
-            </Button>
+        <div className='flex self-end'>
+          {isCompleted ? (
+            <Button disabled>판매 완료</Button>
           ) : (
-            <Button onClick={onPriceHistoryClick}>변동 시세 보기</Button>
+            <Button onClick={handleCancelHorseSelling}>판매 취소</Button>
           )}
-          <Button onClick={handlePurchaseHorse}>구매하기</Button>
         </div>
       </div>
     </div>
   );
 };
 
-export default TradingItem;
+export default SellItem;
