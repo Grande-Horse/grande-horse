@@ -1,39 +1,30 @@
 import { priceHistoryMockData } from '@/mocks/datas/trading';
-import { ApiResponse, CursorData } from '@/types/service/response';
-import { PriceHistoryType, RegisteredItemType } from '@/types/trading';
+import { ApiResponseType } from '@/types/service';
+import { PriceHistoryType } from '@/types/trading';
 import { http, HttpResponse, RequestHandler, StrictResponse } from 'msw';
 
-// const AllHorsetrading = ({ request }): Promise<StrictResponse<ApiResponse<CursorData<RegisteredItemType>>>> => {
-
-//   return HttpResponse.json({
-//     items,
-//     hasNextItems,
-//     nextCursorId,
-//   });
-// };
-
-const priceHistoryHandler = (): StrictResponse<ApiResponse<PriceHistoryType[]>> => {
+const priceHistoryHandler = (): StrictResponse<ApiResponseType<PriceHistoryType[]>> => {
   return HttpResponse.json({
     errorCode: null,
     data: priceHistoryMockData,
   });
 };
 
-const sellHorseHandler = (): StrictResponse<ApiResponse<null>> => {
+const sellHorseHandler = (): StrictResponse<ApiResponseType<null>> => {
   return HttpResponse.json({
     errorCode: null,
     data: null,
   });
 };
 
-const purchaseHorseHandler = (): StrictResponse<ApiResponse<null>> => {
+const purchaseHorseHandler = (): StrictResponse<ApiResponseType<null>> => {
   return HttpResponse.json({
     errorCode: null,
     data: null,
   });
 };
 
-const cancelHorseSellingHandler = (): StrictResponse<ApiResponse<null>> => {
+const cancelHorseSellingHandler = (): StrictResponse<ApiResponseType<null>> => {
   return HttpResponse.json({
     errorCode: null,
     data: null,
