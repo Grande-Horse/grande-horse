@@ -6,7 +6,6 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
 import com.example.grandehorse.global.response.CommonResponse;
-import com.fasterxml.jackson.core.JsonProcessingException;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -80,8 +79,8 @@ public class GlobalExceptionHandler {
 		return CommonResponse.error(ex.getStatus(), ex.getErrorCode());
 	}
 
-	@ExceptionHandler(RuntimeException.class)
-	public ResponseEntity<CommonResponse<Object>> runTimeExceptionHandler (RuntimeException ex) {
+	@ExceptionHandler(Exception.class)
+	public ResponseEntity<CommonResponse<Object>> exceptionHandler(Exception ex) {
 		log.error("runTimeException Occurred. Message: {}", ex.getMessage(), ex);
 		return CommonResponse.error(HttpStatus.INTERNAL_SERVER_ERROR, null);
 	}

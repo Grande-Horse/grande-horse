@@ -31,10 +31,10 @@ public class UserEntity {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int id;
 
-	@Column(name = "email", length = 254, nullable = false, unique = true)
+	@Column(name = "email", length = 254, nullable = false)
 	private String email;
 
-	@Column(name = "nickname", length = 30, nullable = false, unique = true)
+	@Column(name = "nickname", length = 10, nullable = false, unique = true)
 	private String nickname;
 
 	@Enumerated(EnumType.STRING)
