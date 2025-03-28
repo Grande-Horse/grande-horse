@@ -26,7 +26,7 @@ const Dropdown: React.FC<DropdownProps> = ({ options, value, onChange, placehold
         onClick={() => setIsOpen((prev) => !prev)}
         className='flex w-full cursor-pointer items-center justify-between rounded-sm border border-black bg-white'
       >
-        <p className='truncate pl-4 text-black'>{value || placeholder}</p>
+        <p className='text-detail1 truncate pl-4 text-black'>{value || placeholder}</p>
         <div className='border-l border-black p-4'>
           <DownArrowIcon />
         </div>

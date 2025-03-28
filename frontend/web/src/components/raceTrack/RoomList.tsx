@@ -1,5 +1,5 @@
 import { RoomData } from '@/types/room';
-import RoomItem from './RoomItem';
+import RoomItem from '@/components/racetrack/RoomItem';
 
 interface RoomListProps {
   rooms: RoomData[];
@@ -7,7 +7,7 @@ interface RoomListProps {
 
 const RoomList: React.FC<RoomListProps> = ({ rooms }) => {
   return (
-    <div className='text-detail flex flex-col gap-5 p-5'>
+    <div className='text-detail flex flex-col gap-5'>
       {rooms.map((room, idx) => {
         return <RoomItem room={room} key={idx} />;
       })}
