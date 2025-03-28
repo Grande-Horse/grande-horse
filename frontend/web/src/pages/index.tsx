@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
-import { PastureHorse } from '@/components/pastureHorse/PastureHorse';
-import { getRandomDirection, getRandomPosition } from '@/components/pastureHorse/horsePositionUtils';
+import { PastureHorse } from '@/components/pasturehorse/PastureHorse';
+import { getRandomDirection, getRandomPosition } from '@/components/pasturehorse/horsePositionUtils';
 import { HorseType, PastureHorseStatusType } from '@/types/horse';
 import { useHorseMovement } from '@/hooks/useHorseMovement';
 import { horseListMockData } from '@/mocks/datas/horse';
-import InfoPanel from '@/components/pastureHorse/InfoPanel';
+import InfoPanel from '@/components/pasturehorse/InfoPanel';
 
 const GRID_SIZE = 6;
 const CELL_SIZE = 80;

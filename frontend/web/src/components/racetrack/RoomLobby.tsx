@@ -1,5 +1,5 @@
 import RoomCardList from '@/components/racetrack/RoomCardList';
-import RoomActionButtons from './RoomActionButtons';
+import RoomActionButtons from '@/components/racetrack/RoomActionButtons';
 
 interface RoomLobbyProps {
   children: React.ReactNode;
