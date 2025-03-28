@@ -2,7 +2,7 @@ import HorseProfileCard from '@/components/cards/HorseProfileCard';
 import SmallHorseCard from '@/components/cards/SmallHorseCard';
 import RaceRecordChart from '@/components/charts/RaceRecordChart';
 import Dropdown from '@/components/ui/dropdown/Dropdown';
-import { rankMap } from '@/constants/rank';
+import { RankMap } from '@/constants/horse';
 import { horseListMockData, horseMockData } from '@/mocks/datas/horse';
 import { raceRecordMockData } from '@/mocks/datas/race';
 import { HorseType } from '@/types/horse';
@@ -22,7 +22,7 @@ const StatPanel: React.FC = () => {
     {
       icon: <RankIcon />,
       label: '등급',
-      value: rankMap[selectedHorse.rank as keyof typeof rankMap],
+      value: RankMap[selectedHorse.rank as keyof typeof RankMap],
     },
     { icon: <WeightIcon />, label: '체중', value: selectedHorse.weight + 'kg' },
     { icon: <SpeedIcon />, label: '속도', value: selectedHorse.speed + 'km/h' },
@@ -57,7 +57,7 @@ const StatPanel: React.FC = () => {
       </section>
 
       <section className='bg-primary border-t border-b border-black p-4'>
-        <Dropdown options={Object.values(rankMap)} value={rank} onChange={setRank} placeholder='등급 선택' />
+        <Dropdown options={Object.values(RankMap)} value={rank} onChange={setRank} placeholder='등급 선택' />
       </section>
 
       <section className='grid grid-cols-3 place-items-center py-2'>

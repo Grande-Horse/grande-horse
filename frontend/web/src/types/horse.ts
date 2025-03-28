@@ -1,4 +1,4 @@
-import { rankMap } from '@/constants/rank';
+import { RankMap } from '@/constants/horse';
 
 export interface HorseType {
   id: string;
@@ -11,8 +11,8 @@ export interface HorseType {
   stamina: number;
 }
 
-export type RankType = keyof typeof rankMap;
-export type RankKrType = (typeof rankMap)[keyof typeof rankMap];
+export type RankType = keyof typeof RankMap;
+export type RankKrType = (typeof RankMap)[keyof typeof RankMap];
 
 export type CoatColorType = 'black' | 'white' | 'brown' | 'darkbrown' | 'gray';
 

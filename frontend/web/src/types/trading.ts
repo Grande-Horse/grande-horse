@@ -1,5 +1,3 @@
-import { HorseType } from '@/types/horse';
-
 export interface PriceHistoryType {
   date: string;
   averagePrice: number | null;
@@ -7,15 +5,9 @@ export interface PriceHistoryType {
   lowestPrice: number | null;
 }
 
-export interface TradingItemType extends HorseType {
-  tradeId: number;
+export interface SellHorseType {
+  horseId: string;
+  cardId: number;
+  sellerId: number;
   price: number;
-}
-
-export interface RegisteredItemType extends TradingItemType {
-  registeredAt: string;
-}
-
-export interface SoldItemType extends TradingItemType {
-  soldAt: string;
 }
