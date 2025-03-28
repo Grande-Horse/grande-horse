@@ -1,27 +1,21 @@
 import HorseProfileCard from '@/components/cards/HorseProfileCard';
-import { Button } from '@/components/ui/Button';
-import { horseListMockData, horseMockData } from '@/mocks/datas/horse';
-import { HorseType } from '@/types/horse';
-import { useState } from 'react';
 import CoinIcon from '@/assets/icons/coinIcon.svg?react';
+import { Button } from '@/components/ui/Button';
+import { useState } from 'react';
+import { HorseType } from '@/types/horse';
+import { horseListMockData, horseMockData } from '@/mocks/datas/horse';
+import { sellHorse } from '@/services/trading';
+import TradeItem from '@/components/market/items/TradeItem';
+import Tabs from '@/components/ui/Tabs';
+import { sellTabList } from '@/constants/tabList';
+import PriceBarChart from '@/components/charts/PriceBarChart';
 import { PriceHistoryType } from '@/types/trading';
 import { priceHistoryMockData } from '@/mocks/datas/trading';
-import { cancelHorseSelling, sellHorse } from '@/services/trading';
 
-const SellPanel: React.FC = () => {
+const SellPage: React.FC = () => {
   const [horse, setHorse] = useState<HorseType>(horseMockData);
-  const [horseTradingHistory, setHorseTradingHistory] = useState<HorseType[]>(horseListMockData);
+  const [horseList, setHorseList] = useState<HorseType[]>(horseListMockData);
   const [priceHistory, setPriceHistory] = useState<PriceHistoryType[]>(priceHistoryMockData);
-
-  const handleCancelHorseSelling = async () => {
-    const tradeId = 3;
-
-    try {
-      await cancelHorseSelling(tradeId);
-    } catch (error) {
-      console.error(error);
-    }
-  };
 
   const handleSellHorse = async () => {
     try {
@@ -37,7 +31,7 @@ const SellPanel: React.FC = () => {
   };
 
   return (
-    <div className='flex h-full flex-col'>
+    <div className='h-body flex flex-col'>
       <section className='flex gap-4 py-5'>
         <div>
           <HorseProfileCard name={horse.name} rank={horse.rank} coatColor={horse.coatColor} />
@@ -48,22 +42,30 @@ const SellPanel: React.FC = () => {
           <Price label='최저가' price={200} />
           <Price label='최고가' price={400} />
 
-          {/* TODO: 버튼 반응형 구현 */}
           <div className='flex w-full justify-center gap-5 p-2'>
-            <Button onClick={handleCancelHorseSelling} className='w-full'>
-              말 변경
-            </Button>
             <Button onClick={handleSellHorse} className='w-full'>
-              판매
+              판매하기
             </Button>
           </div>
         </div>
       </section>
+
+      <Tabs
+        tabList={sellTabList}
+        tabPanels={[
+          <PriceBarChart priceHistory={priceHistory} />,
+          <section className='divide-y-1 divide-black'>
+            {horseList.map((horse) => (
+              <TradeItem key={horse.id} horse={horse} price={300} soldAt='2025-03-25' />
+            ))}
+          </section>,
+        ]}
+      />
     </div>
   );
 };
 
-export default SellPanel;
+export default SellPage;
 
 interface PriceProps {
   label: string;
