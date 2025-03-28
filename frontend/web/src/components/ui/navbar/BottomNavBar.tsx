@@ -25,7 +25,6 @@ const BottomNavBar: React.FC = () => {
           <Link
             key={index}
             to={item.pathname}
-            replace
             className={`hover:bg-primary flex w-full flex-col items-center justify-between py-2 ${isActive ? activeStyle : ''} ${isRoot && isActive ? rootActiveStyle : ''} ${isRoot ? rootHoverStyle : ''}`}
           >
             <item.icon className='size-14' />
