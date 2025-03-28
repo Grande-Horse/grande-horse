@@ -2,6 +2,7 @@ import { Button } from '@/components/ui/Button';
 import useModal from '@/components/ui/modal/useModal';
 
 import { HorseChangeModalTitle, HorseChangeModalContent } from '@/components/racetrack/HorseChangeModal';
+import RoomReadyButton from '@/components/racetrack/RoomReadyButton';
 
 const RoomActionButtons: React.FC = () => {
   const { openModal } = useModal();
@@ -21,15 +22,15 @@ const RoomActionButtons: React.FC = () => {
         </Button>
       </div>
       <div className='flex-1'>
-        <Button
-          className='w-full'
-          variant='primary'
-          onClick={() => {
-            console.log('click');
+        <RoomReadyButton
+          isHost={false}
+          isReady={false}
+          onCancelClick={() => {
+            console.log('클릭');
           }}
-        >
-          준비하기
-        </Button>
+          onReadyClick={() => {}}
+          onStartClick={() => {}}
+        />
       </div>
     </div>
   );
