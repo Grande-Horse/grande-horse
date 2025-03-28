@@ -15,6 +15,6 @@ export default defineConfig({
   },
   preview: {
     port: 4173,
-    allowedHosts: ['70.12.246.244'],
+    allowedHosts: ['70.12.246.244','j12a606.p.ssafy.io'],
   },
 });
