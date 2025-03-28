@@ -6,7 +6,7 @@ import AccelerationIcon from '@/assets/icons/accelerationIcon.svg?react';
 import StaminaIcon from '@/assets/icons/staminaIcon.svg?react';
 import Ribbon from '@/assets/images/ribbon.webp';
 import { getDynamicImgSrc } from '@/utils/image';
-import { rankMap } from '@/constants/rank';
+import { RankMap } from '@/constants/horse';
 
 interface SmallHorseCardProps {
   horse: HorseType;
@@ -19,7 +19,7 @@ const SmallHorseCard: React.FC<SmallHorseCardProps> = ({
     {
       icon: <RankIcon width={10} height={10} />,
       label: '등급',
-      value: rankMap[rank as keyof typeof rankMap],
+      value: RankMap[rank as keyof typeof RankMap],
     },
     { icon: <WeightIcon width={10} height={10} />, label: '체중', value: weight + 'kg' },
     { icon: <SpeedIcon width={10} height={10} />, label: '속도', value: speed + 'km/h' },
