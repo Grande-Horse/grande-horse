@@ -8,6 +8,9 @@ importers:
 
   .:
     dependencies:
+      '@tanstack/react-query':
+        specifier: ^5.69.0
+        version: 5.69.0(react@19.0.0)
       '@types/node':
         specifier: ^22.13.10
         version: 22.13.10
@@ -42,6 +45,9 @@ importers:
       '@tailwindcss/vite':
         specifier: ^4.0.13
         version: 4.0.13(vite@6.2.1(@types/node@22.13.10)(jiti@2.4.2)(lightningcss@1.29.2))
+      '@tanstack/eslint-plugin-query':
+        specifier: ^5.68.0
+        version: 5.68.0(eslint@9.22.0(jiti@2.4.2))(typescript@5.7.3)
       '@types/react':
         specifier: ^19.0.10
         version: 19.0.10
@@ -726,6 +732,19 @@ packages:
     resolution: {integrity: sha512-0XTd/NoVUAktIDaA4MdXhve0QWYh7WlZg20EHCuBFR80F8FhbVkRX+AY5cjbUP/IO2itHzt0iHc0iSE5kBUMhQ==}
     peerDependencies:
       vite: ^5.2.0 || ^6
+
+  '@tanstack/eslint-plugin-query@5.68.0':
+    resolution: {integrity: sha512-w/+y5LILV1GTWBB2R/lKfUzgocKXU1B7O6jipLUJhmxCKPmJFy5zpfR1Vx7c6yCEsQoKcTbhuR/tIy+1sIGaiA==}
+    peerDependencies:
+      eslint: ^8.57.0 || ^9.0.0
+
+  '@tanstack/query-core@5.69.0':
+    resolution: {integrity: sha512-Kn410jq6vs1P8Nm+ZsRj9H+U3C0kjuEkYLxbiCyn3MDEiYor1j2DGVULqAz62SLZtUZ/e9Xt6xMXiJ3NJ65WyQ==}
+
+  '@tanstack/react-query@5.69.0':
+    resolution: {integrity: sha512-Ift3IUNQqTcaFa1AiIQ7WCb/PPy8aexZdq9pZWLXhfLcLxH0+PZqJ2xFImxCpdDZrFRZhLJrh76geevS5xjRhA==}
+    peerDependencies:
+      react: ^18 || ^19
 
   '@types/babel__core@7.20.5':
     resolution: {integrity: sha512-qoQprZvz5wQFJwMDqeseRXWv3rqMvhgpbXFfVyWhbx9X47POIA6i/+dXefEmZKoAgOaTdaIgNSMqMIU61yRyzA==}
@@ -2380,6 +2399,21 @@ snapshots:
       lightningcss: 1.29.2
       tailwindcss: 4.0.13
       vite: 6.2.1(@types/node@22.13.10)(jiti@2.4.2)(lightningcss@1.29.2)
+
+  '@tanstack/eslint-plugin-query@5.68.0(eslint@9.22.0(jiti@2.4.2))(typescript@5.7.3)':
+    dependencies:
+      '@typescript-eslint/utils': 8.26.1(eslint@9.22.0(jiti@2.4.2))(typescript@5.7.3)
+      eslint: 9.22.0(jiti@2.4.2)
+    transitivePeerDependencies:
+      - supports-color
+      - typescript
+
+  '@tanstack/query-core@5.69.0': {}
+
+  '@tanstack/react-query@5.69.0(react@19.0.0)':
+    dependencies:
+      '@tanstack/query-core': 5.69.0
+      react: 19.0.0
 
   '@types/babel__core@7.20.5':
     dependencies:
