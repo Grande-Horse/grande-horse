@@ -1,5 +1,5 @@
 import { createApiClient } from '@/services/http-commons';
-import { ApiResponseType } from '@/types/service';
+import { ApiResponse } from '@/types/service/response';
 import axios, { AxiosError, AxiosResponse } from 'axios';
 
 const client = createApiClient();
@@ -22,7 +22,7 @@ export const apiDelete = async <U>(url: string, params?: Record<string, any>): P
 
 const apiRequest = async <T, U>(method: Method, url: string, data?: T, params?: Record<string, string>): Promise<U> => {
   try {
-    let response: AxiosResponse<ApiResponseType<U>>;
+    let response: AxiosResponse<ApiResponse<U>>;
 
     switch (method) {
       case 'GET':
