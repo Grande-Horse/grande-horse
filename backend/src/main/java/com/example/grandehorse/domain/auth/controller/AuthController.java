@@ -4,12 +4,14 @@ import java.io.IOException;
 
 import jakarta.servlet.http.HttpServletResponse;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.grandehorse.domain.auth.service.AuthService;
+import com.example.grandehorse.global.response.CommonResponse;
 
 import lombok.RequiredArgsConstructor;
 
@@ -37,5 +39,10 @@ public class AuthController {
 	@GetMapping("/kakao/callback")
 	public void kakaoCallback(@RequestParam String code, HttpServletResponse response) throws IOException {
 		response.sendRedirect(authService.processKakaoUserAuthentication(code, response));
+	}
+
+	@GetMapping("/auto-login")
+	public ResponseEntity<CommonResponse<Void>> autoLogin(HttpServletResponse response) throws IOException {
+		return CommonResponse.success(null);
 	}
 }

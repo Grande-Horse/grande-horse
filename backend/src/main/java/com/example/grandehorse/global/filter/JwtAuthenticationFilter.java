@@ -23,11 +23,11 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 	private static final List<String> EXCLUDED_URLS = List.of(
-		"/api/v1/auth/test",
 		"/api/v1/auth/login-kakao",
 		"/api/v1/auth/login-ssafy",
-		"/api/v1/users",
-		"/api/v1/auth/"
+		"/api/v1/auth/ssafy/callback",
+		"/api/v1/auth/kakao/callback",
+		"/api/v1/users"
 	);
 
 	private final JwtTokenProvider jwtProvider;
