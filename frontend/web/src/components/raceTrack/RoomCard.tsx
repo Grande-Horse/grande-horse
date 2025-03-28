@@ -1,4 +1,4 @@
-import Horse from '@/components/racetrack/Horse';
+import Horse from '@/components/raceTrack/Horse';
 import { rankTextColor } from '@/constants/rank';
 
 const RoomCard: React.FC = () => {
