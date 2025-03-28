@@ -31,7 +31,7 @@ const HorseChangeModalContent: React.FC = () => {
       {userMockData.map((horse, idx) => {
         const isSelected = String(horse.id) === selectedHorseId;
         return (
-          <div className='relative'>
+          <div className='relative' key={`change ${idx}`}>
             {isSelected && (
               <div
                 onClick={handleSelectedClick}
