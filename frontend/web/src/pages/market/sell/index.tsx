@@ -1,20 +1,34 @@
 import HorseProfileCard from '@/components/cards/HorseProfileCard';
+import CoinIcon from '@/assets/icons/coinIcon.svg?react';
 import { Button } from '@/components/ui/Button';
+import { useState } from 'react';
+import { HorseType } from '@/types/horse';
+import { horseListMockData, horseMockData } from '@/mocks/datas/horse';
+import { sellHorse } from '@/services/trading';
+import TradeItem from '@/components/market/items/TradeItem';
 import Tabs from '@/components/ui/Tabs';
 import { sellTabList } from '@/constants/tabList';
-import { horseListMockData, horseMockData } from '@/mocks/datas/horse';
-import TradingItem from '@/pages/market/items/TradingItem';
-import { HorseType } from '@/types/horse';
-import { useState } from 'react';
-import CoinIcon from '@/assets/icons/coinIcon.svg?react';
 import PriceBarChart from '@/components/charts/PriceBarChart';
 import { PriceHistoryType } from '@/types/trading';
 import { priceHistoryMockData } from '@/mocks/datas/trading';
 
 const SellPage: React.FC = () => {
   const [horse, setHorse] = useState<HorseType>(horseMockData);
-  const [horseTradingHistory, setHorseTradingHistory] = useState<HorseType[]>(horseListMockData);
+  const [horseList, setHorseList] = useState<HorseType[]>(horseListMockData);
   const [priceHistory, setPriceHistory] = useState<PriceHistoryType[]>(priceHistoryMockData);
+
+  const handleSellHorse = async () => {
+    try {
+      await sellHorse({
+        horseId: '0058000',
+        cardId: 2,
+        sellerId: 2,
+        price: 500,
+      });
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   return (
     <div className='h-body flex flex-col'>
@@ -28,10 +42,10 @@ const SellPage: React.FC = () => {
           <Price label='최저가' price={200} />
           <Price label='최고가' price={400} />
 
-          {/* TODO: 버튼 반응형 구현 */}
           <div className='flex w-full justify-center gap-5 p-2'>
-            <Button className='w-full'>말 변경</Button>
-            <Button className='w-full'>판매</Button>
+            <Button onClick={handleSellHorse} className='w-full'>
+              판매하기
+            </Button>
           </div>
         </div>
       </section>
@@ -40,11 +54,11 @@ const SellPage: React.FC = () => {
         tabList={sellTabList}
         tabPanels={[
           <PriceBarChart priceHistory={priceHistory} />,
-          <div className='divide-y-1 divide-black'>
-            {horseTradingHistory.map((horse) => (
-              <TradingItem key={horse.id} horse={horse} price={300} />
+          <section className='divide-y-1 divide-black'>
+            {horseList.map((horse) => (
+              <TradeItem key={horse.id} horse={horse} price={300} soldAt='2025-03-25' />
             ))}
-          </div>,
+          </section>,
         ]}
       />
     </div>
