@@ -9,7 +9,7 @@ export const apiGet = async <U>(url: string, params?: Record<string, any>): Prom
 };
 
 export const apiPost = async <T>(url: string, data: T) => {
-  await apiRequest<T, null>('POST', url, data);
+  return await apiRequest<T, null>('POST', url, data);
 };
 
 export const apiPut = async <T>(url: string, data: T) => {
