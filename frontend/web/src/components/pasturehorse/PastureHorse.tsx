@@ -1,5 +1,5 @@
 import React from 'react';
-import '@/components/pastureHorse/horseRun.css';
+import '@/components/pasturehorse/horseRun.css';
 import { PastureHorsePropsType } from '@/types/horse';
 
 const positionMap: Record<string, string> = {
