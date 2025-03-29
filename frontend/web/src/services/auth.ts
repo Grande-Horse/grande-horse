@@ -1,5 +1,5 @@
 import { apiDelete, apiGet, apiPost, apiPut } from '@/services/apiService';
-import { AutoLoginResponseType, KakaoLoginRequestType } from '@/types/auth';
+import { AutoLoginResponseType } from '@/types/auth';
 
 export const postAutoLogin = async () => {
   return apiPost(`/auth/auto-login`, null);
