@@ -3,7 +3,7 @@ export interface ApiResponse<T> {
   data: T | null;
 }
 
-export interface CursorData<T> {
+export interface CursorResponse<T> {
   items: Array<T>;
   hasNextItems: boolean;
   nextCursorId: number;
