@@ -1,6 +1,6 @@
 import { ApiResponseType } from '@/types/service';
 import { http, HttpResponse, RequestHandler, StrictResponse } from 'msw';
-import { AutoLoginResponseType, KakaoLoginResponseType } from '@/types/auth';
+import { AutoLoginResponseType, CheckDuplicatedNicknameResponseType, OauthLoginResponseType } from '@/types/auth';
 
 const autoLoginHandler = () => {
   return HttpResponse.json<ApiResponseType<AutoLoginResponseType>>({
@@ -8,14 +8,32 @@ const autoLoginHandler = () => {
     data: null,
   });
 };
-const kakaoLoginHandler = () => {
-  return HttpResponse.json<ApiResponseType<KakaoLoginResponseType>>({
-    errorCode: 'A1',
+const oauthLoginHandler = () => {
+  return HttpResponse.json<ApiResponseType<OauthLoginResponseType>>({
+    errorCode: '',
+    data: null,
+  });
+};
+
+const checkNicknameDuplicatedHandler = () => {
+  return HttpResponse.json({
+    errorCode: '',
+    data: {
+      isDuplicated: false,
+    },
+  });
+};
+
+const registerHandler = () => {
+  return HttpResponse.json({
+    errorCode: '',
     data: null,
   });
 };
 
 export const handlers: RequestHandler[] = [
   http.post('/auth/auto-login', autoLoginHandler),
-  http.post('/auth/login-kakao', kakaoLoginHandler),
+  http.get('/auth/login-:provider', oauthLoginHandler),
+  http.get('/users/:nickname/duplicate', checkNicknameDuplicatedHandler),
+  http.post('/users', registerHandler),
 ];

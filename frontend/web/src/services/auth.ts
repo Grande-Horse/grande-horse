@@ -1,10 +1,20 @@
 import { apiDelete, apiGet, apiPost, apiPut } from '@/services/apiService';
-import { AutoLoginResponseType } from '@/types/auth';
+import { AutoLoginResponseType, CheckDuplicatedNicknameResponseType } from '@/types/auth';
 
-export const postAutoLogin = async () => {
-  return apiPost(`/auth/auto-login`, null);
+export const autoLogin = async () => {
+  return apiGet(`/auth/auto-login`);
 };
 
-export const postOauthLogin = async (provider: string) => {
-  return apiPost(`/auth/login-${provider}`, null);
+export const oauthLogin = async (provider: string) => {
+  return apiGet(`/auth/login-${provider}`);
 };
+
+export const checkNicknameDuplicated = async (nickname: string) => {
+  return apiGet(`/users/${nickname}/duplicate`);
+};
+
+export const registerUser = (nickname: string) => {
+  return apiPost('/users', { nickname });
+};
+
+
