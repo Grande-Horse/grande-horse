@@ -1,32 +1,35 @@
 import kakaoLogo from '@/assets/images/kakao-logo.png';
 import { useNavigate } from 'react-router-dom';
 import ssafyLogo from '@/assets/images/ssafy-logo.png';
-import { postAutoLogin, postOauthLogin } from '@/services/auth';
-import { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import { useEffect, useContext } from 'react';
+import { AuthContext } from '../register/AuthContextProvider';
 
 const LandingPage: React.FC = () => {
   const landscapeSrc = 'src/assets/images/backgrounds/landingBgLandscape.png';
   const upperCloudSrc = 'src/assets/images/backgrounds/landingBgCloudUpper.png';
   const lowerCloudSrc = 'src/assets/images/backgrounds/landingBgCloudLower.png';
 
-  const UpperCloud = () => (
+  interface CloudBgProps {
+    position: 'upper' | 'lower';
+  }
+
+  const CloudBg = ({ position }: CloudBgProps) => (
     <div
-      className='animate-moveCloudUpper absolute top-0 left-0 h-screen w-full bg-cover bg-repeat-x'
-      style={{ backgroundImage: `url(${upperCloudSrc})` }}
+      className={`animate-moveCloud${position.charAt(0).toUpperCase() + position.slice(1)} absolute top-0 left-0 h-screen w-full bg-cover bg-repeat-x`}
+      style={{ backgroundImage: `url(${position === 'upper' ? upperCloudSrc : lowerCloudSrc})` }}
     />
   );
 
-  const LowerCloud = () => (
+  interface LoginButtonProps {
+    logo: string;
+    text: string;
+    onClick: () => void;
+  }
+
+  const LoginButton = ({ logo, text, onClick }: LoginButtonProps) => (
     <div
-      className='animate-moveCloudLower absolute bottom-0 left-0 h-screen w-full bg-cover bg-repeat-x'
-      style={{ backgroundImage: `url(${lowerCloudSrc})` }}
-    />
-  );
-  const LoginButton = (logo: string, text: string) => (
-    <div
-      className={`relative flex w-sm items-center justify-center rounded-md p-4 text-black ${text === '카카오' ? 'bg-kakao' : 'bg-ssafy'}`}
-      onClick={() => handleOauthLogin(text)}
+      className={`relative flex w-sm items-center justify-center rounded-md p-4 text-black ${text === 'Kakao' ? 'bg-kakao' : 'bg-ssafy'}`}
+      onClick={onClick}
     >
       <img className='absolute left-5 min-h-8 w-8' alt={`${text} 로그인`} src={logo} />
       <span className='flex w-full justify-center'>{text} 로그인</span>
@@ -46,65 +49,33 @@ const LandingPage: React.FC = () => {
     );
   };
 
-  const [isLoading, setIsLoading] = useState(false);
-  const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const authContext = useContext(AuthContext);
   const navigate = useNavigate();
 
-  const handleOauthLogin = async (provider: string) => {
-    try {
-      const response = await postOauthLogin(provider.toLowerCase());
-      console.log(response);
-    } catch (error) {
-      console.error(error);
+  useEffect(() => {
+    if (authContext?.state.isAuthenticated && authContext?.state.isRegistered) {
+      navigate('/');
     }
-  };
+  }, [authContext?.state.isAuthenticated, authContext?.state.isRegistered, navigate]);
 
-  const handleAutoLogin = async () => {
-    // try {
-    // const response = await postAutoLogin();
-    // console.log(response);
-    //TODO: 로그인 상태 분기처리
-    // if (response.errorCode === '') {
-    //   setIsLoggedIn(true);
-    // } else {
-    //   console.error('로그인 실패');
-    //   setIsLoggedIn(false);
-    // }
-    // setIsLoggedIn(true);
-    // } catch (error) {
-    //   console.error(error);
-    // }
-  };
-
-  // useEffect(() => {
-  //   handleAutoLogin();
-  // }, []);
-
-  // useEffect(() => {
-  //   if (isLoggedIn) {
-  //     navigate('/');
-  //   }
-  // }, [isLoggedIn, isLoading, navigate]);
+  if (authContext?.state.loading) return <div>로딩 중...</div>;
 
   return (
-    // isLoading &&
-    // !isLoggedIn && (
     <div
       className='relative flex h-screen w-full flex-col items-center justify-center overflow-hidden bg-cover bg-repeat-x'
       style={{ backgroundImage: `url(${landscapeSrc})` }}
     >
-      <UpperCloud />
-      <LowerCloud />
+      <CloudBg position='upper' />
+      <CloudBg position='lower' />
       <TitlePanel />
       <div className='absolute bottom-[15%] flex flex-col items-center justify-center gap-4'>
-        <Link to='/register'>{LoginButton(kakaoLogo, 'Kakao')}</Link>
-        <Link to='/register'>{LoginButton(ssafyLogo, 'SSAFY')}</Link>
-        {/* <button onClick={handleAutoLogin}>자동 로그인</button> */}
+        <LoginButton text='SSAFY' logo={ssafyLogo} onClick={() => authContext?.handleOauthLogin('ssafy')} />
+        <LoginButton text='Kakao' logo={kakaoLogo} onClick={() => authContext?.handleOauthLogin('kakao')} />
+
+        {authContext?.state.error && <div className='text-warning'>{authContext?.state.error}</div>}
       </div>
     </div>
   );
-  // );
 };
 
 export default LandingPage;
