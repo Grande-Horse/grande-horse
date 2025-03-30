@@ -1,6 +1,6 @@
 import { apiDelete, apiGet, apiPost, apiPut } from '@/services/apiService';
 import { SellHorseRequest } from '@/types/service/request';
-import { CursorData } from '@/types/service/response';
+import { CursorResponse } from '@/types/service/response';
 import { SoldItemType, PriceHistoryType, RegisteredItemType } from '@/types/trading';
 
 export const getAllHorseTrading = async (
@@ -8,7 +8,7 @@ export const getAllHorseTrading = async (
   search: string,
   cursorId: number,
   limit: number
-): Promise<CursorData<RegisteredItemType>> => {
+): Promise<CursorResponse<RegisteredItemType>> => {
   const params = {
     rank,
     search,
@@ -16,29 +16,32 @@ export const getAllHorseTrading = async (
     limit,
   };
 
-  return apiGet<CursorData<RegisteredItemType>>('/tradings', params);
+  return apiGet<CursorResponse<RegisteredItemType>>('/tradings', params);
 };
 
 export const getHorseTrading = async (
   horseId: string,
   cursorId: number,
   limit: number
-): Promise<CursorData<SoldItemType>> => {
+): Promise<CursorResponse<SoldItemType>> => {
   const params = {
     cursorId,
     limit,
   };
 
-  return apiGet<CursorData<SoldItemType>>(`/tradings/${horseId}/sold-cards`, params);
+  return apiGet<CursorResponse<SoldItemType>>(`/tradings/${horseId}/sold-cards`, params);
 };
 
-export const getMyHorseTrading = async (cursorId: number, limit: number): Promise<CursorData<RegisteredItemType>> => {
+export const getMyHorseTrading = async (
+  cursorId: number,
+  limit: number
+): Promise<CursorResponse<RegisteredItemType>> => {
   const params = {
     cursorId,
     limit,
   };
 
-  return apiGet<CursorData<RegisteredItemType>>('/tradings/registered-cards', params);
+  return apiGet<CursorResponse<RegisteredItemType>>('/tradings/registered-cards', params);
 };
 
 export const getPriceHistory = (horseId: string): Promise<PriceHistoryType[]> => {

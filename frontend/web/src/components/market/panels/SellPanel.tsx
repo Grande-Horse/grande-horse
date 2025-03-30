@@ -1,13 +1,14 @@
 import { Button } from '@/components/ui/Button';
-import { horseListMockData, horseMockData } from '@/mocks/datas/horse';
-import { HorseType } from '@/types/horse';
-import { useState } from 'react';
 import useInternalRouter from '@/hooks/useInternalRouter';
 import SellItem from '@/components/market/items/SellItem';
 import HorseDealIcon from '@/assets/icons/horseDealIcon.svg?react';
+import useInfiniteScroll from '@/hooks/useQueries/useInfiniteScroll';
+import { queryKey } from '@/constants/queryKey';
+import { getMyHorseTrading } from '@/services/trading';
+import { ClipLoader } from 'react-spinners';
 
 const SellPanel: React.FC = () => {
-  const [horseList, setHorseList] = useState<HorseType[]>(horseListMockData);
+  const { data, hasNextPage, ref } = useInfiniteScroll(queryKey.MY_TRADING, getMyHorseTrading);
 
   const { push } = useInternalRouter();
 
@@ -23,10 +24,14 @@ const SellPanel: React.FC = () => {
       </div>
 
       <section className='divide-y-1 divide-black'>
-        {horseList.map((horse, index) => (
-          <SellItem key={horse.id} horse={horse} price={300} isSold={index % 2 === 1} />
-        ))}
+        {data?.pages.flatMap((page) => page.items.map((item) => <SellItem key={item.tradeId} item={item} />))}
       </section>
+
+      {hasNextPage && (
+        <div ref={ref} className='flex w-full justify-center p-8'>
+          <ClipLoader size={18} color='#3D4B63' />
+        </div>
+      )}
     </div>
   );
 };

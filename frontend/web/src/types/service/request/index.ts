@@ -4,3 +4,8 @@ export interface SellHorseRequest {
   sellerId: number;
   price: number;
 }
+
+export interface CursorRequest {
+  cursorId: number;
+  limit: number;
+}
