@@ -3,10 +3,17 @@ import { useNavigate } from 'react-router-dom';
 import ssafyLogo from '@/assets/images/ssafy-logo.png';
 import { useEffect, useContext } from 'react';
 import { AuthContext } from '../register/AuthContextProvider';
-import appTitleBg from '@/assets/images/appTitleBg.png';
-import landingBgLandscape from '@/assets/images/backgrounds/landingBgLandscape.png';
-import landingBgCloudUpper from '@/assets/images/backgrounds/landingBgCloudUpper.png';
-import landingBgCloudLower from '@/assets/images/backgrounds/landingBgCloudLower.png';
+
+
+const cloudBgImages = {
+  upper: `bg-[url(@/assets/images/backgrounds/landingBgCloudUpper.png)]`,
+  lower: `bg-[url(@/assets/images/backgrounds/landingBgCloudLower.png)]`,
+} as const;
+
+const bgImages = {
+  landscape: `bg-[url(@/assets/images/backgrounds/landingBgLandscape.png)]`,
+  titlePanel: `bg-[url(@/assets/images/appTitleBg.png)]`,
+} as const;
 
 const LandingPage: React.FC = () => {
   interface CloudBgProps {
@@ -14,10 +21,7 @@ const LandingPage: React.FC = () => {
   }
 
   const CloudBg = ({ position }: CloudBgProps) => (
-    <div
-      className={`animate-moveCloud${position.charAt(0).toUpperCase() + position.slice(1)} absolute top-0 left-0 h-screen w-full bg-cover bg-repeat-x`}
-      style={{ backgroundImage: `url(${position === 'upper' ? landingBgCloudUpper : landingBgCloudLower})` }}
-    />
+    <div className={`${cloudBgImages[position]} absolute top-0 left-0 h-screen w-full bg-cover bg-repeat-x`} />
   );
 
   interface LoginButtonProps {
@@ -39,7 +43,7 @@ const LandingPage: React.FC = () => {
   const TitlePanel = () => {
     return (
       <div
-        className={`absolute top-0 left-1/2 aspect-300/278 w-2/3 -translate-x-1/2 transform bg-[url(${appTitleBg})] bg-contain bg-center bg-no-repeat`}
+        className={`absolute top-0 left-1/2 aspect-300/278 w-2/3 -translate-x-1/2 transform ${bgImages.titlePanel} bg-contain bg-center bg-no-repeat`}
       >
         <div className='absolute top-[70%] right-0 left-0 -translate-y-1/2'>
           <h1 className='text-stroke text-heading1 flex flex-col items-center justify-center px-20 text-nowrap'>
@@ -64,8 +68,7 @@ const LandingPage: React.FC = () => {
 
   return (
     <div
-      className='relative flex h-screen w-full flex-col items-center justify-center overflow-hidden bg-cover bg-repeat-x'
-      style={{ backgroundImage: `url(${landingBgLandscape})` }}
+      className={`relative flex h-screen w-full flex-col items-center justify-center overflow-hidden ${bgImages.landscape} bg-cover bg-repeat-x`}
     >
       <CloudBg position='upper' />
       <CloudBg position='lower' />
