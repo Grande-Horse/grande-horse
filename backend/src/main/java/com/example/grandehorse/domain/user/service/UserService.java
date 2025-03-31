@@ -119,8 +119,4 @@ public class UserService {
 	public String findNicknameById(int userId) {
 		return userJpaRepository.findNicknameById(userId);
 	}
-
-	public String findNicknameById(int userId) {
-		return userJpaRepository.findNicknameById(userId);
-	}
 }

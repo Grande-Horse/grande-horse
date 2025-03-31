@@ -21,4 +21,6 @@ public interface UserJpaRepository extends JpaRepository<UserEntity, Integer> {
 	Optional<UserEntity> findBySocialProviderAndSocialId(SocialProvider socialProvider, String socialId);
 
 	String findNicknameById(int userId);
+
+	Optional<Object> findByNickname(String nickname);
 }
