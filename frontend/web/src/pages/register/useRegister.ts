@@ -47,11 +47,10 @@ const useRegister = () => {
 
     try {
       const response = await checkNicknameDuplicated(state.nickname);
-      const isAvailable = !response.isDuplicated;
       setState((prev) => ({
         ...prev,
         isNicknameChecked: true,
-        isNicknameAvailable: isAvailable,
+        isNicknameAvailable: !response,
         isLoading: false,
       }));
       return true;
@@ -80,7 +79,6 @@ const useRegister = () => {
 
     try {
       const response = await registerUser(state.nickname);
-      console.log(response);
       setState((prev) => ({ ...prev, isLoading: false }));
     } catch (error) {
       setState((prev) => ({

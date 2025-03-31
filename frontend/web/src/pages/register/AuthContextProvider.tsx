@@ -1,4 +1,5 @@
 import { createContext, useReducer, useContext, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { autoLogin, oauthLogin, registerUser } from '@/services/auth';
 
 interface AuthState {
@@ -6,7 +7,7 @@ interface AuthState {
   isRegistered: boolean;
   user: {
     nickname?: string;
-    provider?: 'kakao' | 'ssafy';
+    provider?: 'KAKAO' | 'SSAFY';
   } | null;
   loading: boolean;
   error: string | null;
@@ -68,7 +69,7 @@ const authReducer = (state: AuthState, action: AuthAction): AuthState => {
 
 interface AuthContextType {
   state: AuthState;
-  handleOauthLogin: (provider: string) => Promise<void>;
+  handleOauthRedirect: (provider: string) => Promise<void>;
   handleAutoLogin: () => Promise<void>;
   register: (nickname: string) => Promise<void>;
   logout: () => void;
@@ -87,26 +88,33 @@ export const useAuth = () => {
 export const AuthContextProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [state, dispatch] = useReducer(authReducer, initialState);
 
+  const { VITE_SSAFY_CLIENT_ID, VITE_SSAFY_REDIRECT_URI } = import.meta.env;
   useEffect(() => {
-    handleAutoLogin();
+    // handleAutoLogin();
   }, []);
 
-  const handleOauthLogin = async (provider: string) => {
+  const handleOauthRedirect = async (provider: string) => {
     try {
       dispatch({ type: 'SET_LOADING', payload: true });
-      const response = await oauthLogin(provider.toLowerCase());
 
-      if (response.isRegistered) {
-        dispatch({
-          type: 'LOGIN_SUCCESS',
-          payload: { user: response.user },
-        });
-      } else {
-        dispatch({
-          type: 'REGISTRATION_REQUIRED',
-          payload: { user: response.user },
-        });
+      if (provider === 'SSAFY') {
+        console.log(VITE_SSAFY_CLIENT_ID, VITE_SSAFY_REDIRECT_URI);
+        window.location.href = `https://project.ssafy.com/oauth/sso-check?client_id=${VITE_SSAFY_CLIENT_ID}&redirect_uri=${VITE_SSAFY_REDIRECT_URI}&response_type=code`;
       }
+
+      // if (response.isRegistered) {
+      //   dispatch({
+      //     type: 'LOGIN_SUCCESS',
+      //     payload: { user: response.user },
+      //   });
+      //   navigate('/');
+      // } else {
+      //   dispatch({
+      //     type: 'REGISTRATION_REQUIRED',
+      //     payload: { user: response.user },
+      //   });
+      //   navigate('/register');
+      // }
     } catch (error) {
       dispatch({
         type: 'SET_ERROR',
@@ -120,16 +128,19 @@ export const AuthContextProvider: React.FC<{ children: React.ReactNode }> = ({ c
     try {
       dispatch({ type: 'SET_LOADING', payload: true });
       const response = await autoLogin();
+      console.log(response.headers);
 
-      if (response.isRegistered) {
+      if (response.headers?.get('__msw-cookie-store__')?.includes('accessToken')) {
         dispatch({
           type: 'LOGIN_SUCCESS',
-          payload: { user: response.user },
+          payload: { user: response.data.user },
         });
       } else {
+        console.log(response.data.user);
+        dispatch({ type: 'LOGOUT' });
         dispatch({
-          type: 'REGISTRATION_REQUIRED',
-          payload: { user: response.user },
+          type: 'SET_ERROR',
+          payload: '자동 로그인 실패',
         });
       }
     } catch (error) {
@@ -177,7 +188,7 @@ export const AuthContextProvider: React.FC<{ children: React.ReactNode }> = ({ c
 
   const value: AuthContextType = {
     state,
-    handleOauthLogin,
+    handleOauthRedirect,
     handleAutoLogin,
     register,
     logout: () => dispatch({ type: 'LOGOUT' }),

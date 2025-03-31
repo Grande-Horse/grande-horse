@@ -1,5 +1,5 @@
 import kakaoLogo from '@/assets/images/kakao-logo.png';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import ssafyLogo from '@/assets/images/ssafy-logo.png';
 import { useEffect, useContext } from 'react';
 import { AuthContext } from '../register/AuthContextProvider';
@@ -53,10 +53,10 @@ const LandingPage: React.FC = () => {
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (authContext?.state.isAuthenticated && authContext?.state.isRegistered) {
+    if (authContext?.state.isAuthenticated) {
       navigate('/');
     }
-  }, [authContext?.state.isAuthenticated, authContext?.state.isRegistered, navigate]);
+  }, [authContext?.state.isAuthenticated, navigate]);
 
   if (authContext?.state.loading) return <div>로딩 중...</div>;
 
@@ -69,8 +69,8 @@ const LandingPage: React.FC = () => {
       <CloudBg position='lower' />
       <TitlePanel />
       <div className='absolute bottom-[15%] flex flex-col items-center justify-center gap-4'>
-        <LoginButton text='SSAFY' logo={ssafyLogo} onClick={() => authContext?.handleOauthLogin('ssafy')} />
-        <LoginButton text='Kakao' logo={kakaoLogo} onClick={() => authContext?.handleOauthLogin('kakao')} />
+        <LoginButton text='SSAFY' logo={ssafyLogo} onClick={() => authContext?.handleOauthRedirect('SSAFY')} />
+        <LoginButton text='Kakao' logo={kakaoLogo} onClick={() => authContext?.handleOauthRedirect('KAKAO')} />
 
         {authContext?.state.error && <div className='text-warning'>{authContext?.state.error}</div>}
       </div>

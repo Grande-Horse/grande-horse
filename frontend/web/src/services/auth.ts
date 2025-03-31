@@ -1,12 +1,18 @@
 import { apiDelete, apiGet, apiPost, apiPut } from '@/services/apiService';
 import { AutoLoginResponseType, CheckDuplicatedNicknameResponseType } from '@/types/auth';
+import { useNavigate } from 'react-router-dom';
 
 export const autoLogin = async () => {
   return apiGet(`/auth/auto-login`);
 };
 
-export const oauthLogin = async (provider: string) => {
-  return apiGet(`/auth/login-${provider}`);
+interface OauthLoginRequestType {
+  socialProvider: string;
+  code: string;
+}
+
+export const oauthLogin = async (request: OauthLoginRequestType) => {
+  return apiPost(`/auth/login`, request);
 };
 
 export const checkNicknameDuplicated = async (nickname: string) => {
