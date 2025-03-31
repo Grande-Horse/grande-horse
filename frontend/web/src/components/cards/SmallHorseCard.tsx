@@ -10,10 +10,12 @@ import { rankMap } from '@/constants/rank';
 
 interface SmallHorseCardProps {
   horse: HorseType;
+  onHorseCardClick?: () => void;
 }
 
 const SmallHorseCard: React.FC<SmallHorseCardProps> = ({
   horse: { name, coatColor, rank, weight, speed, acceleration, stamina },
+  onHorseCardClick,
 }) => {
   const horseStats = [
     {
@@ -30,11 +32,11 @@ const SmallHorseCard: React.FC<SmallHorseCardProps> = ({
   const horseImageSrc = getDynamicImgSrc('horses', coatColor + 'Horse');
 
   return (
-    <div>
+    <div className='cursor-pointer' onClick={onHorseCardClick}>
       <div
         className={`${cardImageClass[rank as keyof typeof cardImageClass]} relative flex aspect-[320/492] w-[11rem] flex-col items-center justify-between bg-contain bg-center bg-no-repeat pt-5 pb-6.5`}
       >
-        <p className='text-detail3 text-stroke absolute top-5.5 z-2'>{name}</p>
+        <p className='text-detail3 absolute top-6 z-2'>{name}</p>
         <img src={Ribbon} alt='ribbon' className='absolute top-4 z-1' />
         <div
           className={`${bgImageClass[rank as keyof typeof bgImageClass]} relative aspect-[256/270] w-[8rem] bg-cover`}

@@ -1,5 +1,5 @@
 import { CURSOR_LIMIT } from '@/constants/service';
-import { priceHistoryMockData, RegisteredListMockData } from '@/mocks/datas/trading';
+import { priceHistoryMockData, tradingListMockData } from '@/mocks/datas/trading';
 import { ApiResponse, CursorResponse } from '@/types/service/response';
 import { PriceHistoryType, TradingItemType } from '@/types/trading';
 import { delay, http, HttpResponse, HttpResponseResolver, RequestHandler, StrictResponse } from 'msw';
@@ -17,9 +17,9 @@ const HorseTradingHandler: HttpResponseResolver = async ({
   const startIndex = cursorId;
   const endIndex = cursorId + limit;
 
-  const items = RegisteredListMockData.slice(startIndex, endIndex);
+  const items = tradingListMockData.slice(startIndex, endIndex);
 
-  const hasNextItems = endIndex < RegisteredListMockData.length;
+  const hasNextItems = endIndex < tradingListMockData.length;
   const nextCursorId = hasNextItems ? endIndex : -1;
 
   const response = {
@@ -34,28 +34,38 @@ const HorseTradingHandler: HttpResponseResolver = async ({
   return HttpResponse.json(response);
 };
 
-const priceHistoryHandler: HttpResponseResolver = (): StrictResponse<ApiResponse<PriceHistoryType[]>> => {
+const priceHistoryHandler: HttpResponseResolver = async (): Promise<
+  StrictResponse<ApiResponse<PriceHistoryType[]>>
+> => {
+  await delay(1000);
+
   return HttpResponse.json({
     errorCode: null,
     data: priceHistoryMockData,
   });
 };
 
-const sellHorseHandler: HttpResponseResolver = (): StrictResponse<ApiResponse<null>> => {
+const sellHorseHandler: HttpResponseResolver = async (): Promise<StrictResponse<ApiResponse<null>>> => {
+  await delay(1000);
+
   return HttpResponse.json({
     errorCode: null,
     data: null,
   });
 };
 
-const purchaseHorseHandler: HttpResponseResolver = (): StrictResponse<ApiResponse<null>> => {
+const purchaseHorseHandler: HttpResponseResolver = async (): Promise<StrictResponse<ApiResponse<null>>> => {
+  await delay(1000);
+
   return HttpResponse.json({
     errorCode: null,
     data: null,
   });
 };
 
-const cancelHorseSellingHandler: HttpResponseResolver = (): StrictResponse<ApiResponse<null>> => {
+const cancelHorseSellingHandler: HttpResponseResolver = async (): Promise<StrictResponse<ApiResponse<null>>> => {
+  await delay(1000);
+
   return HttpResponse.json({
     errorCode: null,
     data: null,
@@ -65,6 +75,7 @@ const cancelHorseSellingHandler: HttpResponseResolver = (): StrictResponse<ApiRe
 export const handlers: RequestHandler[] = [
   http.get('/tradings', HorseTradingHandler),
   http.get('/tradings/registered-cards', HorseTradingHandler),
+  http.get('/tradings/:hordeId/sold-cards', HorseTradingHandler),
   http.get('/tradings/:horseId/price-history', priceHistoryHandler),
   http.post('/tradings', sellHorseHandler),
   http.put('/tradings/:tradeId', purchaseHorseHandler),
