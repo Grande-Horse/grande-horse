@@ -1,4 +1,4 @@
-import { PriceHistoryType, RegisteredItemType, TradingItemType } from '@/types/trading';
+import { PriceHistoryType, TradingItemType } from '@/types/trading';
 
 export const tradingItemMockData: TradingItemType = {
   id: '1',
@@ -11,14 +11,11 @@ export const tradingItemMockData: TradingItemType = {
   stamina: 160,
   tradeId: 1,
   price: 500,
-};
-
-export const RegisteredItemMockData: RegisteredItemType = {
-  ...tradingItemMockData,
   registeredAt: '2025-03-27',
+  soldAt: '2025-03-27',
 };
 
-export const RegisteredListMockData: RegisteredItemType[] = Array.from({ length: 200 }, () => RegisteredItemMockData);
+export const tradingListMockData: TradingItemType[] = Array.from({ length: 200 }, () => tradingItemMockData);
 
 export const priceHistoryMockData: PriceHistoryType[] = [
   {

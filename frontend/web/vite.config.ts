@@ -10,10 +10,10 @@ export default defineConfig({
   plugins: [react(), tailwindcss(), svgr()],
   server: {
     port: 3000,
-    https: {
-      key: fs.readFileSync(path.resolve(__dirname, 'localhost+2-key.pem')),
-      cert: fs.readFileSync(path.resolve(__dirname, 'localhost+2.pem')),
-    },
+    // https: {
+    //   key: fs.readFileSync(path.resolve(__dirname, 'localhost+2-key.pem')),
+    //   cert: fs.readFileSync(path.resolve(__dirname, 'localhost+2.pem')),
+    // },
   },
   resolve: {
     alias: [{ find: '@', replacement: path.resolve(__dirname, 'src') }],

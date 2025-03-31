@@ -1,21 +1,44 @@
 import HorseProfileCard from '@/components/cards/HorseProfileCard';
 import CoinIcon from '@/assets/icons/coinIcon.svg?react';
 import { Button } from '@/components/ui/Button';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { HorseType } from '@/types/horse';
-import { horseListMockData, horseMockData } from '@/mocks/datas/horse';
-import { sellHorse } from '@/services/trading';
-import TradeItem from '@/components/market/items/TradeItem';
+import { horseMockData } from '@/mocks/datas/horse';
+import { getPriceHistory, sellHorse } from '@/services/trading';
 import Tabs from '@/components/ui/Tabs';
 import { sellTabList } from '@/constants/tabList';
 import PriceBarChart from '@/components/charts/PriceBarChart';
 import { PriceHistoryType } from '@/types/trading';
-import { priceHistoryMockData } from '@/mocks/datas/trading';
+import useGetHorseTrading from '@/hooks/useQueries/useGetHorseTrading';
+import { useInView } from 'react-intersection-observer';
+import { ClipLoader } from 'react-spinners';
+import { useParams } from 'react-router-dom';
+import TradeList from '@/components/market/list/TradeList';
 
 const SellPage: React.FC = () => {
+  const { horseId } = useParams<{ horseId: string }>();
+
   const [horse, setHorse] = useState<HorseType>(horseMockData);
-  const [horseList, setHorseList] = useState<HorseType[]>(horseListMockData);
-  const [priceHistory, setPriceHistory] = useState<PriceHistoryType[]>(priceHistoryMockData);
+  const [priceHistory, setPriceHistory] = useState<PriceHistoryType[]>([]);
+
+  const { data, fetchNextPage, hasNextPage } = useGetHorseTrading(horseId!);
+
+  const { ref, inView } = useInView();
+
+  useEffect(() => {
+    const fetchPriceHistory = async () => {
+      const data = await getPriceHistory(horseId!);
+      setPriceHistory(data);
+    };
+
+    fetchPriceHistory();
+  }, [horseId]);
+
+  useEffect(() => {
+    if (inView) {
+      fetchNextPage();
+    }
+  }, [inView]);
 
   const handleSellHorse = async () => {
     try {
@@ -54,11 +77,14 @@ const SellPage: React.FC = () => {
         tabList={sellTabList}
         tabPanels={[
           <PriceBarChart priceHistory={priceHistory} />,
-          <section className='divide-y-1 divide-black'>
-            {horseList.map((horse) => (
-              <TradeItem key={horse.id} horse={horse} price={300} soldAt='2025-03-25' />
-            ))}
-          </section>,
+          <>
+            <TradeList data={data} />
+            {hasNextPage && (
+              <div ref={ref} className='flex w-full justify-center p-8'>
+                <ClipLoader size={18} color='#3D4B63' />
+              </div>
+            )}
+          </>,
         ]}
       />
     </div>

@@ -45,7 +45,7 @@ export const getMyHorseTrading = async (
 };
 
 export const getPriceHistory = (horseId: string): Promise<PriceHistoryType[]> => {
-  return apiGet<PriceHistoryType[]>(`/horses/${horseId}/price-history`);
+  return apiGet<PriceHistoryType[]>(`/tradings/${horseId}/price-history`);
 };
 
 export const sellHorse = async (horse: SellHorseRequest) => {

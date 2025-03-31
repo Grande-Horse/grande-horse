@@ -43,7 +43,7 @@ const SellItem: React.FC<SellItemProps> = ({
         </div>
 
         <div className='flex self-end'>
-          {soldAt ? <Button disabled>판매 완료</Button> : <Button onClick={handleCancelHorseSelling}>판매 취소</Button>}
+          <Button onClick={handleCancelHorseSelling}>판매 취소</Button>
         </div>
       </div>
     </div>

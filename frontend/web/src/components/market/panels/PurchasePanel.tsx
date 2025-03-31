@@ -2,7 +2,6 @@ import PriceLineChart from '@/components/charts/PriceLineChart';
 import Dropdown from '@/components/ui/dropdown/Dropdown';
 import Input from '@/components/ui/Input';
 import { rankMap } from '@/constants/rank';
-import { horseMockData } from '@/mocks/datas/horse';
 import PurchaseItem from '@/components/market/items/PurchaseItem';
 import { HorseType } from '@/types/horse';
 import { PriceHistoryType } from '@/types/trading';
@@ -18,24 +17,31 @@ const PurchasePanel: React.FC = () => {
   const [rank, setRank] = useState<string>('');
   const [search, setSearch] = useState<string>('');
 
-  const [selectedHorse, setSelectedHorse] = useState<HorseType>(horseMockData);
+  const [selectedHorse, setSelectedHorse] = useState<HorseType>();
   const [isPriceHistoryOpen, serIsPriceHistoryOpen] = useState<boolean>(false);
 
-  const [priceHistory, setPriceHistory] = useState<PriceHistoryType[]>([]);
-
   const { data, fetchNextPage, hasNextPage } = useGetAllHorseTrading(rank, search);
+  const [priceHistory, setPriceHistory] = useState<PriceHistoryType[]>([]);
 
   const { ref, inView } = useInView();
 
   useEffect(() => {
     // TODO: 변동 시세 조회 API 연동 (msw test completed)
     const fetchPriceHistory = async () => {
-      const data = await getPriceHistory(selectedHorse.id);
-      setPriceHistory(data);
+      if (selectedHorse) {
+        const data = await getPriceHistory(selectedHorse.id);
+        setPriceHistory(data);
+      }
     };
 
-    // fetchPriceHistory();
-  }, []);
+    fetchPriceHistory();
+  }, [selectedHorse]);
+
+  useEffect(() => {
+    if (inView) {
+      fetchNextPage();
+    }
+  }, [inView]);
 
   useEffect(() => {
     if (inView) {
@@ -47,14 +53,16 @@ const PurchasePanel: React.FC = () => {
     setSearch(e.target.value);
   };
 
-  const handlePriceHistoryClick = () => {
+  const handlePriceHistoryClick = (horse: HorseType) => {
+    if (!isPriceHistoryOpen) {
+      setSelectedHorse(horse);
+    }
     serIsPriceHistoryOpen((prev) => !prev);
   };
 
   return (
     <div className='h-full'>
       <section className='flex h-1/3 flex-col items-center justify-center gap-4'>
-        {/* TODO: 추후 Suspense 및 Error Boundary 적용 */}
         {isPriceHistoryOpen && priceHistory.length > 0 ? (
           <PriceLineChart priceHistory={priceHistory} />
         ) : (
@@ -84,7 +92,7 @@ const PurchasePanel: React.FC = () => {
               key={item.tradeId}
               item={item}
               isPriceHistoryOpen={isPriceHistoryOpen}
-              onPriceHistoryClick={handlePriceHistoryClick}
+              onPriceHistoryClick={() => handlePriceHistoryClick(item)}
             />
           ))
         )}

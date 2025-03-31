@@ -22,11 +22,11 @@ const useModal = () => {
         onClose: () => close(id),
         children: (
           <>
-            {title && <div className='mb-4 text-lg font-bold'>{title}</div>}
+            {title && <div className='text-body1 mb-6'>{title}</div>}
 
             <div className='w-full'>{content}</div>
 
-            <div className='flex gap-2 pt-10'>
+            <div className='flex gap-2 pt-6'>
               <Button
                 variant='secondary'
                 onClick={() => {
