@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.example.grandehorse.domain.auth.controller.response.SocialUserResponse;
 import com.example.grandehorse.domain.user.controller.request.SignUpDto;
+import com.example.grandehorse.domain.user.controller.response.CoinResponse;
 import com.example.grandehorse.domain.user.entity.SocialProvider;
 import com.example.grandehorse.domain.user.entity.UserEntity;
 import com.example.grandehorse.domain.user.repository.UserJpaRepository;
@@ -31,8 +32,7 @@ public class UserService {
 	private final JwtTokenProvider jwtTokenProvider;
 
 	public UserEntity findUserById(int userId) {
-		return userJpaRepository.findById(userId)
-			.orElseThrow(() -> new UserException(CustomError.USER_NOT_EXISTED));
+		return userJpaRepository.findById(userId).orElseThrow(() -> new UserException(CustomError.USER_NOT_EXISTED));
 	}
 
 	@Transactional
@@ -70,11 +70,8 @@ public class UserService {
 	}
 
 	@Transactional
-	public ResponseEntity<CommonResponse<Void>> processSocialSignUp(
-		SignUpDto signUpDto,
-		String socialToken,
-		HttpServletResponse response
-	) {
+	public ResponseEntity<CommonResponse<Void>> processSocialSignUp(SignUpDto signUpDto, String socialToken,
+		HttpServletResponse response) {
 		validateSocialToken(socialToken);
 
 		String nickname = signUpDto.getNickname();
@@ -113,5 +110,9 @@ public class UserService {
 		userJpaRepository.findByNickname(nickname).ifPresent(user -> {
 			throw new UserException(CustomError.USER_DUPLICATE_NICKNAME);
 		});
+	}
+
+	public ResponseEntity<CommonResponse<CoinResponse>> getUserCoin(int userId) {
+		return CommonResponse.success(new CoinResponse(findUserById(userId).getCoin()));
 	}
 }
