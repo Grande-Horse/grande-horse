@@ -23,6 +23,11 @@ spring:
 
   data:
     redis:
-      host: localhost
-      port: 6379
-      password: ${REDIS_PASSWORD}
+      default:
+        host: j12a606.p.ssafy.io
+        port: 6380
+        password: ${REDIS_DEFAULT_PASSWORD}
+      websocket:
+        host: j12a606.p.ssafy.io
+        port: 6381
+        password: ${REDIS_WEBSOCKET_PASSWORD}

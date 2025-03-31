@@ -18,8 +18,7 @@ public class TokenBlacklistService {
 	private final JwtTokenProvider jwtTokenProvider;
 
 	public TokenBlacklistService(
-		@Qualifier("tokenBlackListRedisTemplate")
-		RedisTemplate<String, Object> redisTemplate,
+		@Qualifier("defaultRedisTemplate") RedisTemplate<String, Object> redisTemplate,
 		JwtTokenProvider jwtTokenProvider
 	) {
 		this.redisTemplate = redisTemplate;
@@ -42,3 +41,4 @@ public class TokenBlacklistService {
 		}
 	}
 }
+
