@@ -86,6 +86,4 @@ public class CardEntity {
 		victoryCount = 0;
 		totalPrize = 0;
 	}
-
-
 }

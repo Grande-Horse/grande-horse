@@ -18,7 +18,7 @@ import lombok.RequiredArgsConstructor;
 
 @Component
 @RequiredArgsConstructor
-public class SsafyApiClient {
+public class SsafyApiClient implements OauthApiClient{
 	private final ExternalApiClient externalApiClient;
 	private final ObjectMapper objectMapper;
 
@@ -29,7 +29,7 @@ public class SsafyApiClient {
 	@Value("${SSAFY_SECRET}")
 	private String ssafySecret;
 
-	public String ssafyLoginUrl() {
+	public String getLoginUrl() {
 		StringBuffer url = new StringBuffer();
 		url.append("https://project.ssafy.com/oauth/sso-check?");
 		url.append("client_id=").append(ssafyClientId);
@@ -81,5 +81,10 @@ public class SsafyApiClient {
 		} catch (Exception e) {
 			throw new ExternalApiException(CustomError.EXTERNAL_SERVICE_PARSE_ERROR);
 		}
+	}
+
+	@Override
+	public String getProvider() {
+		return SocialProvider.SSAFY.toString();
 	}
 }

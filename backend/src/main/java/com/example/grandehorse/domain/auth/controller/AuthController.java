@@ -1,15 +1,22 @@
 package com.example.grandehorse.domain.auth.controller;
 
 import java.io.IOException;
+import java.util.Map;
 
 import jakarta.servlet.http.HttpServletResponse;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.example.grandehorse.domain.auth.controller.request.SocialAuthorizationDto;
 import com.example.grandehorse.domain.auth.service.AuthService;
+import com.example.grandehorse.global.response.CommonResponse;
 
 import lombok.RequiredArgsConstructor;
 
@@ -19,23 +26,40 @@ import lombok.RequiredArgsConstructor;
 public class AuthController {
 	private final AuthService authService;
 
-	@GetMapping(value = "/login-ssafy")
-	public void ssafyConnect(HttpServletResponse response) throws IOException {
-		response.sendRedirect(authService.getSsafyLoginUrl());
+	// 테스트용 API
+	@GetMapping("/test/login/{social}")
+	public ResponseEntity<CommonResponse<String>> ssafyConnect(
+		@PathVariable String social,
+		HttpServletResponse response
+	) throws IOException {
+		return CommonResponse.success(authService.getLoginUrl(social));
 	}
 
+	// 테스트용 API
 	@GetMapping("/ssafy/callback")
-	public void ssafyCallback(@RequestParam String code, HttpServletResponse response) throws IOException {
-		response.sendRedirect(authService.processSsafyUserAuthentication(code, response));
+	public ResponseEntity<CommonResponse<String>> ssafyCallback(@RequestParam("code") String code){
+		return CommonResponse.success(code);
 	}
 
-	@GetMapping(value = "/login-kakao")
-	public void kakaoConnect(HttpServletResponse response) throws IOException {
-		response.sendRedirect(authService.getKakaoLoginUrl());
-	}
-
+	// 테스트용 API
 	@GetMapping("/kakao/callback")
-	public void kakaoCallback(@RequestParam String code, HttpServletResponse response) throws IOException {
-		response.sendRedirect(authService.processKakaoUserAuthentication(code, response));
+	public ResponseEntity<CommonResponse<String>> kakaoCallback(@RequestParam("code") String code){
+		return CommonResponse.success(code);
+	}
+
+	@PostMapping("/login")
+	public ResponseEntity<CommonResponse<Map>> oauthCallback(
+		@RequestBody SocialAuthorizationDto socialAuthorizationDto,
+		HttpServletResponse response
+	) {
+		return authService.processUserAuthentication(
+			socialAuthorizationDto,
+			response
+		);
+	}
+
+	@GetMapping("/auto-login")
+	public ResponseEntity<CommonResponse<Void>> autoLogin(HttpServletResponse response) throws IOException {
+		return CommonResponse.success(null);
 	}
 }

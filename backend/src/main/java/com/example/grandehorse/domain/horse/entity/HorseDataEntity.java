@@ -26,7 +26,7 @@ public class HorseDataEntity {
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private int id;
 
-	@Column(name = "horse_id", unique = true, length = 7, nullable = false)
+	@Column(name = "horse_id", length = 7, nullable = false)
 	private String horseId; // 마사회에서 제공되는 말 고유번호
 
 	@Column(name = "latest_rank", length = 20, nullable = false)
@@ -43,6 +43,15 @@ public class HorseDataEntity {
 
 	@Column(name = "avg_g1f_time", nullable = false)
 	private double avgG1fTime;
+
+	@Column(name = "speed", nullable = false)
+	private double speed;
+
+	@Column(name = "acceleration", nullable = false)
+	private double acceleration;
+
+	@Column(name = "stamina", nullable = false)
+	private double stamina;
 
 	@Column(name = "race_count", nullable = false)
 	private byte raceCount;
