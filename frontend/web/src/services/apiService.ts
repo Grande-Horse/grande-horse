@@ -4,20 +4,20 @@ import axios, { AxiosError, AxiosResponse } from 'axios';
 
 const client = createApiClient();
 
-export const apiGet = async <U>(url: string, params?: Record<string, any>): Promise<U> => {
-  return await apiRequest<null, U>('GET', url, null, params);
+export const apiGet = <U>(url: string, params?: Record<string, any>): Promise<U> => {
+  return apiRequest<null, U>('GET', url, null, params);
 };
 
-export const apiPost = async <T>(url: string, data: T) => {
-  return await apiRequest<T, null>('POST', url, data);
+export const apiPost = <T>(url: string, data: T) => {
+  return apiRequest<T, null>('POST', url, data);
 };
 
-export const apiPut = async <T>(url: string, data: T) => {
-  await apiRequest<T, null>('PUT', url, data);
+export const apiPut = <T>(url: string, data: T) => {
+  return apiRequest<T, null>('PUT', url, data);
 };
 
-export const apiDelete = async <U>(url: string, params?: Record<string, any>): Promise<U> => {
-  return await apiRequest<null, U>('DELETE', url, null, params);
+export const apiDelete = <U>(url: string, params?: Record<string, any>): Promise<U> => {
+  return apiRequest<null, U>('DELETE', url, null, params);
 };
 
 const apiRequest = async <T, U>(method: Method, url: string, data?: T, params?: Record<string, string>): Promise<U> => {
