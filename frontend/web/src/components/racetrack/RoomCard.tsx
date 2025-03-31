@@ -1,4 +1,4 @@
-import Horse from '@/components/raceTrack/Horse';
+import Horse from '@/components/racetrack/Horse';
 import { rankTextColor } from '@/constants/rank';
 
 const RoomCard: React.FC = () => {
@@ -49,11 +49,11 @@ const RoomCard: React.FC = () => {
   ];
 
   const bgImageClass = {
-    normal: `bg-[url(@/assets/images/backgrounds/normalBg.png)]`,
-    rare: `bg-[url(@/assets/images/backgrounds/rareBg.png)]`,
-    epic: `bg-[url(@/assets/images/backgrounds/epicBg.png)]`,
-    unique: `bg-[url(@/assets/images/backgrounds/uniqueBg.png)]`,
-    legend: `bg-[url(@/assets/images/backgrounds/legendBg.png)]`,
+    normal: `bg-[url(@/assets/images/backgrounds/normalBg.webp)]`,
+    rare: `bg-[url(@/assets/images/backgrounds/rareBg.webp)]`,
+    epic: `bg-[url(@/assets/images/backgrounds/epicBg.webp)]`,
+    unique: `bg-[url(@/assets/images/backgrounds/uniqueBg.webp)]`,
+    legend: `bg-[url(@/assets/images/backgrounds/legendBg.webp)]`,
   } as const;
 
   return (

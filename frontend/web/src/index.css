@@ -55,10 +55,6 @@
   z-index: 10;
 }
 
-@utility z-bottomnavbar {
-  z-index: 10;
-}
-
 @theme {
   --color-primary: #3D4B63;
   --color-secondary: #E0EEFF;
@@ -76,6 +72,7 @@
   --color-epic: #A100FF;
   --color-unique: #FFEA00;
   --color-legend: #00FF2A;
+  --color-legend: #00FF2A;
   --color-warning: #E5002C;
 
   --text-heading1: 2.4rem;
@@ -91,6 +88,7 @@
 
   --font-primary: 'DungGeunMo';
   --container-base: 480px;
+  --container-modal: 320px;
   --container-modal: 320px;
   --radius-sm: 1rem;
   
@@ -118,4 +116,16 @@
   }
 }
 
+@layer utilities {
+  @keyframes dot-animation {
+    0% { content: '.'; }
+    30% { content: '..'; }
+    60% { content: '...'; }
+  }
 
+  .dot-animation::after {
+    content: '.';
+    animation: dot-animation 2s infinite steps(1);
+  }
+
+}

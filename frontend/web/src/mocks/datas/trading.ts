@@ -1,4 +1,21 @@
-import { PriceHistoryType } from '@/types/trading';
+import { PriceHistoryType, TradingItemType } from '@/types/trading';
+
+export const tradingItemMockData: TradingItemType = {
+  id: '1',
+  name: '굿필승',
+  coatColor: 'gray',
+  rank: 'epic',
+  weight: 100,
+  speed: 100,
+  acceleration: 220,
+  stamina: 160,
+  tradeId: 1,
+  price: 500,
+  registeredAt: '2025-03-27',
+  soldAt: '2025-03-27',
+};
+
+export const tradingListMockData: TradingItemType[] = Array.from({ length: 200 }, () => tradingItemMockData);
 
 export const priceHistoryMockData: PriceHistoryType[] = [
   {

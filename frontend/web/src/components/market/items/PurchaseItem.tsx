@@ -1,20 +1,18 @@
 import { Button } from '@/components/ui/Button';
-import { HorseType } from '@/types/horse';
-import { RankMap } from '@/constants/horse';
+import { rankMap } from '@/constants/rank';
 import CoinIcon from '@/assets/icons/coinIcon.svg?react';
 import StatBar from '@/components/charts/StatBar';
 import { purchaseHorse } from '@/services/trading';
+import { RegisteredItemType } from '@/types/trading';
 
-interface TradingItemProps {
-  horse: HorseType;
-  price: number;
+interface PurchaseItemProps {
+  item: RegisteredItemType;
   isPriceHistoryOpen?: boolean;
   onPriceHistoryClick?: () => void;
 }
 
-const TradingItem: React.FC<TradingItemProps> = ({
-  horse: { id, name, coatColor, rank, speed, acceleration, stamina },
-  price,
+const PurchaseItem: React.FC<PurchaseItemProps> = ({
+  item: { id, name, coatColor, rank, speed, acceleration, stamina, tradeId, price, registeredAt },
   isPriceHistoryOpen = false,
   onPriceHistoryClick,
 }) => {
@@ -34,7 +32,7 @@ const TradingItem: React.FC<TradingItemProps> = ({
 
       <div className='flex grow flex-col justify-between'>
         <div className='flex items-center justify-between'>
-          <p>{RankMap[rank]}</p>
+          <p>{rankMap[rank]}</p>
           <span className='flex items-center gap-2'>
             <CoinIcon width={18} />
             <p>{price}</p>
@@ -48,7 +46,6 @@ const TradingItem: React.FC<TradingItemProps> = ({
         </div>
 
         <div className='flex gap-4 self-end'>
-          {/* TODO: API 연동 */}
           {isPriceHistoryOpen ? (
             <Button onClick={onPriceHistoryClick} variant='secondary'>
               변동 시세 닫기
@@ -63,4 +60,4 @@ const TradingItem: React.FC<TradingItemProps> = ({
   );
 };
 
-export default TradingItem;
+export default PurchaseItem;

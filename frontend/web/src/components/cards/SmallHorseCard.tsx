@@ -6,20 +6,22 @@ import AccelerationIcon from '@/assets/icons/accelerationIcon.svg?react';
 import StaminaIcon from '@/assets/icons/staminaIcon.svg?react';
 import Ribbon from '@/assets/images/ribbon.webp';
 import { getDynamicImgSrc } from '@/utils/image';
-import { RankMap } from '@/constants/horse';
+import { rankMap } from '@/constants/rank';
 
 interface SmallHorseCardProps {
   horse: HorseType;
+  onHorseCardClick?: () => void;
 }
 
 const SmallHorseCard: React.FC<SmallHorseCardProps> = ({
   horse: { name, coatColor, rank, weight, speed, acceleration, stamina },
+  onHorseCardClick,
 }) => {
   const horseStats = [
     {
       icon: <RankIcon width={10} height={10} />,
       label: '등급',
-      value: RankMap[rank as keyof typeof RankMap],
+      value: rankMap[rank as keyof typeof rankMap],
     },
     { icon: <WeightIcon width={10} height={10} />, label: '체중', value: weight + 'kg' },
     { icon: <SpeedIcon width={10} height={10} />, label: '속도', value: speed + 'km/h' },
@@ -30,11 +32,11 @@ const SmallHorseCard: React.FC<SmallHorseCardProps> = ({
   const horseImageSrc = getDynamicImgSrc('horses', coatColor + 'Horse');
 
   return (
-    <div>
+    <div className='cursor-pointer' onClick={onHorseCardClick}>
       <div
         className={`${cardImageClass[rank as keyof typeof cardImageClass]} relative flex aspect-[320/492] w-[11rem] flex-col items-center justify-between bg-contain bg-center bg-no-repeat pt-5 pb-6.5`}
       >
-        <p className='text-detail3 text-stroke absolute top-5.5 z-2'>{name}</p>
+        <p className='text-detail3 absolute top-6 z-2'>{name}</p>
         <img src={Ribbon} alt='ribbon' className='absolute top-4 z-1' />
         <div
           className={`${bgImageClass[rank as keyof typeof bgImageClass]} relative aspect-[256/270] w-[8rem] bg-cover`}
