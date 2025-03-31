@@ -25,6 +25,7 @@ public enum CustomError {
 	USER_NOT_EXISTED(HttpStatus.BAD_REQUEST, "U3", "존재하지 않는 유저입니다."),
 
 	// 말 관련 에러
+	HORSE_NOT_EXISTED(HttpStatus.BAD_REQUEST, "H1", "존재하지 않는 말입니다."),
 
 	// 거래 관련 에러
 	CARD_NOT_FOR_SALE(HttpStatus.BAD_REQUEST, "T1", "판매중인 말이 아닙니다."),
@@ -34,11 +35,15 @@ public enum CustomError {
 	// 상품 관련 에러
 
 	// 카드 관련 에러
-	USER_NOT_OWNER_OF_CARD(HttpStatus.BAD_REQUEST, "C1", "유저의 말카드가 아닙니다."),
-	CARD_SALE_RESTRICTED(HttpStatus.BAD_REQUEST, "C2", "판매할 수 없는 말카드 입니다."),
-	CARD_NOT_EXISTED(HttpStatus.BAD_REQUEST, "C3", "존재하지 않는 말카드입니다."),
+	USER_NOT_OWNER_OF_CARD(HttpStatus.BAD_REQUEST, "CA1", "유저의 말카드가 아닙니다."),
+	CARD_SALE_RESTRICTED(HttpStatus.BAD_REQUEST, "CA2", "판매할 수 없는 말카드 입니다."),
+	CARD_NOT_EXISTED(HttpStatus.BAD_REQUEST, "CA3", "존재하지 않는 말카드입니다."),
+	NO_REPRESENTATIVE_HORSE_CARD(HttpStatus.BAD_REQUEST, "CA4", "대표로 등록된 맒카드가 없습니다."),
 
 	// 경마 관련 에러
+	RACE_ROOM_NOT_EXISTED(HttpStatus.BAD_REQUEST, "R1", "존재하지 않는 방입니다."),
+	RACE_ROOM_IS_ALREADY_EXISTED(HttpStatus.BAD_REQUEST, "R2", "중복된 방입니다."),
+	RACE_ROOM_MAX_PLAYER(HttpStatus.BAD_REQUEST, "R3", "최대 참여 가능 인원을 초과하였습니다."),
 
 	// 외부 API 관련 에러
 	EXTERNAL_SERVICE_PARSE_ERROR(HttpStatus.BAD_REQUEST, "E1", "외부 API 응답 처리 중 오류가 발생했습니다.");

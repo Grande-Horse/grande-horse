@@ -31,7 +31,8 @@ public class TradingController {
 
 	@PostMapping("")
 	public ResponseEntity<CommonResponse<Void>> createCardTrade(
-		@Valid @RequestBody CreateCardTradeDto createTradeDto) {
+		@Valid @RequestBody CreateCardTradeDto createTradeDto
+	) {
 		return tradingService.createCardTrade(createTradeDto);
 	}
 

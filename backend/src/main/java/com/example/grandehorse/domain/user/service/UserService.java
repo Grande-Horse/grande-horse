@@ -47,4 +47,8 @@ public class UserService {
 			socialUserResponse.getSocialId()
 		);
 	}
+
+	public String findNicknameById(int userId) {
+		return userJpaRepository.findNicknameById(userId);
+	}
 }
