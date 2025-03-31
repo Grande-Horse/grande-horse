@@ -11,3 +11,12 @@ export interface KakaoLoginResponseType {
   // A2, 블랙리스트에 등록된 토큰으로 로그인 시,  AuthenticationException
   data: null;
 }
+
+export interface OAuthCallbackResponse {
+  success: boolean;
+  message?: string;
+  error?: {
+    code: string;
+    message: string;
+  };
+}
