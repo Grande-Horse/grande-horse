@@ -23,8 +23,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "user", indexes = {
-	@Index(name = "idx_social_provider_social_id", columnList = "social_provider, social_id")
-})
+	@Index(name = "idx_social_provider_social_id", columnList = "social_provider, social_id")})
 @Getter
 public class UserEntity {
 	@Id
@@ -56,6 +55,17 @@ public class UserEntity {
 
 	@Column(name = "deleted_at")
 	private LocalDateTime deletedAt;
+
+	public static UserEntity signUp(String email, String nickname, SocialProvider socialProvider, String socialId) {
+		return UserEntity.builder()
+			.email(email)
+			.nickname(nickname)
+			.socialProvider(socialProvider)
+			.socialId(socialId)
+			.registeredAt(LocalDateTime.now())
+			.coin(new Coin())
+			.build();
+	}
 
 	public void increaseCoin(int price) {
 		coin.increaseCoin(price);

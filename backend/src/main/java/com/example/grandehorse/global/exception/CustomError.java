@@ -13,11 +13,11 @@ import lombok.Getter;
 public enum CustomError {
 	// 공통 에러
 	INPUT_LENGTH_EXCEEDED(HttpStatus.BAD_REQUEST, "C1", "입력할 수 있는 글자 길이를 초과하였습니다."),
+	FORBIDDEN_WORD(HttpStatus.BAD_REQUEST, "C2", "사용할 수 없는 단어가 포함되어 있습니다."),
 
 	// 인증 관련 에러
 	INVALID_TOKEN(HttpStatus.BAD_REQUEST, "A1", "유효하지 않은 토큰이거나 토큰이 존재하지 않습니다."),
 	BLACKLISTED_TOKEN(HttpStatus.BAD_REQUEST, "A2", "블랙리스트에 등록된 토큰입니다."),
-	ID_TOKEN_EXPIRED(HttpStatus.BAD_REQUEST, "A3", "ID 토큰이 유효기간이 만료 되었습니다."),
 
 	// 유저 관련 에러
 	USER_DUPLICATE_NICKNAME(HttpStatus.BAD_REQUEST, "U1", "중복되는 유저 닉네임입니다."),
