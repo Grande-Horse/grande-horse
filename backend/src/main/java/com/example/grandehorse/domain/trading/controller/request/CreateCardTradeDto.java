@@ -25,10 +25,6 @@ public class CreateCardTradeDto {
 	@Min(value = 1, message = "cardId는 0보다 커야 합니다.")
 	private int cardId;
 
-	@NotNull(message = "sellerId는 반드시 존재해야 합니다.")
-	@Min(value = 1, message = "sellerId는 0보다 커야 합니다.")
-	private int sellerId;
-
 	@Min(value = 0, message = "price는 음수일 수 없습니다.")
 	private int price;
 }

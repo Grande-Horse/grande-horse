@@ -18,7 +18,7 @@ import lombok.RequiredArgsConstructor;
 
 @Component
 @RequiredArgsConstructor
-public class KakaoApiClient {
+public class KakaoApiClient implements OauthApiClient{
 	private final ExternalApiClient externalApiClient;
 	private final ObjectMapper objectMapper;
 
@@ -27,7 +27,7 @@ public class KakaoApiClient {
 	@Value("${KAKAO_REDIRECT_URI}")
 	private String kakaoRedirectUri;
 
-	public String kakaoLoginUrl() {
+	public String getLoginUrl() {
 		StringBuffer url = new StringBuffer();
 		url.append("https://kauth.kakao.com/oauth/authorize?");
 		url.append("client_id=").append(kakaoClientId);
@@ -80,5 +80,10 @@ public class KakaoApiClient {
 		} catch (Exception e) {
 			throw new ExternalApiException(CustomError.EXTERNAL_SERVICE_PARSE_ERROR);
 		}
+	}
+
+	@Override
+	public String getProvider() {
+		return SocialProvider.KAKAO.toString();
 	}
 }
