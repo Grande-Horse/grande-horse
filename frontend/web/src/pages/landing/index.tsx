@@ -21,7 +21,9 @@ const LandingPage: React.FC = () => {
   }
 
   const CloudBg = ({ position }: CloudBgProps) => (
-    <div className={`${cloudBgImages[position]} absolute top-0 left-0 h-screen w-full bg-cover bg-repeat-x`} />
+    <div
+      className={`${cloudBgImages[position]} absolute top-0 left-0 h-screen w-full bg-cover bg-repeat-x animate-moveCloud${position.charAt(0).toUpperCase() + position.slice(1)}`}
+    />
   );
 
   interface LoginButtonProps {
