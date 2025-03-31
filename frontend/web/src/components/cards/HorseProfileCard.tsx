@@ -15,7 +15,7 @@ const HorseProfileCard: React.FC<HorseProfileCardProps> = ({ name, rank, coatCol
       <div
         className={`${bgRibbonClass} absolute z-1 flex h-1/3 w-full scale-120 items-center justify-center bg-contain bg-center bg-no-repeat`}
       ></div>
-      <p className='text-body2 text-stroke absolute z-2'>{name}</p>
+      <p className='text-body2 text-stroke absolute top-0.5 z-2'>{name}</p>
       <div
         className={`${bgImageClass[rank as keyof typeof bgImageClass]} relative h-full w-full bg-contain bg-center bg-no-repeat`}
       >
