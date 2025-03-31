@@ -23,21 +23,22 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 	private static final List<String> EXCLUDED_URLS = List.of(
-		"/api/v1/auth/login-kakao",
-		"/api/v1/auth/login-ssafy",
-		"/api/v1/auth/ssafy/callback",
-		"/api/v1/auth/kakao/callback",
+		"/api/v1/auth",
 		"/api/v1/users"
+	);
+
+	private static final List<String> INCLUDED_URL_PATTERNS = List.of(
+		"/api/v1/users/coin"
 	);
 
 	private final JwtTokenProvider jwtProvider;
 	private final TokenBlacklistService tokenBlacklistService;
 
-
 	@Override
 	protected boolean shouldNotFilter(HttpServletRequest request) {
 		String requestUri = request.getRequestURI();
-		return EXCLUDED_URLS.stream().anyMatch(requestUri::startsWith);
+		return INCLUDED_URL_PATTERNS.stream().noneMatch(requestUri::equals)
+			&& EXCLUDED_URLS.stream().anyMatch(requestUri::startsWith);
 	}
 
 	@Override
