@@ -115,4 +115,8 @@ public class UserService {
 	public ResponseEntity<CommonResponse<CoinResponse>> getUserCoin(int userId) {
 		return CommonResponse.success(new CoinResponse(findUserById(userId).getCoin()));
 	}
+
+	public String findNicknameById(int userId) {
+		return userJpaRepository.findNicknameById(userId);
+	}
 }
