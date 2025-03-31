@@ -10,6 +10,7 @@ import com.example.grandehorse.domain.card.entity.CardEntity;
 import com.example.grandehorse.domain.card.entity.CardRecordEntity;
 import com.example.grandehorse.domain.card.repository.CardJpaRepository;
 import com.example.grandehorse.domain.card.repository.CardRecordJpaRepository;
+import com.example.grandehorse.domain.horse.service.HorseService;
 import com.example.grandehorse.global.exception.CardException;
 import com.example.grandehorse.global.exception.CustomError;
 
@@ -21,6 +22,11 @@ public class CardService {
 	private final CardJpaRepository cardJpaRepository;
 	private final CardRecordJpaRepository cardRecordJpaRepository;
 
+	public CardEntity findRepresentativeCard(int userId) {
+		return cardJpaRepository.findCardByUserIdAndStatus(userId, 3)
+			.orElseThrow(() -> new CardException(CustomError.NO_REPRESENTATIVE_HORSE_CARD));
+	}
+
 	public void validateCardOwnedByUser(int userId, int cardId) {
 		if (!cardJpaRepository.existsByUserIdAndId(userId, cardId)) {
 			throw new CardException(CustomError.USER_NOT_OWNER_OF_CARD);
@@ -28,7 +34,7 @@ public class CardService {
 	}
 
 	public void validateCardAvailableForSale(int cardId) {
-		if (!cardJpaRepository.existsByIdAndStatus(cardId, (byte) 0)) {
+		if (!cardJpaRepository.existsByIdAndStatus(cardId, (byte)0)) {
 			throw new CardException(CustomError.CARD_SALE_RESTRICTED);
 		}
 	}
@@ -73,6 +79,5 @@ public class CardService {
 
 		cardRecordJpaRepository.save(cardRecord);
 	}
-
 
 }

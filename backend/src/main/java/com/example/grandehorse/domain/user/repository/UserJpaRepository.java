@@ -19,4 +19,6 @@ public interface UserJpaRepository extends JpaRepository<UserEntity, Integer> {
 	Optional<UserEntity> findByIdWithPessimisticLock(int userId);
 
 	Optional<UserEntity> findBySocialProviderAndSocialId(SocialProvider socialProvider, String socialId);
+
+	String findNicknameById(int userId);
 }

@@ -18,4 +18,6 @@ public interface CardJpaRepository extends JpaRepository<CardEntity, Integer> {
 	@Lock(LockModeType.PESSIMISTIC_WRITE)
 	@Query("SELECT c FROM CardEntity c WHERE c.id = :cardId")
 	Optional<CardEntity> findByIdWithPessimisticLock(int cardId);
+
+	Optional<CardEntity> findCardByUserIdAndStatus(int userId, int status);
 }
