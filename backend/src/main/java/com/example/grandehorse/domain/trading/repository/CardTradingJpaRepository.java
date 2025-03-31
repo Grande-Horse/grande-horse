@@ -114,18 +114,18 @@ public interface CardTradingJpaRepository extends JpaRepository<CardTradeEntity,
 	);
 
 	@Query("""
-			SELECT new com.example.grandehorse.domain.trading.controller.response.PriceHistoryResponse(
-				MAX(t.price) AS highestPrice,
-				AVG(t.price) AS averagePrice,
-				MIN(t.price) AS lowestPrice,
-				t.soldAt::date AS soldAt
-			)
-			FROM CardTradeEntity t
-			WHERE t.horseId = :horseId
-			AND t.status = 'SOLD'
-			AND t.soldAt BETWEEN :oneDayAgo AND :sevenDaysAgo
-			GROUP BY t.soldAt::date
-			ORDER BY t.soldAt DESC
+		SELECT new com.example.grandehorse.domain.trading.controller.response.PriceHistoryResponse(
+			MAX(t.price),
+			AVG(t.price),
+			MIN(t.price),
+			FUNCTION('DATE', t.soldAt)
+		)
+		FROM CardTradeEntity t
+		WHERE t.horseId = :horseId
+		AND t.status = 'SOLD'
+		AND t.soldAt BETWEEN :sevenDaysAgo AND :oneDayAgo
+		GROUP BY FUNCTION('DATE', t.soldAt)
+		ORDER BY FUNCTION('DATE', t.soldAt) DESC
 		""")
 	List<PriceHistoryResponse> findPriceHistory(
 		@Param("horseId") String horseId,

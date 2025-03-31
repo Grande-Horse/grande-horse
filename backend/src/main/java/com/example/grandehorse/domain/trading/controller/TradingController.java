@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestAttribute;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -33,22 +34,26 @@ public class TradingController {
 
 	@PostMapping("")
 	public ResponseEntity<CommonResponse<Void>> createCardTrade(
-		@Valid @RequestBody CreateCardTradeDto createTradeDto) {
-		return tradingService.createCardTrade(createTradeDto);
+		@Valid @RequestBody CreateCardTradeDto createTradeDto,
+		@RequestAttribute("userId") int userId
+	) {
+		return tradingService.createCardTrade(createTradeDto, userId);
 	}
 
 	@PutMapping("/{tradeId}")
 	public ResponseEntity<CommonResponse<Void>> purchaseCard(
-		@PathVariable(name = "tradeId") int tradeId
+		@PathVariable(name = "tradeId") int tradeId,
+		@RequestAttribute("userId") int userId
 	) {
-		return tradingService.purchaseCard(tradeId);
+		return tradingService.purchaseCard(tradeId, userId);
 	}
 
 	@DeleteMapping("/{tradeId}")
 	public ResponseEntity<CommonResponse<Void>> cancelCardTrade(
-		@PathVariable(name = "tradeId") int tradeId
+		@PathVariable(name = "tradeId") int tradeId,
+		@RequestAttribute("userId") int userId
 	) {
-		return tradingService.cancelCardTrade(tradeId);
+		return tradingService.cancelCardTrade(tradeId, userId);
 	}
 
 	@GetMapping("/trade-cards")
@@ -63,15 +68,16 @@ public class TradingController {
 
 	@GetMapping("/registered-cards")
 	public ResponseEntity<CommonResponse<List<RegisteredCardResponse>>> getRegisteredCards(
+		@RequestAttribute("userId") int userId,
 		@RequestParam(name = "cursorId") int cursorId,
 		@RequestParam(name = "limit") int limit
 	) {
-		return tradingService.getRegisteredCards(cursorId, limit);
+		return tradingService.getRegisteredCards(userId, cursorId, limit);
 	}
 
-	@GetMapping("/sold-cards")
+	@GetMapping("/{horseId}/sold-cards")
 	public ResponseEntity<CommonResponse<List<SoldCardResponse>>> getSoldCards(
-		@RequestParam(name = "horseId") String horseId,
+		@PathVariable(name = "horseId") String horseId,
 		@RequestParam(name = "cursorId") int cursorId,
 		@RequestParam(name = "limit") int limit
 	) {
