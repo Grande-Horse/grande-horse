@@ -27,7 +27,7 @@ const HorseChangeModalContent: React.FC = () => {
   };
 
   return (
-    <div className='grid grid-cols-3 gap-5'>
+    <div className='mb-4 grid grid-cols-3 gap-5'>
       {userMockData.map((horse, idx) => {
         const isSelected = String(horse.id) === selectedHorseId;
         return (

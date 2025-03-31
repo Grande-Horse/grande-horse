@@ -1,20 +1,16 @@
 import { Button } from '@/components/ui/Button';
-import { HorseType } from '@/types/horse';
 import { rankMap } from '@/constants/rank';
 import CoinIcon from '@/assets/icons/coinIcon.svg?react';
 import StatBar from '@/components/charts/StatBar';
 import { cancelHorseSelling } from '@/services/trading';
+import { SoldItemType } from '@/types/trading';
 
 interface SellItemProps {
-  horse: HorseType;
-  price: number;
-  isSold?: boolean;
+  item: SoldItemType;
 }
 
 const SellItem: React.FC<SellItemProps> = ({
-  horse: { id, name, coatColor, rank, speed, acceleration, stamina },
-  price,
-  isSold: isCompleted = false,
+  item: { id, name, coatColor, rank, speed, acceleration, stamina, tradeId, price, soldAt },
 }) => {
   const handleCancelHorseSelling = async () => {
     const tradeId = 3;
@@ -47,11 +43,7 @@ const SellItem: React.FC<SellItemProps> = ({
         </div>
 
         <div className='flex self-end'>
-          {isCompleted ? (
-            <Button disabled>판매 완료</Button>
-          ) : (
-            <Button onClick={handleCancelHorseSelling}>판매 취소</Button>
-          )}
+          <Button onClick={handleCancelHorseSelling}>판매 취소</Button>
         </div>
       </div>
     </div>

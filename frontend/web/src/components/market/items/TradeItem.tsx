@@ -1,18 +1,14 @@
-import { HorseType } from '@/types/horse';
 import { rankMap } from '@/constants/rank';
 import CoinIcon from '@/assets/icons/coinIcon.svg?react';
 import StatBar from '@/components/charts/StatBar';
+import { SoldItemType } from '@/types/trading';
 
 interface TradeItemProps {
-  horse: HorseType;
-  price: number;
-  soldAt: string;
+  item: SoldItemType;
 }
 
 const TradeItem: React.FC<TradeItemProps> = ({
-  horse: { id, name, coatColor, rank, speed, acceleration, stamina },
-  price,
-  soldAt: date,
+  item: { id, name, coatColor, rank, speed, acceleration, stamina, tradeId, price, soldAt },
 }) => {
   return (
     <div className='flex gap-5 p-5'>
@@ -35,7 +31,7 @@ const TradeItem: React.FC<TradeItemProps> = ({
         </div>
 
         <div className='flex self-end'>
-          <p>{date}</p>
+          <p>{soldAt}</p>
         </div>
       </div>
     </div>

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 import { useEffect, useRef, useState } from 'react';
 import { Button } from '@/components/ui/Button';
 import Input from '@/components/ui/Input';
@@ -81,6 +82,20 @@ const ChatBox: React.FC = () => {
         <Button variant='primary' ref={buttonRef} onClick={handleEnterOnClick}>
           Enter
         </Button>
+=======
+import { Button } from '../ui/Button';
+import Input from '../ui/Input';
+
+const ChatBox: React.FC = () => {
+  return (
+    <div className='flex flex-1 flex-col gap-5'>
+      <div className='flex flex-1 items-center justify-center rounded-2xl bg-white/10 inset-shadow-xs inset-shadow-white/10'>
+        채팅
+      </div>
+      <div className='flex gap-3'>
+        <Input />
+        <Button variant='primary'>Enter</Button>
+>>>>>>> 3570e2d28108774cb5e21b27764d9e7bfb4b1b48
       </div>
     </div>
   );
