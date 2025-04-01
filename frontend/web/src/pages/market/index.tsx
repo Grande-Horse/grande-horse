@@ -7,6 +7,7 @@ import Loading from '@/components/ui/Loading';
 import ErrorBoundary from '@/components/ui/errorBoundary/ErrorBoundary';
 import Error from '@/components/ui/Error';
 import CoinPanel from '@/components/market/panels/CoinPanel';
+import CardpackPanel from '@/components/market/panels/CardpackPanel';
 
 const MarketPage: React.FC = () => {
   return (
@@ -15,7 +16,7 @@ const MarketPage: React.FC = () => {
         <Suspense fallback={<Loading />}>
           <Tabs
             tabList={marketTabList}
-            tabPanels={[<div>카드팩</div>, <CoinPanel />, <PurchasePanel />, <SellPanel />]}
+            tabPanels={[<CardpackPanel />, <CoinPanel />, <PurchasePanel />, <SellPanel />]}
           />
         </Suspense>
       </ErrorBoundary>
