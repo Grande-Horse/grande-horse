@@ -87,7 +87,8 @@ export const useAuth = () => {
 export const AuthContextProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [state, dispatch] = useReducer(authReducer, initialState);
 
-  const { VITE_SSAFY_CLIENT_ID, VITE_SSAFY_REDIRECT_URI } = import.meta.env;
+  const { VITE_SSAFY_CLIENT_ID, VITE_SSAFY_REDIRECT_URI, VITE_KAKAO_CLIENT_ID, VITE_KAKAO_REDIRECT_URI } = import.meta
+    .env;
   useEffect(() => {
     // handleAutoLogin();
   }, []);
@@ -98,6 +99,8 @@ export const AuthContextProvider: React.FC<{ children: React.ReactNode }> = ({ c
 
       if (provider === 'SSAFY') {
         window.location.href = `https://project.ssafy.com/oauth/sso-check?client_id=${VITE_SSAFY_CLIENT_ID}&redirect_uri=${VITE_SSAFY_REDIRECT_URI}&response_type=code`;
+      } else if (provider === 'KAKAO') {
+        window.location.href = `https://kauth.kakao.com/oauth/authorize?client_id=${VITE_KAKAO_CLIENT_ID}&redirect_uri=${VITE_KAKAO_REDIRECT_URI}&response_type=code`;
       }
 
       // if (response.isRegistered) {
