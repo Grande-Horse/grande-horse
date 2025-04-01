@@ -1,5 +1,4 @@
 import { createContext, useReducer, useContext, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { autoLogin, oauthLogin, registerUser } from '@/services/auth';
 
 interface AuthState {
@@ -71,8 +70,8 @@ interface AuthContextType {
   state: AuthState;
   handleOauthRedirect: (provider: string) => Promise<void>;
   handleAutoLogin: () => Promise<void>;
-  register: (nickname: string) => Promise<void>;
-  logout: () => void;
+  handleRegister: (nickname: string) => Promise<void>;
+  handleLogout: () => void;
 }
 
 export const AuthContext = createContext<AuthContextType | null>(null);
@@ -98,7 +97,6 @@ export const AuthContextProvider: React.FC<{ children: React.ReactNode }> = ({ c
       dispatch({ type: 'SET_LOADING', payload: true });
 
       if (provider === 'SSAFY') {
-        console.log(VITE_SSAFY_CLIENT_ID, VITE_SSAFY_REDIRECT_URI);
         window.location.href = `https://project.ssafy.com/oauth/sso-check?client_id=${VITE_SSAFY_CLIENT_ID}&redirect_uri=${VITE_SSAFY_REDIRECT_URI}&response_type=code`;
       }
 
@@ -152,7 +150,7 @@ export const AuthContextProvider: React.FC<{ children: React.ReactNode }> = ({ c
     }
   };
 
-  const register = async (nickname: string) => {
+  const handleRegister = async (nickname: string) => {
     if (!state.user) {
       dispatch({
         type: 'SET_ERROR',
@@ -182,7 +180,7 @@ export const AuthContextProvider: React.FC<{ children: React.ReactNode }> = ({ c
     }
   };
 
-  const logout = () => {
+  const handleLogout = () => {
     dispatch({ type: 'LOGOUT' });
   };
 
@@ -190,8 +188,8 @@ export const AuthContextProvider: React.FC<{ children: React.ReactNode }> = ({ c
     state,
     handleOauthRedirect,
     handleAutoLogin,
-    register,
-    logout: () => dispatch({ type: 'LOGOUT' }),
+    handleRegister,
+    handleLogout,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
