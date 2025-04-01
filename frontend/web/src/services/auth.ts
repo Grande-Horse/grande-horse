@@ -1,6 +1,4 @@
-import { apiDelete, apiGet, apiPost, apiPut } from '@/services/apiService';
-import { AutoLoginResponseType, CheckDuplicatedNicknameResponseType } from '@/types/auth';
-import { useNavigate } from 'react-router-dom';
+import { apiGet, apiPost } from '@/services/apiService';
 
 export const autoLogin = async () => {
   return apiGet(`/auth/auto-login`);
@@ -22,5 +20,3 @@ export const checkNicknameDuplicated = async (nickname: string) => {
 export const registerUser = (nickname: string) => {
   return apiPost('/users', { nickname });
 };
-
-

@@ -2,7 +2,7 @@ import kakaoLogo from '@/assets/images/kakao-logo.png';
 import { useNavigate } from 'react-router-dom';
 import ssafyLogo from '@/assets/images/ssafy-logo.png';
 import { useEffect, useContext } from 'react';
-import { AuthContext } from '../register/AuthContextProvider';
+import { AuthContext } from '../auth/AuthContextProvider';
 
 
 const cloudBgImages = {

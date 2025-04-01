@@ -2,7 +2,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import '@/App.css';
 import GlobalLayout from '@/layouts/GlobalLayout';
 import ModalProvider from '@/components/ui/modal/ModalProvider.tsx';
-import { AuthContextProvider } from '@/pages/register/AuthContextProvider';
+import { AuthContextProvider } from '@/pages/auth/AuthContextProvider';
 import LandingPage from '@/pages/landing';
 import HomePage from '@/pages';
 import StallPage from '@/pages/stall';
