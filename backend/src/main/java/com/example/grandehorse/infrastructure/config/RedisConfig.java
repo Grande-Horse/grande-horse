@@ -41,8 +41,7 @@ public class RedisConfig {
 	}
 
 	@Bean
-	@Qualifier("defaultRedisConnectionFactory")
-	public RedisConnectionFactory defaultRedisConnectionFactory() {
+	public RedisConnectionFactory redisConnectionFactory() {
 		RedisStandaloneConfiguration config = new RedisStandaloneConfiguration(defaultRedisHost, defaultRedisPort);
 		config.setPassword(defaultRedisPassword);
 		return new LettuceConnectionFactory(config);
@@ -50,10 +49,10 @@ public class RedisConfig {
 
 	@Bean
 	@Qualifier("websocketRedisTemplate")
-	public RedisTemplate<String, String> websocketRedisTemplate(
+	public RedisTemplate<String, Object> websocketRedisTemplate(
 		@Qualifier("websocketRedisConnectionFactory") RedisConnectionFactory redisConnectionFactory
 	) {
-		RedisTemplate<String, String> template = new RedisTemplate<>();
+		RedisTemplate<String, Object> template = new RedisTemplate<>();
 		template.setConnectionFactory(redisConnectionFactory);
 		template.setKeySerializer(new StringRedisSerializer());
 		template.setValueSerializer(new StringRedisSerializer());
@@ -61,9 +60,8 @@ public class RedisConfig {
 	}
 
 	@Bean
-	@Qualifier("defaultRedisTemplate")
-	public RedisTemplate<String, Object> defaultRedisTemplate(
-		@Qualifier("defaultRedisConnectionFactory") RedisConnectionFactory redisConnectionFactory
+	public RedisTemplate<String, Object> redisTemplate(
+		RedisConnectionFactory redisConnectionFactory
 	) {
 		RedisTemplate<String, Object> template = new RedisTemplate<>();
 		template.setConnectionFactory(redisConnectionFactory);

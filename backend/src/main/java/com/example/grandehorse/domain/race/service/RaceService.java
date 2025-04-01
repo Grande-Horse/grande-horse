@@ -7,6 +7,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.script.RedisScript;
@@ -23,10 +24,7 @@ import com.example.grandehorse.domain.user.service.UserService;
 import com.example.grandehorse.global.exception.CustomError;
 import com.example.grandehorse.global.exception.RaceException;
 
-import lombok.RequiredArgsConstructor;
-
 @Service
-@RequiredArgsConstructor
 public class RaceService {
 	private static final String GAME_ROOM_PREFIX = "game_room:";
 
@@ -36,6 +34,20 @@ public class RaceService {
 	private final CardService cardService;
 	private final HorseService horseService;
 	private final UserService userService;
+
+	public RaceService(
+		@Qualifier("websocketRedisTemplate") RedisTemplate<String, Object> redisTemplate,
+		SimpMessagingTemplate messagingTemplate,
+		CardService cardService,
+		HorseService horseService,
+		UserService userService
+	) {
+		this.redisTemplate = redisTemplate;
+		this.messagingTemplate = messagingTemplate;
+		this.cardService = cardService;
+		this.horseService = horseService;
+		this.userService = userService;
+	}
 
 	public void createRaceRoom(CreateRaceRoomDto createRaceRoomDto, int userId) {
 		String roomId = redisTemplate.opsForValue().increment("roomIdCounter", 1).toString();
@@ -109,7 +121,7 @@ public class RaceService {
 				"redis.call('HSET', userCardKey, 'horseAcceleration', horseAcceleration)\n" +
 				"redis.call('HSET', userCardKey, 'horseStamina', horseStamina)\n" +
 				"redis.call('HSET', userCardKey, 'isRoomOwner, isRoomOwner)\n" +
-				
+
 				"-- 유저 방에 추가\n" +
 				"local playerKey = 'player:' .. userId\n" +
 				"redis.call('HSET', roomKey, playerKey, userId)\n" +
