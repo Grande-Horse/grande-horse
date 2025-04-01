@@ -60,6 +60,7 @@ const LandingPage: React.FC = () => {
   const authContext = useContext(AuthContext);
   const navigate = useNavigate();
 
+
   useEffect(() => {
     if (authContext?.state.isAuthenticated) {
       navigate('/');

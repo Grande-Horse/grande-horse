@@ -1,10 +1,11 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import { PastureHorse } from '@/components/pastureHorse/PastureHorse';
 import { getRandomDirection, getRandomPosition } from '@/components/pastureHorse/horsePositionUtils';
 import { HorseType, PastureHorseStatusType } from '@/types/horse';
 import { useHorseMovement } from '@/hooks/useHorseMovement';
 import { horseListMockData } from '@/mocks/datas/horse';
 import InfoPanel from '@/components/pastureHorse/InfoPanel';
+import { AuthContext } from '@/pages/auth/AuthContextProvider';
 
 const GRID_SIZE = 6;
 const CELL_SIZE = 80;
@@ -54,6 +55,12 @@ const HomePage: React.FC = () => {
       }))
     );
   };
+
+  const authContext = useContext(AuthContext);
+
+  useEffect(() => {
+    console.log('HomePage - AuthContext 상태:', authContext?.state);
+  }, [authContext?.state]);
 
   return (
     <div className='flex h-full flex-col items-center bg-[linear-gradient(to_bottom,rgba(173,193,254,0.8),rgba(114,147,255,0.8))]'>

@@ -11,6 +11,7 @@ import SellPage from '@/pages/market/sell';
 import RacetrackPage from '@/pages/racetrack';
 import RacetrackRoomPage from '@/pages/racetrack/room';
 import RegisterPage from '@/pages/register';
+import AuthPage from '@/pages/auth';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ProtectedRoute } from '@/components/ProtectedRoute';
 
@@ -108,6 +109,15 @@ function App() {
                   element={
                     <PublicPage>
                       <LandingPage />
+                    </PublicPage>
+                  }
+                />
+
+                <Route
+                  path='/auth'
+                  element={
+                    <PublicPage>
+                      <AuthPage />
                     </PublicPage>
                   }
                 />

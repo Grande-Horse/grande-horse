@@ -3,6 +3,7 @@ import { autoLogin, oauthLogin, registerUser } from '@/services/auth';
 
 interface AuthState {
   isAuthenticated: boolean;
+  isLoggedIn: boolean;
   isRegistered: boolean;
   user: {
     nickname?: string;
@@ -13,15 +14,17 @@ interface AuthState {
 }
 
 type AuthAction =
+  | { type: 'AUTH_SUCCESS'; payload: { user: AuthState['user'] } }
   | { type: 'LOGIN_SUCCESS'; payload: { user: AuthState['user'] } }
   | { type: 'LOGOUT' }
-  | { type: 'REGISTRATION_REQUIRED'; payload: AuthState['user'] }
+  | { type: 'REGISTER_REQUIRED'; payload: AuthState['user'] }
   | { type: 'REGISTER_SUCCESS'; payload: { user: AuthState['user'] } }
   | { type: 'SET_LOADING'; payload: boolean }
   | { type: 'SET_ERROR'; payload: string | null };
 
 const initialState: AuthState = {
   isAuthenticated: false,
+  isLoggedIn: false,
   isRegistered: false,
   user: null,
   loading: false,
@@ -30,22 +33,36 @@ const initialState: AuthState = {
 
 const authReducer = (state: AuthState, action: AuthAction): AuthState => {
   switch (action.type) {
+    case 'SET_LOADING':
+      return { ...state, loading: action.payload };
+    case 'SET_ERROR':
+      return { ...state, error: action.payload, loading: false };
+    case 'LOGOUT':
+      return initialState;
+    case 'AUTH_SUCCESS':
+      return {
+        ...state,
+        isAuthenticated: true,
+        isLoggedIn: false,
+        user: action.payload?.user || null,
+        loading: false,
+        error: null,
+      };
     case 'LOGIN_SUCCESS':
       return {
         ...state,
         isAuthenticated: true,
-        user: action.payload.user,
+        isLoggedIn: true,
+        user: action.payload?.user || null,
         loading: false,
         error: null,
-      };
-    case 'LOGOUT':
-      return initialState;
-    case 'REGISTRATION_REQUIRED':
+      }
+    case 'REGISTER_REQUIRED':
       return {
         ...state,
         isAuthenticated: true,
         isRegistered: false,
-        user: action.payload.user,
+        user: action.payload?.user || null,
         loading: false,
         error: null,
       };
@@ -57,10 +74,6 @@ const authReducer = (state: AuthState, action: AuthAction): AuthState => {
         loading: false,
         error: null,
       };
-    case 'SET_LOADING':
-      return { ...state, loading: action.payload };
-    case 'SET_ERROR':
-      return { ...state, error: action.payload, loading: false };
     default:
       return state;
   }
@@ -68,6 +81,7 @@ const authReducer = (state: AuthState, action: AuthAction): AuthState => {
 
 interface AuthContextType {
   state: AuthState;
+  dispatch: React.Dispatch<AuthAction>;
   handleOauthRedirect: (provider: string) => Promise<void>;
   handleAutoLogin: () => Promise<void>;
   handleRegister: (nickname: string) => Promise<void>;
@@ -89,13 +103,12 @@ export const AuthContextProvider: React.FC<{ children: React.ReactNode }> = ({ c
 
   const { VITE_SSAFY_CLIENT_ID, VITE_SSAFY_REDIRECT_URI, VITE_KAKAO_CLIENT_ID, VITE_KAKAO_REDIRECT_URI } = import.meta
     .env;
-  useEffect(() => {
-    // handleAutoLogin();
-  }, []);
 
   const handleOauthRedirect = async (provider: string) => {
     try {
       dispatch({ type: 'SET_LOADING', payload: true });
+
+      sessionStorage.setItem('oauthProvider', provider);
 
       if (provider === 'SSAFY') {
         window.location.href = `https://project.ssafy.com/oauth/sso-check?client_id=${VITE_SSAFY_CLIENT_ID}&redirect_uri=${VITE_SSAFY_REDIRECT_URI}&response_type=code`;
@@ -103,19 +116,6 @@ export const AuthContextProvider: React.FC<{ children: React.ReactNode }> = ({ c
         window.location.href = `https://kauth.kakao.com/oauth/authorize?client_id=${VITE_KAKAO_CLIENT_ID}&redirect_uri=${VITE_KAKAO_REDIRECT_URI}&response_type=code`;
       }
 
-      // if (response.isRegistered) {
-      //   dispatch({
-      //     type: 'LOGIN_SUCCESS',
-      //     payload: { user: response.user },
-      //   });
-      //   navigate('/');
-      // } else {
-      //   dispatch({
-      //     type: 'REGISTRATION_REQUIRED',
-      //     payload: { user: response.user },
-      //   });
-      //   navigate('/register');
-      // }
     } catch (error) {
       dispatch({
         type: 'SET_ERROR',
@@ -125,33 +125,29 @@ export const AuthContextProvider: React.FC<{ children: React.ReactNode }> = ({ c
     }
   };
 
-  const handleAutoLogin = async () => {
-    try {
-      dispatch({ type: 'SET_LOADING', payload: true });
-      const response = await autoLogin();
-      console.log(response.headers);
+const handleAutoLogin = async () => {
+  try {
+    dispatch({ type: 'SET_LOADING', payload: true });
+    const response = await autoLogin();
 
-      if (response.headers?.get('__msw-cookie-store__')?.includes('accessToken')) {
-        dispatch({
-          type: 'LOGIN_SUCCESS',
-          payload: { user: response.data.user },
-        });
-      } else {
-        console.log(response.data.user);
-        dispatch({ type: 'LOGOUT' });
-        dispatch({
-          type: 'SET_ERROR',
-          payload: '자동 로그인 실패',
-        });
-      }
-    } catch (error) {
-      dispatch({ type: 'LOGOUT' });
+    if (response.data?.user) {
       dispatch({
-        type: 'SET_ERROR',
-        payload: '자동 로그인 실패',
+        type: 'AUTH_SUCCESS',
+        payload: { user: response.data.user },
       });
+    } else {
+      dispatch({ type: 'LOGOUT' });
     }
-  };
+  } catch (error) {
+    dispatch({ type: 'LOGOUT' });
+  }
+};
+  useEffect(() => {
+    const provider = sessionStorage.getItem('oauthProvider');
+    if (provider) {
+      handleAutoLogin();
+    }
+  }, []);
 
   const handleRegister = async (nickname: string) => {
     if (!state.user) {
@@ -189,6 +185,7 @@ export const AuthContextProvider: React.FC<{ children: React.ReactNode }> = ({ c
 
   const value: AuthContextType = {
     state,
+    dispatch,
     handleOauthRedirect,
     handleAutoLogin,
     handleRegister,

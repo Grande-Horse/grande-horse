@@ -13,8 +13,30 @@ export interface KakaoLoginResponseType {
 }
 
 export interface OAuthCallbackResponse {
-  errorCode: '' | 'A1' | 'A2';
+  errorCode: string;
   data: {
     redirectUrl: '/' | '/register';
+    user?: {
+      nickname?: string;
+      provider?: 'KAKAO' | 'SSAFY';
+    } | null;
+  };
+}
+
+export interface OAuthLoginResponse {
+  isRegistered: boolean;
+  user: {
+    nickname?: string;
+    provider?: 'KAKAO' | 'SSAFY';
+  } | null;
+}
+
+export interface AutoLoginResponse {
+  headers?: Headers;
+  data?: {
+    user: {
+      nickname?: string;
+      provider?: 'KAKAO' | 'SSAFY';
+    } | null;
   };
 }
