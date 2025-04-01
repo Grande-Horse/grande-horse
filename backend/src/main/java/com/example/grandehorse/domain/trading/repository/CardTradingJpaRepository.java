@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import com.example.grandehorse.domain.horse.entity.HorseRank;
 import com.example.grandehorse.domain.trading.controller.response.PriceHistoryResponse;
 import com.example.grandehorse.domain.trading.controller.response.RegisteredCardResponse;
 import com.example.grandehorse.domain.trading.controller.response.SoldCardResponse;
@@ -45,13 +46,13 @@ public interface CardTradingJpaRepository extends JpaRepository<CardTradeEntity,
 			JOIN HorseEntity h ON t.horseId = h.id
 			WHERE t.status = 'REGISTERED'
 			AND t.id > :cursorId
-			AND h.horseRank = :horseRank
-			AND h.name LIKE CONCAT('%', :search, '%')
-			ORDER BY t.id DESC
+			AND (:horseRank IS NULL OR h.horseRank = :horseRank)
+			AND (:search IS NULL OR h.name LIKE CONCAT('%', :search, '%'))
+			ORDER BY t.id ASC
 		""")
 	Slice<TradeCardResponse> findTradeCardsByCursor(
 		@Param("cursorId") int cursorId,
-		@Param("horseRank") String horseRank,
+		@Param("horseRank") HorseRank horseRank,
 		@Param("search") String search,
 		Pageable pageable
 	);
@@ -60,7 +61,7 @@ public interface CardTradingJpaRepository extends JpaRepository<CardTradeEntity,
    		검색 기능 ngram 사용하여 최적화 시키기
    		JPA N+1 문제 확인하기
  	*/
-	@Query("""
+	@Query(value = """
 			SELECT new com.example.grandehorse.domain.trading.controller.response.RegisteredCardResponse(
 				t.id,
 				h.id,
@@ -78,7 +79,7 @@ public interface CardTradingJpaRepository extends JpaRepository<CardTradeEntity,
 			WHERE t.status = 'REGISTERED'
 			AND t.sellerId = :sellerId
 			AND t.id > :cursorId
-			ORDER BY t.id DESC
+			ORDER BY t.id ASC
 		""")
 	Slice<RegisteredCardResponse> findRegisteredCardsByCursor(
 		@Param("sellerId") int sellerId,
@@ -105,7 +106,7 @@ public interface CardTradingJpaRepository extends JpaRepository<CardTradeEntity,
 			WHERE t.horseId = :horseId
 			AND t.status = 'SOLD'
 			AND t.id > :cursorId
-			ORDER BY t.id DESC
+			ORDER BY t.id ASC
 		""")
 	Slice<SoldCardResponse> findSoldCardsByCursor(
 		@Param("horseId") String horseId,

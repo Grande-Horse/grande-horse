@@ -41,7 +41,7 @@ public class CardService {
 
 	@Transactional
 	public void updateCardStatusToSell(int cardId) {
-		CardEntity cardEntity = cardJpaRepository.findByIdWithPessimisticLock(cardId)
+		CardEntity cardEntity = cardJpaRepository.findCardByIdWithPessimisticLock(cardId)
 			.orElseThrow(() -> new CardException(CustomError.CARD_NOT_EXISTED));
 
 		cardEntity.updateStatusToSell();
@@ -50,7 +50,7 @@ public class CardService {
 
 	@Transactional
 	public void updateCardStatusToReady(int cardId) {
-		CardEntity cardEntity = cardJpaRepository.findByIdWithPessimisticLock(cardId)
+		CardEntity cardEntity = cardJpaRepository.findCardByIdWithPessimisticLock(cardId)
 			.orElseThrow(() -> new CardException(CustomError.CARD_NOT_EXISTED));
 
 		cardEntity.updateStatusToReady();
@@ -59,7 +59,7 @@ public class CardService {
 
 	@Transactional
 	public void changeCardOwner(int cardId, int userId, int cardTradeId) {
-		CardEntity cardEntity = cardJpaRepository.findByIdWithPessimisticLock(cardId)
+		CardEntity cardEntity = cardJpaRepository.findCardByIdWithPessimisticLock(cardId)
 			.orElseThrow(() -> new CardException(CustomError.CARD_NOT_EXISTED));
 
 		cardEntity.updateOwner(userId);
@@ -78,6 +78,11 @@ public class CardService {
 			.build();
 
 		cardRecordJpaRepository.save(cardRecord);
+	}
+
+	public String findHorseIdByCardId(int cardId) {
+		return cardJpaRepository.findHorseIdById(cardId)
+			.orElseThrow(() -> new CardException(CustomError.CARD_NOT_EXISTED));
 	}
 
 }

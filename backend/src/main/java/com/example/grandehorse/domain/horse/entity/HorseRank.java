@@ -19,4 +19,16 @@ public enum HorseRank {
 	public String toLowerCase() {
 		return name().toLowerCase();
 	}
+
+	public static HorseRank fromString(String rank) {
+		HorseRank horseRank = null;
+
+		for (HorseRank value : HorseRank.values()) {
+			if (value.name().equalsIgnoreCase(rank)) {
+				horseRank = value;
+			}
+		}
+
+		return horseRank;
+	}
 }

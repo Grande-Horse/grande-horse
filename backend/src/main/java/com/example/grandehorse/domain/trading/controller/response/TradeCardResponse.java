@@ -1,7 +1,9 @@
 package com.example.grandehorse.domain.trading.controller.response;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
+
+import com.example.grandehorse.domain.horse.entity.CoatColor;
+import com.example.grandehorse.domain.horse.entity.HorseRank;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -9,9 +11,9 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 public class TradeCardResponse {
-	private int tradeId;
+	private Integer tradeId;
 
-	private int horseId;
+	private String horseId;
 
 	private String coatColor;
 
@@ -19,26 +21,26 @@ public class TradeCardResponse {
 
 	private String horseRank;
 
-	private int price;
+	private Integer price;
 
-	private double speed;
+	private Double speed;
 
-	private double acceleration;
+	private Double acceleration;
 
-	private double stamina;
+	private Double stamina;
 
-	private LocalDate registeredAt;
+	private LocalDateTime registeredAt;
 
 	public TradeCardResponse(
-		int tradeId,
-		int horseId,
-		String coatColor,
+		Integer tradeId,
+		String horseId,
+		CoatColor coatColor,
 		String name,
-		String horseRank,
-		int price,
-		double speed,
-		double acceleration,
-		double stamina,
+		HorseRank horseRank,
+		Integer price,
+		Double speed,
+		Double acceleration,
+		Double stamina,
 		LocalDateTime registeredAt
 	) {
 		this.tradeId = tradeId;
@@ -50,6 +52,6 @@ public class TradeCardResponse {
 		this.speed = speed;
 		this.acceleration = acceleration;
 		this.stamina = stamina;
-		this.registeredAt = registeredAt.toLocalDate();
+		this.registeredAt = registeredAt;
 	}
 }

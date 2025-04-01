@@ -1,7 +1,13 @@
 package com.example.grandehorse.domain.trading.service;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -11,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.example.grandehorse.domain.card.service.CardService;
+import com.example.grandehorse.domain.horse.entity.HorseRank;
 import com.example.grandehorse.domain.horse.service.HorseService;
 import com.example.grandehorse.domain.trading.controller.request.CreateCardTradeDto;
 import com.example.grandehorse.domain.trading.controller.response.PriceHistoryResponse;
@@ -36,6 +43,7 @@ public class TradingService {
 
 	private final CardTradingJpaRepository cardTradingJpaRepository;
 
+	// 완료
 	@Transactional
 	public ResponseEntity<CommonResponse<Void>> createCardTrade(CreateCardTradeDto createTradeDto, int userId) {
 		cardService.validateCardOwnedByUser(userId, createTradeDto.getCardId());
@@ -48,6 +56,7 @@ public class TradingService {
 		return CommonResponse.success(null);
 	}
 
+	// 완료
 	@Transactional
 	public ResponseEntity<CommonResponse<Void>> purchaseCard(int cardTradeId, int userId) {
 		CardTradeEntity cardTradeEntity = findCardTradeByCardTradeId(cardTradeId);
@@ -55,15 +64,16 @@ public class TradingService {
 		validateCardForSale(cardTradeId);
 		validateCardPurchasability(cardTradeEntity.getSellerId(), userId);
 
-		userService.purchaseCard(2, cardTradeEntity.getSellerId(), cardTradeEntity.getPrice());
+		userService.purchaseCard(userId, cardTradeEntity.getSellerId(), cardTradeEntity.getPrice());
 
 		cardService.changeCardOwner(cardTradeEntity.getCardId(), userId, cardTradeId);
 
-		processCardSale(cardTradeEntity);
+		processCardSale(cardTradeEntity, userId);
 
 		return CommonResponse.success(null);
 	}
 
+	// 완료
 	@Transactional
 	public ResponseEntity<CommonResponse<Void>> cancelCardTrade(int cardTradeId, int userId) {
 		CardTradeEntity cardTradeEntity = findCardTradeByCardTradeId(cardTradeId);
@@ -79,16 +89,13 @@ public class TradingService {
 		return CommonResponse.success(null);
 	}
 
+	// 완료
 	public ResponseEntity<CommonResponse<List<TradeCardResponse>>> getTradeCards(
 		int cursorId,
 		String rank,
 		String search,
 		int limit
 	) {
-		if ("ALL".equals(rank)) {
-			rank = null;
-		}
-
 		Slice<TradeCardResponse> tradeCardSlice = findTradeCardsByCursor(
 			cursorId,
 			rank,
@@ -96,13 +103,21 @@ public class TradingService {
 			limit
 		);
 
+		List<TradeCardResponse> tradeCards = tradeCardSlice.getContent().stream()
+			.sorted(Comparator.comparing(TradeCardResponse::getTradeId).reversed())
+			.collect(Collectors.toUnmodifiableList());
+
 		boolean hasNextItems = tradeCardSlice.hasNext();
 
-		int nextCursorId = getNextCursorId(hasNextItems, cursorId, limit);
+		int nextCursorId = -1;
+		if (hasNextItems) {
+			nextCursorId = tradeCards.get(0).getTradeId();
+		}
 
-		return CommonResponse.pagedSuccess(tradeCardSlice.getContent(), hasNextItems, nextCursorId);
+		return CommonResponse.pagedSuccess(tradeCards, hasNextItems, nextCursorId);
 	}
 
+	// 완료
 	public ResponseEntity<CommonResponse<List<RegisteredCardResponse>>> getRegisteredCards(
 		int sellerId,
 		int cursorId,
@@ -114,12 +129,20 @@ public class TradingService {
 			limit
 		);
 
+		List<RegisteredCardResponse> registeredCards = registeredCardSlice.getContent().stream()
+			.sorted(Comparator.comparing(RegisteredCardResponse::getTradeId).reversed())
+			.collect(Collectors.toUnmodifiableList());
+
 		boolean hasNextItems = registeredCardSlice.hasNext();
 
-		int nextCursorId = getNextCursorId(hasNextItems, cursorId, limit);
+		int nextCursorId = -1;
+		if (hasNextItems) {
+			nextCursorId = registeredCards.get(0).getTradeId();
+		}
 
-		return CommonResponse.pagedSuccess(registeredCardSlice.getContent(), hasNextItems, nextCursorId);
+		return CommonResponse.pagedSuccess(registeredCards, hasNextItems, nextCursorId);
 	}
+
 
 	public ResponseEntity<CommonResponse<List<SoldCardResponse>>> getSoldCards(
 		String horseId,
@@ -128,11 +151,18 @@ public class TradingService {
 	) {
 		Slice<SoldCardResponse> soldCardsSlice = findSoldCardsByCursor(horseId, cursorId, limit);
 
+		List<SoldCardResponse> soldCards = soldCardsSlice.getContent().stream()
+			.sorted(Comparator.comparing(SoldCardResponse::getSoldAt).reversed())
+			.collect(Collectors.toUnmodifiableList());
+
 		boolean hasNextItems = soldCardsSlice.hasNext();
 
-		int nextCursorId = getNextCursorId(hasNextItems, cursorId, limit);
+		int nextCursorId = -1;
+		if (hasNextItems) {
+			nextCursorId = soldCards.get(0).getTradeId();
+		}
 
-		return CommonResponse.pagedSuccess(soldCardsSlice.getContent(), hasNextItems, nextCursorId);
+		return CommonResponse.pagedSuccess(soldCards, hasNextItems, nextCursorId);
 	}
 
 	/* TODO
@@ -142,15 +172,32 @@ public class TradingService {
 		LocalDateTime now = LocalDateTime.now();
 		LocalDateTime oneDayAgo = now.minusDays(1);
 		LocalDateTime sevenDaysAgo = now.minusDays(7);
-		List<PriceHistoryResponse> priceHistories = cardTradingJpaRepository.findPriceHistory(horseId, oneDayAgo,
-			sevenDaysAgo);
 
-		return CommonResponse.listSuccess(priceHistories);
+		List<PriceHistoryResponse> priceHistories
+			= cardTradingJpaRepository.findPriceHistory(horseId, oneDayAgo, sevenDaysAgo);
+
+		Map<LocalDate, PriceHistoryResponse> historyMap = priceHistories.stream()
+			.collect(Collectors.toMap(PriceHistoryResponse::getDate, Function.identity()));
+
+		List<PriceHistoryResponse> completeList = new ArrayList<>();
+		for (LocalDate date = sevenDaysAgo.toLocalDate(); !date.isAfter(oneDayAgo.toLocalDate()); date = date.plusDays(
+			1)) {
+			PriceHistoryResponse response = historyMap.get(date);
+			if (response == null) {
+				completeList.add(new PriceHistoryResponse(0, 0.0, 0, date));
+			} else {
+				completeList.add(response);
+			}
+		}
+
+		return CommonResponse.listSuccess(completeList);
 	}
 
 	private void registerCardTrade(CreateCardTradeDto createTradeDto, int userId) {
+		String horseId = cardService.findHorseIdByCardId(createTradeDto.getCardId());
+
 		CardTradeEntity cardTradeEntity = CardTradeEntity.builder()
-			.horseId(createTradeDto.getHorseId())
+			.horseId(horseId)
 			.cardId(createTradeDto.getCardId())
 			.sellerId(userId)
 			.status(CardTradeStatus.REGISTERED)
@@ -177,9 +224,9 @@ public class TradingService {
 		}
 	}
 
-	private void processCardSale(CardTradeEntity cardTradeEntity) {
+	private void processCardSale(CardTradeEntity cardTradeEntity, int buyerId) {
 		int horseId = horseService.findHorseDataIdByHorseId(cardTradeEntity.getHorseId());
-		cardTradeEntity.purchase(horseId); // 카드가 판매된 시점의 카드 스탯, 등급 등 저장
+		cardTradeEntity.purchase(horseId, buyerId); // 카드가 판매된 시점의 카드 스탯, 등급 등 저장
 		cardTradingJpaRepository.save(cardTradeEntity);
 	}
 
@@ -195,11 +242,11 @@ public class TradingService {
 		String search,
 		int limit
 	) {
-		Pageable pageable = PageRequest.of(cursorId / limit, limit);
+		Pageable pageable = PageRequest.of(0, limit);
 
 		return cardTradingJpaRepository.findTradeCardsByCursor(
 			cursorId,
-			rank,
+			HorseRank.fromString(rank),
 			search,
 			pageable
 		);
@@ -210,7 +257,7 @@ public class TradingService {
 		int cursorId,
 		int limit
 	) {
-		Pageable pageable = PageRequest.of(cursorId / limit, limit);
+		Pageable pageable = PageRequest.of(0, limit);
 
 		return cardTradingJpaRepository.findRegisteredCardsByCursor(
 			sellerId,
@@ -224,19 +271,12 @@ public class TradingService {
 		int cursorId,
 		int limit
 	) {
-		Pageable pageable = PageRequest.of(cursorId / limit, limit);
+		Pageable pageable = PageRequest.of(0, limit);
 
 		return cardTradingJpaRepository.findSoldCardsByCursor(
 			horseId,
 			cursorId,
 			pageable
 		);
-	}
-
-	private int getNextCursorId(boolean hasNextPage, int cursorId, int limit) {
-		if (hasNextPage) {
-			return cursorId + limit;
-		}
-		return -1;
 	}
 }

@@ -17,10 +17,6 @@ import lombok.Setter;
 @AllArgsConstructor
 @Builder
 public class CreateCardTradeDto {
-	@NotNull(message = "horseId는 반드시 존재해야 합니다.")
-	@Length(min = 7, max = 7, message = "horseId는 7글자여야합니다.")
-	private String horseId;
-
 	@NotNull(message = "cardId는 반드시 존재해야 합니다.")
 	@Min(value = 1, message = "cardId는 0보다 커야 합니다.")
 	private int cardId;

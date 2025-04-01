@@ -42,7 +42,9 @@ public class UserController {
 	}
 
 	@GetMapping("/coins")
-	public ResponseEntity<CommonResponse<CoinResponse>> coins(@ModelAttribute("userId") int userId) {
+	public ResponseEntity<CommonResponse<CoinResponse>> coins(
+		@ModelAttribute("userId") int userId
+	) {
 		return userService.getUserCoin(userId);
 	}
 }

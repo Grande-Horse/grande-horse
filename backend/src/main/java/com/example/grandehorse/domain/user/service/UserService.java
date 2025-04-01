@@ -81,11 +81,15 @@ public class UserService {
 		Map<String, Object> social = jwtTokenProvider.getPayloadFromToken(socialToken);
 		SocialProvider socialProvider = SocialProvider.valueOf(social.get("socialProvider").toString());
 
-		UserEntity userEntity = UserEntity.signUp(social.get("email").toString(), nickname, socialProvider,
-			social.get("socialId").toString());
+		UserEntity userEntity = UserEntity.signUp(
+			social.get("email").toString(),
+			nickname,
+			socialProvider,
+			social.get("socialId").toString()
+		);
 
 		if (socialProvider == SocialProvider.SSAFY) {
-			userEntity.getCoin().increaseCoin(10_000);
+			userEntity.increaseCoin(10_000);
 		}
 
 		userJpaRepository.save(userEntity);

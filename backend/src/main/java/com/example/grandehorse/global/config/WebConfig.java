@@ -22,20 +22,16 @@ public class WebConfig implements WebMvcConfigurer {
 
 	@Override
 	public void addArgumentResolvers(List<HandlerMethodArgumentResolver> resolvers) {
-		resolvers.add(userArgumentResolver);  // ArgumentResolver 등록
+		resolvers.add(userArgumentResolver);
 	}
 
 	@Override
 	public void addCorsMappings(CorsRegistry registry) {
 		registry.addMapping("/**")
-			.allowedOrigins(
-				"http://localhost:4173", frontUri, "https://j12a606.p.ssafy.io/"
-			)
+			.allowedOrigins("http://localhost:3000")
 			.allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
-			.allowedHeaders("*")
-			.exposedHeaders(
-				"Authorization", "Set-Cookie", "Access-Control-Allow-Origin", "Access-Control-Allow-Credentials"
-			)
+			.allowedHeaders("Content-Type", "Authorization", "Set-Cookie")
+			.exposedHeaders("Set-Cookie", "Authorization")
 			.allowCredentials(true)
 			.maxAge(3600);
 	}

@@ -8,7 +8,9 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
+import org.springframework.util.AntPathMatcher;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import com.example.grandehorse.domain.auth.service.TokenBlacklistService;
@@ -23,8 +25,8 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
 	private static final List<String> EXCLUDED_URLS = List.of(
-		"/api/v1/auth",
-		"/api/v1/users"
+		"/api/v1/auth/**",
+		"/api/v1/users/**"
 	);
 
 	private static final List<String> INCLUDED_URL_PATTERNS = List.of(
@@ -33,12 +35,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
 	private final JwtTokenProvider jwtProvider;
 	private final TokenBlacklistService tokenBlacklistService;
+	private static final AntPathMatcher pathMatcher = new AntPathMatcher();
 
 	@Override
 	protected boolean shouldNotFilter(HttpServletRequest request) {
 		String requestUri = request.getRequestURI();
-		return INCLUDED_URL_PATTERNS.stream().noneMatch(requestUri::equals)
-			&& EXCLUDED_URLS.stream().anyMatch(requestUri::startsWith);
+
+		return EXCLUDED_URLS.stream()
+			.anyMatch(url -> pathMatcher.match(url, requestUri));
 	}
 
 	@Override
@@ -47,6 +51,16 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 		HttpServletResponse response,
 		FilterChain filterChain
 	) throws ServletException, IOException {
+		if (request.getMethod().equals("OPTIONS")) {
+			response.setHeader("Access-Control-Allow-Origin", "http://localhost:3000");
+			response.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
+			response.setHeader("Access-Control-Allow-Headers", "Authorization, Content-Type, Access-Control-Allow-Headers");
+			response.setHeader("Access-Control-Allow-Credentials", "true");
+
+			response.setStatus(HttpServletResponse.SC_OK);
+			return;
+		}
+
 		String accessToken = getAccessToken(request, response);
 		validateToken(accessToken);
 

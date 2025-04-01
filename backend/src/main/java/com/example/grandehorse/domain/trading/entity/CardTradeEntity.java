@@ -62,10 +62,11 @@ public class CardTradeEntity {
 	@Column(name = "horse_data_id")
 	private int horseDataId;
 
-	public void purchase(int horseDataId) {
+	public void purchase(int horseDataId, int buyerId) {
 		status = CardTradeStatus.SOLD;
 		soldAt = LocalDateTime.now();
 		this.horseDataId = horseDataId;
+		this.buyerId = buyerId;
 	}
 
 	public void cancel() {
