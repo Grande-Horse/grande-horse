@@ -10,10 +10,9 @@ const handleOauthCallback = async (): Promise<OAuthCallbackResponse> => {
 
   if (!code) {
     return {
-      success: false,
-      error: {
-        code: 'NO_CODE',
-        message: '인증 코드가 없습니다.',
+      errorCode: 'A1',
+      data: {
+        redirectUrl: '/',
       },
     };
   }
@@ -24,16 +23,17 @@ const handleOauthCallback = async (): Promise<OAuthCallbackResponse> => {
       code,
     });
     return {
-      success: true,
-      message: '로그인이 완료되었습니다.',
+      errorCode: '',
+      data: {
+        redirectUrl: '/register',
+      },
     };
   } catch (error) {
     console.error('OAuth 로그인 실패:', error);
     return {
-      success: false,
-      error: {
-        code: 'LOGIN_FAILED',
-        message: '로그인 처리 중 오류가 발생했습니다.',
+      errorCode: 'A1',
+      data: {
+        redirectUrl: '/',
       },
     };
   }
@@ -50,19 +50,13 @@ const AuthPage = () => {
   }, []);
 
   useEffect(() => {
-    if (response?.success) {
-      navigate('/register');
-    } else {
-      navigate('/landing');
-    }
+    if (response?.errorCode === '') navigate(response?.data.redirectUrl);
   }, [response, navigate]);
 
   return (
     <div className='flex h-screen w-full flex-col items-center justify-center gap-4'>
       <ClipLoader size={36} color='#3D4B63' />
-      <span className='text-body1'>
-        {response?.success ? '로그인 중입니다...' : response?.error?.message || '처리 중입니다...'}
-      </span>
+      <span className='text-body1'>{response?.errorCode === '' ? '로그인 중입니다...' : '처리 중입니다...'}</span>
     </div>
   );
 };

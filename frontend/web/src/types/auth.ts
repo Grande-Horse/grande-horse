@@ -13,10 +13,8 @@ export interface KakaoLoginResponseType {
 }
 
 export interface OAuthCallbackResponse {
-  success: boolean;
-  message?: string;
-  error?: {
-    code: string;
-    message: string;
+  errorCode: '' | 'A1' | 'A2';
+  data: {
+    redirectUrl: '/' | '/register';
   };
 }
