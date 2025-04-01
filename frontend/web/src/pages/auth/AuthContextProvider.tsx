@@ -14,13 +14,14 @@ interface AuthState {
 }
 
 type AuthAction =
-  | { type: 'AUTH_SUCCESS'; payload: { user: AuthState['user'] } }
-  | { type: 'LOGIN_SUCCESS'; payload: { user: AuthState['user'] } }
+  | { type: 'AUTH_SUCCESS' }
+  | { type: 'LOGIN_SUCCESS' }
   | { type: 'LOGOUT' }
-  | { type: 'REGISTER_REQUIRED'; payload: AuthState['user'] }
-  | { type: 'REGISTER_SUCCESS'; payload: { user: AuthState['user'] } }
+  | { type: 'REGISTER_REQUIRED' }
+  | { type: 'REGISTER_SUCCESS' }
   | { type: 'SET_LOADING'; payload: boolean }
-  | { type: 'SET_ERROR'; payload: string | null };
+  | { type: 'SET_ERROR'; payload: string | null }
+  | { type: 'NICKNAME_AVAILABLE' };
 
 const initialState: AuthState = {
   isAuthenticated: false,
@@ -43,8 +44,6 @@ const authReducer = (state: AuthState, action: AuthAction): AuthState => {
       return {
         ...state,
         isAuthenticated: true,
-        isLoggedIn: false,
-        user: action.payload?.user || null,
         loading: false,
         error: null,
       };
@@ -53,24 +52,22 @@ const authReducer = (state: AuthState, action: AuthAction): AuthState => {
         ...state,
         isAuthenticated: true,
         isLoggedIn: true,
-        user: action.payload?.user || null,
         loading: false,
         error: null,
-      }
+      };
     case 'REGISTER_REQUIRED':
       return {
         ...state,
         isAuthenticated: true,
         isRegistered: false,
-        user: action.payload?.user || null,
         loading: false,
         error: null,
       };
     case 'REGISTER_SUCCESS':
       return {
         ...state,
+        isAuthenticated: true,
         isRegistered: true,
-        user: action.payload.user,
         loading: false,
         error: null,
       };
@@ -115,7 +112,6 @@ export const AuthContextProvider: React.FC<{ children: React.ReactNode }> = ({ c
       } else if (provider === 'KAKAO') {
         window.location.href = `https://kauth.kakao.com/oauth/authorize?client_id=${VITE_KAKAO_CLIENT_ID}&redirect_uri=${VITE_KAKAO_REDIRECT_URI}&response_type=code`;
       }
-
     } catch (error) {
       dispatch({
         type: 'SET_ERROR',
@@ -125,32 +121,27 @@ export const AuthContextProvider: React.FC<{ children: React.ReactNode }> = ({ c
     }
   };
 
-const handleAutoLogin = async () => {
-  try {
-    dispatch({ type: 'SET_LOADING', payload: true });
-    const response = await autoLogin();
+  const handleAutoLogin = async () => {
+    try {
+      dispatch({ type: 'SET_LOADING', payload: true });
+      const response = await autoLogin();
 
-    if (response.data?.user) {
-      dispatch({
-        type: 'AUTH_SUCCESS',
-        payload: { user: response.data.user },
-      });
-    } else {
-      dispatch({ type: 'LOGOUT' });
+      if (response.data?.redirectUrl === '/') {
+        dispatch({ type: 'AUTH_SUCCESS' }); // OAuth 인증됨
+        dispatch({ type: 'LOGIN_SUCCESS' }); // 로그인 완료
+      } else if (response.data?.redirectUrl === '/register') {
+        dispatch({ type: 'AUTH_SUCCESS' }); // OAuth 인증됨
+        dispatch({ type: 'REGISTER_REQUIRED' }); // 회원가입 필요
+      } else {
+        dispatch({ type: 'LOGOUT' });
+      }
+    } catch (error) {
+      dispatch({ type: 'SET_ERROR', payload: '자동 로그인 실패' });
     }
-  } catch (error) {
-    dispatch({ type: 'LOGOUT' });
-  }
-};
-  useEffect(() => {
-    const provider = sessionStorage.getItem('oauthProvider');
-    if (provider) {
-      handleAutoLogin();
-    }
-  }, []);
+  };
 
   const handleRegister = async (nickname: string) => {
-    if (!state.user) {
+    if (!state.isAuthenticated) {
       dispatch({
         type: 'SET_ERROR',
         payload: '사용자 정보가 없습니다',
@@ -161,15 +152,14 @@ const handleAutoLogin = async () => {
     try {
       dispatch({ type: 'SET_LOADING', payload: true });
       const response = await registerUser(nickname);
+      if (response.errorCode === '') {
+        dispatch({
+          type: 'NICKNAME_AVAILABLE',
+        });
+      }
 
       dispatch({
         type: 'REGISTER_SUCCESS',
-        payload: {
-          user: {
-            nickname,
-            provider: state.user.provider,
-          },
-        },
       });
     } catch (error) {
       dispatch({
@@ -182,6 +172,13 @@ const handleAutoLogin = async () => {
   const handleLogout = () => {
     dispatch({ type: 'LOGOUT' });
   };
+
+  useEffect(() => {
+    const provider = sessionStorage.getItem('oauthProvider');
+    if (provider) {
+      handleAutoLogin();
+    }
+  }, []);
 
   const value: AuthContextType = {
     state,

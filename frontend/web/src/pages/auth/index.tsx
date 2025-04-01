@@ -3,7 +3,6 @@ import { oauthLogin } from '@/services/auth';
 import { useEffect, useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ClipLoader } from 'react-spinners';
-import { OAuthCallbackResponse } from '@/types/auth';
 import { AuthContext } from '../auth/AuthContextProvider';
 
 const AuthPage = () => {
@@ -20,7 +19,7 @@ const AuthPage = () => {
 
       if (!code) {
         setError('인증 코드가 없습니다');
-        navigate('/');
+        navigate('/landing');
         return;
       }
 
@@ -32,15 +31,16 @@ const AuthPage = () => {
         });
 
         // 응답 데이터로 AuthContext 상태 업데이트
-        if (response?.isRegistered) {
+        // response?.data.redirectUrl === '/' 일 경우 등록된 사용자
+        if (response?.data.redirectUrl === '/') {
           authContext?.dispatch({
-            type: 'AUTH_SUCCESS',
+            type: 'LOGIN_SUCCESS',
             payload: { user: response.user },
           });
           navigate('/');
-        } else {
+        } else if (response?.data.redirectUrl === '/register') {
           authContext?.dispatch({
-            type: 'REGISTRATION_REQUIRED',
+            type: 'REGISTER_REQUIRED',
             payload: { user: response.user },
           });
           navigate('/register');
