@@ -12,6 +12,7 @@ interface HorseProps {
   color: CoatColorType;
   id: string;
   direction?: string;
+  type?: 'passivity' | 'auto';
 }
 
 const colorMap = {
@@ -24,7 +25,7 @@ const colorMap = {
 
 const FRAME_RATE = 150;
 
-const Horse: React.FC<HorseProps> = ({ color, direction = 'waiting' }) => {
+const Horse: React.FC<HorseProps> = ({ color, direction = 'waiting', type = 'passivity' }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const frameIndex = useRef(0);
   const imgRef = useRef<HTMLImageElement | null>(null);
@@ -91,12 +92,14 @@ const Horse: React.FC<HorseProps> = ({ color, direction = 'waiting' }) => {
     setIsMobileAnimating(!isMobileAnimating);
   };
 
+  if (type === 'auto') startAnimation();
+
   return (
     <div
       className='flex items-center justify-center p-2'
-      onMouseEnter={direction === 'change' ? startAnimation : undefined}
-      onMouseLeave={direction === 'change' ? stopAnimation : undefined}
-      onTouchStart={direction === 'change' ? handleTouch : undefined}
+      onMouseEnter={type !== 'auto' && direction === 'change' ? startAnimation : undefined}
+      onMouseLeave={type !== 'auto' && direction === 'change' ? stopAnimation : undefined}
+      onTouchStart={type !== 'auto' && direction === 'change' ? handleTouch : undefined}
     >
       <canvas ref={canvasRef} width={78} height={88} className='size-32 w-full'></canvas>
     </div>

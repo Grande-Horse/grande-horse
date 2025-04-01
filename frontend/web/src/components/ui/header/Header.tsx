@@ -21,6 +21,11 @@ const Header: React.FC = () => {
     { path: '/stall', component: <StallContent title='마구간' /> },
   ];
 
+  const dynamicRacePath = /^\/racetrack\/room\/([^/]+)\/race$/;
+  if (dynamicRacePath.test(pathname)) {
+    return null;
+  }
+
   const content = contentMap.find((item) => pathname === item.path || pathname.startsWith(item.path))?.component;
 
   return content && <header className={commonStyle}>{content}</header>;

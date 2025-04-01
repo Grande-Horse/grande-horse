@@ -10,6 +10,7 @@ import LandingPage from './pages/landing';
 import RacetrackPage from '@/pages/racetrack';
 import RacetrackRoomPage from './pages/racetrack/room';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import RaceTrackRacePage from './pages/racetrack/room/race';
 
 function App() {
   const queryClient = new QueryClient();
@@ -26,6 +27,7 @@ function App() {
               <Route path='/landing' element={<LandingPage />} />
               <Route path='/racetrack' element={<RacetrackPage />} />
               <Route path='/racetrack/room/:roomid' element={<RacetrackRoomPage />} />
+              <Route path='/racetrack/room/:roomid/race' element={<RaceTrackRacePage />} />
             </Routes>
           </ModalProvider>
         </QueryClientProvider>
