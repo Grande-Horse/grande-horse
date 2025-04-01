@@ -3,7 +3,6 @@ import Dropdown from '@/components/ui/dropdown/Dropdown';
 import Input from '@/components/ui/Input';
 import { rankMap } from '@/constants/rank';
 import PurchaseItem from '@/components/market/items/PurchaseItem';
-import { HorseType } from '@/types/horse';
 import { PriceHistoryType } from '@/types/trading';
 import { useEffect, useState } from 'react';
 import SearchIcon from '@/assets/icons/searchIcon.svg?react';
@@ -17,31 +16,18 @@ const PurchasePanel: React.FC = () => {
   const [rank, setRank] = useState<string>('');
   const [search, setSearch] = useState<string>('');
 
-  const [selectedHorse, setSelectedHorse] = useState<HorseType>();
+  const { data, fetchNextPage, hasNextPage } = useGetAllHorseTrading(rank, search);
+
+  const [priceHistory, setPriceHistory] = useState<PriceHistoryType[]>([]);
   const [isPriceHistoryOpen, serIsPriceHistoryOpen] = useState<boolean>(false);
 
-  const { data, fetchNextPage, hasNextPage } = useGetAllHorseTrading(rank, search);
-  const [priceHistory, setPriceHistory] = useState<PriceHistoryType[]>([]);
+  const [error, setError] = useState<Error | null>(null);
 
   const { ref, inView } = useInView();
 
-  useEffect(() => {
-    // TODO: 변동 시세 조회 API 연동 (msw test completed)
-    const fetchPriceHistory = async () => {
-      if (selectedHorse) {
-        const data = await getPriceHistory(selectedHorse.id);
-        setPriceHistory(data);
-      }
-    };
-
-    fetchPriceHistory();
-  }, [selectedHorse]);
-
-  useEffect(() => {
-    if (inView) {
-      fetchNextPage();
-    }
-  }, [inView]);
+  if (error) {
+    throw error;
+  }
 
   useEffect(() => {
     if (inView) {
@@ -53,9 +39,18 @@ const PurchasePanel: React.FC = () => {
     setSearch(e.target.value);
   };
 
-  const handlePriceHistoryClick = (horse: HorseType) => {
+  const fetchPriceHistory = async (horseId: string) => {
+    try {
+      const data = await getPriceHistory(horseId);
+      setPriceHistory(data);
+    } catch (error) {
+      setError(error as Error);
+    }
+  };
+
+  const handlePriceHistoryClick = async (horseId: string) => {
     if (!isPriceHistoryOpen) {
-      setSelectedHorse(horse);
+      await fetchPriceHistory(horseId);
     }
     serIsPriceHistoryOpen((prev) => !prev);
   };
@@ -92,7 +87,7 @@ const PurchasePanel: React.FC = () => {
               key={item.tradeId}
               item={item}
               isPriceHistoryOpen={isPriceHistoryOpen}
-              onPriceHistoryClick={() => handlePriceHistoryClick(item)}
+              onPriceHistoryClick={() => handlePriceHistoryClick(item.id)}
             />
           ))
         )}

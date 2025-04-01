@@ -44,7 +44,7 @@ export const getMyHorseTrading = async (
   return apiGet<CursorResponse<RegisteredItemType>>('/tradings/registered-cards', params);
 };
 
-export const getPriceHistory = (horseId: string): Promise<PriceHistoryType[]> => {
+export const getPriceHistory = async (horseId: string): Promise<PriceHistoryType[]> => {
   return apiGet<PriceHistoryType[]>(`/tradings/${horseId}/price-history`);
 };
 
