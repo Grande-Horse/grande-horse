@@ -1,4 +1,4 @@
-package com.example.grandehorse.domain.race.controller.response;
+package com.example.grandehorse.domain.race.service;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -6,11 +6,13 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Getter
-@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class RacePlayerDetailsResponse {
-	private int cardId;
+@Builder
+public class PlayerInfo {
+	private Integer userId;
+
+	private Integer cardId;
 
 	private String horseId;
 
@@ -22,13 +24,15 @@ public class RacePlayerDetailsResponse {
 
 	private String horseRank;
 
-	private double horseWeight;
+	private Short weight;
 
-	private double horseSpeed;
+	private Double speed;
 
-	private double horseAcceleration;
+	private Double acceleration;
 
-	private double horseStamina;
+	private Double stamina;
+
+	private String getUserNickname;
 
 	private boolean isRoomOwner;
 }

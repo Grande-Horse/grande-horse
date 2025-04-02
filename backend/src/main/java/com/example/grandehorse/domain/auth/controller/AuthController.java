@@ -37,13 +37,13 @@ public class AuthController {
 
 	// 테스트용 API
 	@GetMapping("/ssafy/callback")
-	public ResponseEntity<CommonResponse<String>> ssafyCallback(@RequestParam("code") String code){
+	public ResponseEntity<CommonResponse<String>> ssafyCallback(@RequestParam("code") String code) {
 		return CommonResponse.success(code);
 	}
 
 	// 테스트용 API
 	@GetMapping("/kakao/callback")
-	public ResponseEntity<CommonResponse<String>> kakaoCallback(@RequestParam("code") String code){
+	public ResponseEntity<CommonResponse<String>> kakaoCallback(@RequestParam("code") String code) {
 		return CommonResponse.success(code);
 	}
 

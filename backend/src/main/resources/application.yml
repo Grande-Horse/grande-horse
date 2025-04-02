@@ -29,5 +29,5 @@ spring:
         password: ${REDIS_DEFAULT_PASSWORD}
       websocket:
         host: j12a606.p.ssafy.io
-        port: 6380
+        port: 3500
         password: ${REDIS_WEBSOCKET_PASSWORD}

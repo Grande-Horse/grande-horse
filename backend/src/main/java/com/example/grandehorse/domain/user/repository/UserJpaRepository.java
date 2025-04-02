@@ -20,7 +20,8 @@ public interface UserJpaRepository extends JpaRepository<UserEntity, Integer> {
 
 	Optional<UserEntity> findBySocialProviderAndSocialId(SocialProvider socialProvider, String socialId);
 
+	@Query("SELECT u.nickname FROM UserEntity u WHERE u.id = :userId")
 	String findNicknameById(int userId);
 
-	Optional<Object> findByNickname(String nickname);
+	Optional<UserEntity> findByNickname(String nickname);
 }

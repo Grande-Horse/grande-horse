@@ -24,7 +24,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Table(name = "card_trade", indexes = {
 	@Index(name = "idx_id_status", columnList = "id, status"),
-	@Index(name = "idx_status_seller_id_id", columnList = "status, seller_id, id desc")
+	@Index(name = "idx_status_seller_id_id", columnList = "status, seller_id, id asc")
 })
 public class CardTradeEntity {
 	@Id
@@ -71,6 +71,6 @@ public class CardTradeEntity {
 
 	public void cancel() {
 		status = CardTradeStatus.CANCELED;
-		soldAt = LocalDateTime.now();
+		canceledAt = LocalDateTime.now();
 	}
 }

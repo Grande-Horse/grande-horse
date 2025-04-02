@@ -4,19 +4,11 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 @Getter
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class CreateRaceRoomDto {
-	private String roomName;
-
-	private int maxPlayers;
-
-	private String rankRestriction;
-
-	private int bettingCoin;
+public class JoinRaceRoomDto {
+	private Long roomId;
 }

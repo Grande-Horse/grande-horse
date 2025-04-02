@@ -22,17 +22,24 @@ public class CardService {
 	private final CardJpaRepository cardJpaRepository;
 	private final CardRecordJpaRepository cardRecordJpaRepository;
 
-	public CardEntity findRepresentativeCard(int userId) {
-		return cardJpaRepository.findCardByUserIdAndStatus(userId, 3)
-			.orElseThrow(() -> new CardException(CustomError.NO_REPRESENTATIVE_HORSE_CARD));
-	}
-
 	public void validateCardOwnedByUser(int userId, int cardId) {
 		if (!cardJpaRepository.existsByUserIdAndId(userId, cardId)) {
 			throw new CardException(CustomError.USER_NOT_OWNER_OF_CARD);
 		}
 	}
 
+	public CardEntity findRepresentativeCard(int userId) {
+		return cardJpaRepository.findCardByUserIdAndStatus(userId, 3)
+			.orElseThrow(() -> new CardException(CustomError.NO_REPRESENTATIVE_HORSE_CARD));
+	}
+
+	/**
+	 * 0 : 대기마
+	 * 1 : 판매마
+	 * 2 : 경주마
+	 * 3 : 출전마
+	 * 대기마의 경우 서비스상 아무곳에서도 사용되지 않기 때문에 대기마만 판매등록이 가능합니다.
+	 */
 	public void validateCardAvailableForSale(int cardId) {
 		if (!cardJpaRepository.existsByIdAndStatus(cardId, (byte)0)) {
 			throw new CardException(CustomError.CARD_SALE_RESTRICTED);
@@ -46,6 +53,11 @@ public class CardService {
 
 		cardEntity.updateStatusToSell();
 		cardJpaRepository.save(cardEntity);
+	}
+
+	public String findHorseIdByCardId(int cardId) {
+		return cardJpaRepository.findHorseIdById(cardId)
+			.orElseThrow(() -> new CardException(CustomError.CARD_NOT_EXISTED));
 	}
 
 	@Transactional
@@ -79,10 +91,4 @@ public class CardService {
 
 		cardRecordJpaRepository.save(cardRecord);
 	}
-
-	public String findHorseIdByCardId(int cardId) {
-		return cardJpaRepository.findHorseIdById(cardId)
-			.orElseThrow(() -> new CardException(CustomError.CARD_NOT_EXISTED));
-	}
-
 }

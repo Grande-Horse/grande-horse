@@ -64,7 +64,7 @@ public class JwtTokenProvider {
 
 	public Map<String, Object> getPayloadFromToken(String token) {
 		Claims claims = getClaims(token);
-		return new HashMap<>(claims);  // Immutable 형태로 반환
+		return new HashMap<>(claims);
 	}
 
 	public long getExpiration(String token) {

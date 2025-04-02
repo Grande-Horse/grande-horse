@@ -18,7 +18,7 @@ import lombok.RequiredArgsConstructor;
 
 @Component
 @RequiredArgsConstructor
-public class SsafyApiClient implements OauthApiClient{
+public class SsafyApiClient implements OauthApiClient {
 	private final ExternalApiClient externalApiClient;
 	private final ObjectMapper objectMapper;
 

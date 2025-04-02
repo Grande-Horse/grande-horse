@@ -17,7 +17,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.example.grandehorse.domain.card.service.CardService;
-import com.example.grandehorse.domain.horse.entity.HorseRank;
 import com.example.grandehorse.domain.horse.service.HorseService;
 import com.example.grandehorse.domain.trading.controller.request.CreateCardTradeDto;
 import com.example.grandehorse.domain.trading.controller.response.PriceHistoryResponse;
@@ -43,25 +42,26 @@ public class TradingService {
 
 	private final CardTradingJpaRepository cardTradingJpaRepository;
 
-	// 완료
 	@Transactional
-	public ResponseEntity<CommonResponse<Void>> createCardTrade(CreateCardTradeDto createTradeDto, int userId) {
+	public void createCardTrade(
+		int userId,
+		CreateCardTradeDto createTradeDto
+	) {
 		cardService.validateCardOwnedByUser(userId, createTradeDto.getCardId());
 		cardService.validateCardAvailableForSale(createTradeDto.getCardId());
 
 		cardService.updateCardStatusToSell(createTradeDto.getCardId());
 
 		registerCardTrade(createTradeDto, userId);
-
-		return CommonResponse.success(null);
 	}
 
-	// 완료
 	@Transactional
-	public ResponseEntity<CommonResponse<Void>> purchaseCard(int cardTradeId, int userId) {
-		CardTradeEntity cardTradeEntity = findCardTradeByCardTradeId(cardTradeId);
-
+	public void purchaseCard(
+		int cardTradeId,
+		int userId
+	) {
 		validateCardForSale(cardTradeId);
+		CardTradeEntity cardTradeEntity = findCardTradeByCardTradeIdWithPessimisticLock(cardTradeId);
 		validateCardPurchasability(cardTradeEntity.getSellerId(), userId);
 
 		userService.purchaseCard(userId, cardTradeEntity.getSellerId(), cardTradeEntity.getPrice());
@@ -69,80 +69,44 @@ public class TradingService {
 		cardService.changeCardOwner(cardTradeEntity.getCardId(), userId, cardTradeId);
 
 		processCardSale(cardTradeEntity, userId);
-
-		return CommonResponse.success(null);
 	}
 
-	// 완료
 	@Transactional
-	public ResponseEntity<CommonResponse<Void>> cancelCardTrade(int cardTradeId, int userId) {
-		CardTradeEntity cardTradeEntity = findCardTradeByCardTradeId(cardTradeId);
-
+	public void cancelCardTrade(
+		int cardTradeId,
+		int userId
+	) {
 		validateCardForSale(cardTradeId);
+		CardTradeEntity cardTradeEntity = findCardTradeByCardTradeIdWithPessimisticLock(cardTradeId);
 		validateCardTradeCancellation(cardTradeEntity.getSellerId(), userId);
 
 		cardService.updateCardStatusToReady(cardTradeEntity.getCardId());
 
 		cardTradeEntity.cancel();
 		cardTradingJpaRepository.save(cardTradeEntity);
-
-		return CommonResponse.success(null);
 	}
 
-	// 완료
 	public ResponseEntity<CommonResponse<List<TradeCardResponse>>> getTradeCards(
 		int cursorId,
 		String rank,
 		String search,
 		int limit
 	) {
-		Slice<TradeCardResponse> tradeCardSlice = findTradeCardsByCursor(
-			cursorId,
-			rank,
-			search,
-			limit
-		);
-
-		List<TradeCardResponse> tradeCards = tradeCardSlice.getContent().stream()
-			.sorted(Comparator.comparing(TradeCardResponse::getTradeId).reversed())
-			.collect(Collectors.toUnmodifiableList());
-
-		boolean hasNextItems = tradeCardSlice.hasNext();
-
-		int nextCursorId = -1;
-		if (hasNextItems) {
-			nextCursorId = tradeCards.get(0).getTradeId();
-		}
-
-		return CommonResponse.pagedSuccess(tradeCards, hasNextItems, nextCursorId);
+		Slice<TradeCardResponse> tradeCardSlice = findTradeCardsByCursor(cursorId, rank, search, limit);
+		return processPagedResponse(tradeCardSlice, Comparator.comparing(TradeCardResponse::getTradeId).reversed());
 	}
 
-	// 완료
 	public ResponseEntity<CommonResponse<List<RegisteredCardResponse>>> getRegisteredCards(
 		int sellerId,
 		int cursorId,
 		int limit
 	) {
-		Slice<RegisteredCardResponse> registeredCardSlice = findRegisteredCardsByCursor(
-			sellerId,
-			cursorId,
-			limit
+		Slice<RegisteredCardResponse> registeredCardSlice = findRegisteredCardsByCursor(sellerId, cursorId, limit);
+		return processPagedResponse(
+			registeredCardSlice,
+			Comparator.comparing(RegisteredCardResponse::getTradeId).reversed()
 		);
-
-		List<RegisteredCardResponse> registeredCards = registeredCardSlice.getContent().stream()
-			.sorted(Comparator.comparing(RegisteredCardResponse::getTradeId).reversed())
-			.collect(Collectors.toUnmodifiableList());
-
-		boolean hasNextItems = registeredCardSlice.hasNext();
-
-		int nextCursorId = -1;
-		if (hasNextItems) {
-			nextCursorId = registeredCards.get(0).getTradeId();
-		}
-
-		return CommonResponse.pagedSuccess(registeredCards, hasNextItems, nextCursorId);
 	}
-
 
 	public ResponseEntity<CommonResponse<List<SoldCardResponse>>> getSoldCards(
 		String horseId,
@@ -150,50 +114,47 @@ public class TradingService {
 		int limit
 	) {
 		Slice<SoldCardResponse> soldCardsSlice = findSoldCardsByCursor(horseId, cursorId, limit);
-
-		List<SoldCardResponse> soldCards = soldCardsSlice.getContent().stream()
-			.sorted(Comparator.comparing(SoldCardResponse::getSoldAt).reversed())
-			.collect(Collectors.toUnmodifiableList());
-
-		boolean hasNextItems = soldCardsSlice.hasNext();
-
-		int nextCursorId = -1;
-		if (hasNextItems) {
-			nextCursorId = soldCards.get(0).getTradeId();
-		}
-
-		return CommonResponse.pagedSuccess(soldCards, hasNextItems, nextCursorId);
+		return processPagedResponse(soldCardsSlice, Comparator.comparing(SoldCardResponse::getSoldAt).reversed());
 	}
 
 	/* TODO
-		스케줄링 돌려서 매일 밤 12시에 데이터 들고와서 레디스에 올려놓는 방식으로 리팩토링하기 (성능 개선)
+		스케줄링 돌려서 매일 밤 12시에 데이터 들고와서 레디스에 올려놓는 방식으로 리팩토링하기 (성능 개선 예정)
 	 */
 	public ResponseEntity<CommonResponse<List<PriceHistoryResponse>>> getPriceHistory(String horseId) {
-		LocalDateTime now = LocalDateTime.now();
-		LocalDateTime oneDayAgo = now.minusDays(1);
-		LocalDateTime sevenDaysAgo = now.minusDays(7);
+		LocalDate now = LocalDate.now();
+		LocalDate oneDayAgo = now.minusDays(1);
+		LocalDate sevenDaysAgo = now.minusDays(7);
 
-		List<PriceHistoryResponse> priceHistories
+		List<PriceHistoryResponse> priceHistory
 			= cardTradingJpaRepository.findPriceHistory(horseId, oneDayAgo, sevenDaysAgo);
 
-		Map<LocalDate, PriceHistoryResponse> historyMap = priceHistories.stream()
+		Map<LocalDate, PriceHistoryResponse> priceHistoryByDate = priceHistory.stream()
 			.collect(Collectors.toMap(PriceHistoryResponse::getDate, Function.identity()));
 
 		List<PriceHistoryResponse> completeList = new ArrayList<>();
-		for (LocalDate date = sevenDaysAgo.toLocalDate(); !date.isAfter(oneDayAgo.toLocalDate()); date = date.plusDays(
-			1)) {
-			PriceHistoryResponse response = historyMap.get(date);
-			if (response == null) {
-				completeList.add(new PriceHistoryResponse(0, 0.0, 0, date));
-			} else {
-				completeList.add(response);
-			}
-		}
 
 		return CommonResponse.listSuccess(completeList);
 	}
 
-	private void registerCardTrade(CreateCardTradeDto createTradeDto, int userId) {
+	// private List<PriceHistoryResponse> fillMissingPriceHistory(
+	// 	R
+	// 	Map<LocalDate, PriceHistoryResponse> priceHistoryByDate
+	// ) {
+	// 	for (LocalDate date = sevenDaysAgo; !date.isAfter(oneDayAgo); date = date.plusDays(1)) {
+	// 		PriceHistoryResponse response = priceHistoryByDate.get(date);
+	// 		if (response == null) {
+	// 			completeList.add(new PriceHistoryResponse(0, 0.0, 0, date));
+	// 		} else {
+	// 			completeList.add(response);
+	// 		}
+	// 	}
+	// 	return
+	// }
+
+	private void registerCardTrade(
+		CreateCardTradeDto createTradeDto,
+		int userId
+	) {
 		String horseId = cardService.findHorseIdByCardId(createTradeDto.getCardId());
 
 		CardTradeEntity cardTradeEntity = CardTradeEntity.builder()
@@ -208,8 +169,8 @@ public class TradingService {
 		cardTradingJpaRepository.save(cardTradeEntity);
 	}
 
-	private CardTradeEntity findCardTradeByCardTradeId(int cardTradeId) {
-		return cardTradingJpaRepository.findCardTradeById(cardTradeId);
+	private CardTradeEntity findCardTradeByCardTradeIdWithPessimisticLock(int cardTradeId) {
+		return cardTradingJpaRepository.findCardTradeByIdWithPessimisticLock(cardTradeId);
 	}
 
 	private void validateCardForSale(int cardTradeId) {
@@ -218,13 +179,19 @@ public class TradingService {
 		}
 	}
 
-	private void validateCardPurchasability(int sellerId, int userId) {
+	private void validateCardPurchasability(
+		int sellerId,
+		int userId
+	) {
 		if (sellerId == userId) {
 			throw new TradingException(CustomError.CANNOT_PURCHASE_OWN_CARD);
 		}
 	}
 
-	private void processCardSale(CardTradeEntity cardTradeEntity, int buyerId) {
+	private void processCardSale(
+		CardTradeEntity cardTradeEntity,
+		int buyerId
+	) {
 		int horseId = horseService.findHorseDataIdByHorseId(cardTradeEntity.getHorseId());
 		cardTradeEntity.purchase(horseId, buyerId); // 카드가 판매된 시점의 카드 스탯, 등급 등 저장
 		cardTradingJpaRepository.save(cardTradeEntity);
@@ -233,6 +200,29 @@ public class TradingService {
 	private void validateCardTradeCancellation(int sellerId, int userId) {
 		if (sellerId != userId) {
 			throw new TradingException(CustomError.CANNOT_CANCEL_TRADE_PERMISSION);
+		}
+	}
+
+	private <T> ResponseEntity<CommonResponse<List<T>>> processPagedResponse(
+		Slice<T> slice,
+		Comparator<T> comparator
+	) {
+		List<T> sortedList = slice.getContent().stream()
+			.sorted(comparator)
+			.collect(Collectors.toUnmodifiableList());
+
+		boolean hasNextItems = slice.hasNext();
+
+		int nextCursorId = hasNextItems ? extractTradeId(sortedList.get(0)) : -1;
+
+		return CommonResponse.pagedSuccess(sortedList, hasNextItems, nextCursorId);
+	}
+
+	private <T> int extractTradeId(T item) {
+		try {
+			return (int)item.getClass().getMethod("getTradeId").invoke(item);
+		} catch (Exception e) {
+			throw new IllegalStateException("getTradeId() 메서드 호출 실패", e);
 		}
 	}
 
@@ -246,7 +236,7 @@ public class TradingService {
 
 		return cardTradingJpaRepository.findTradeCardsByCursor(
 			cursorId,
-			HorseRank.fromString(rank),
+			rank,
 			search,
 			pageable
 		);

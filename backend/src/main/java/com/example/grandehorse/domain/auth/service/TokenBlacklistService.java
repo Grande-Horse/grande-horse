@@ -2,6 +2,7 @@ package com.example.grandehorse.domain.auth.service;
 
 import java.util.concurrent.TimeUnit;
 
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
@@ -17,7 +18,7 @@ public class TokenBlacklistService {
 	private final JwtTokenProvider jwtTokenProvider;
 
 	public TokenBlacklistService(
-		RedisTemplate<String, Object> redisTemplate,
+		@Qualifier("redisTemplate") RedisTemplate<String, Object> redisTemplate,
 		JwtTokenProvider jwtTokenProvider
 	) {
 		this.redisTemplate = redisTemplate;

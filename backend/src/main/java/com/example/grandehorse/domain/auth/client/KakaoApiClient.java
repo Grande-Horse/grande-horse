@@ -18,7 +18,7 @@ import lombok.RequiredArgsConstructor;
 
 @Component
 @RequiredArgsConstructor
-public class KakaoApiClient implements OauthApiClient{
+public class KakaoApiClient implements OauthApiClient {
 	private final ExternalApiClient externalApiClient;
 	private final ObjectMapper objectMapper;
 

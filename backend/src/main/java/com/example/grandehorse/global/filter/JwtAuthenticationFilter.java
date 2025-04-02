@@ -28,14 +28,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 		"/api/v1/auth/**",
 		"/api/v1/users/**"
 	);
-
 	private static final List<String> INCLUDED_URL_PATTERNS = List.of(
 		"/api/v1/users/coin"
 	);
+	private static final AntPathMatcher pathMatcher = new AntPathMatcher();
 
 	private final JwtTokenProvider jwtProvider;
 	private final TokenBlacklistService tokenBlacklistService;
-	private static final AntPathMatcher pathMatcher = new AntPathMatcher();
+
 
 	@Override
 	protected boolean shouldNotFilter(HttpServletRequest request) {
@@ -54,9 +54,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 		if (request.getMethod().equals("OPTIONS")) {
 			response.setHeader("Access-Control-Allow-Origin", "http://localhost:3000");
 			response.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
-			response.setHeader("Access-Control-Allow-Headers", "Authorization, Content-Type, Access-Control-Allow-Headers");
+			response.setHeader(
+				"Access-Control-Allow-Headers", "Authorization, Content-Type, Access-Control-Allow-Headers"
+			);
 			response.setHeader("Access-Control-Allow-Credentials", "true");
-
 			response.setStatus(HttpServletResponse.SC_OK);
 			return;
 		}

@@ -34,26 +34,29 @@ public class TradingController {
 
 	@PostMapping("")
 	public ResponseEntity<CommonResponse<Void>> createCardTrade(
-		@Valid @RequestBody CreateCardTradeDto createTradeDto,
-		@RequestAttribute("userId") int userId
+		@RequestAttribute("userId") int userId,
+		@Valid @RequestBody CreateCardTradeDto createTradeDto
 	) {
-		return tradingService.createCardTrade(createTradeDto, userId);
+		tradingService.createCardTrade(userId, createTradeDto);
+		return CommonResponse.success(null);
 	}
 
-	@PutMapping("/{tradeId}")
+	@PutMapping("/{cardTradeId}")
 	public ResponseEntity<CommonResponse<Void>> purchaseCard(
-		@PathVariable(name = "tradeId") int tradeId,
+		@PathVariable(name = "cardTradeId") int cardTradeId,
 		@RequestAttribute("userId") int userId
 	) {
-		return tradingService.purchaseCard(tradeId, userId);
+		tradingService.purchaseCard(cardTradeId, userId);
+		return CommonResponse.success(null);
 	}
 
-	@DeleteMapping("/{tradeId}")
+	@DeleteMapping("/{cardTradeId}")
 	public ResponseEntity<CommonResponse<Void>> cancelCardTrade(
-		@PathVariable(name = "tradeId") int tradeId,
+		@PathVariable(name = "cardTradeId") int cardTradeId,
 		@RequestAttribute("userId") int userId
 	) {
-		return tradingService.cancelCardTrade(tradeId, userId);
+		tradingService.cancelCardTrade(cardTradeId, userId);
+		return CommonResponse.success(null);
 	}
 
 	@GetMapping("/trade-cards")
@@ -68,11 +71,11 @@ public class TradingController {
 
 	@GetMapping("/registered-cards")
 	public ResponseEntity<CommonResponse<List<RegisteredCardResponse>>> getRegisteredCards(
-		@RequestAttribute("userId") int userId,
+		@RequestAttribute("userId") int sellerId,
 		@RequestParam(name = "cursorId") int cursorId,
 		@RequestParam(name = "limit") int limit
 	) {
-		return tradingService.getRegisteredCards(userId, cursorId, limit);
+		return tradingService.getRegisteredCards(sellerId, cursorId, limit);
 	}
 
 	@GetMapping("/{horseId}/sold-cards")

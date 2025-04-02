@@ -16,12 +16,11 @@ import com.example.grandehorse.global.jwt.JwtTokenProvider;
 import com.example.grandehorse.global.response.CommonResponse;
 import com.example.grandehorse.global.util.CookieUtil;
 
-import lombok.RequiredArgsConstructor;
-
 @Service
 public class AuthService {
 	private final static String HOME_URL = "/";
 	private final static String REGISTER_URL = "/register";
+
 	private final JwtTokenProvider jwtTokenProvider;
 	private final Map<String, OauthApiClient> oauthClients;
 	private final UserService userService;

@@ -28,7 +28,7 @@ public enum CustomError {
 	HORSE_NOT_EXISTED(HttpStatus.BAD_REQUEST, "H1", "존재하지 않는 말입니다."),
 
 	// 거래 관련 에러
-	CARD_NOT_FOR_SALE(HttpStatus.BAD_REQUEST, "T1", "판매중인 말이 아닙니다."),
+	CARD_NOT_FOR_SALE(HttpStatus.BAD_REQUEST, "T1", "판매중인 말 카드가 아닙니다."),
 	CANNOT_PURCHASE_OWN_CARD(HttpStatus.BAD_REQUEST, "T2", "자신의 카드를 구매할 수 없습니다."),
 	CANNOT_CANCEL_TRADE_PERMISSION(HttpStatus.BAD_REQUEST, "T3", "거래(판매) 취소에 대한 권한이 없습니다."),
 
@@ -38,7 +38,7 @@ public enum CustomError {
 	USER_NOT_OWNER_OF_CARD(HttpStatus.BAD_REQUEST, "CA1", "유저의 말카드가 아닙니다."),
 	CARD_SALE_RESTRICTED(HttpStatus.BAD_REQUEST, "CA2", "판매할 수 없는 말카드 입니다."),
 	CARD_NOT_EXISTED(HttpStatus.BAD_REQUEST, "CA3", "존재하지 않는 말카드입니다."),
-	NO_REPRESENTATIVE_HORSE_CARD(HttpStatus.BAD_REQUEST, "CA4", "대표로 등록된 맒카드가 없습니다."),
+	NO_REPRESENTATIVE_HORSE_CARD(HttpStatus.BAD_REQUEST, "CA4", "대표로 등록된 말카드가 없습니다."),
 
 	// 경마 관련 에러
 	RACE_ROOM_NOT_EXISTED(HttpStatus.BAD_REQUEST, "R1", "존재하지 않는 방입니다."),

@@ -1,15 +1,17 @@
 package com.example.grandehorse.domain.trading.repository;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.List;
+
+import jakarta.persistence.LockModeType;
 
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
-import com.example.grandehorse.domain.horse.entity.HorseRank;
 import com.example.grandehorse.domain.trading.controller.response.PriceHistoryResponse;
 import com.example.grandehorse.domain.trading.controller.response.RegisteredCardResponse;
 import com.example.grandehorse.domain.trading.controller.response.SoldCardResponse;
@@ -21,7 +23,9 @@ import io.lettuce.core.dynamic.annotation.Param;
 
 @Repository
 public interface CardTradingJpaRepository extends JpaRepository<CardTradeEntity, Integer> {
-	CardTradeEntity findCardTradeById(int cardTradeId);
+	@Lock(LockModeType.PESSIMISTIC_WRITE)
+	@Query("SELECT c FROM CardTradeEntity c WHERE c.id = :id")
+	CardTradeEntity findCardTradeByIdWithPessimisticLock(@Param("id") int id);
 
 	boolean existsByIdAndStatus(int id, CardTradeStatus status);
 
@@ -52,7 +56,7 @@ public interface CardTradingJpaRepository extends JpaRepository<CardTradeEntity,
 		""")
 	Slice<TradeCardResponse> findTradeCardsByCursor(
 		@Param("cursorId") int cursorId,
-		@Param("horseRank") HorseRank horseRank,
+		@Param("horseRank") String horseRank,
 		@Param("search") String search,
 		Pageable pageable
 	);
@@ -124,13 +128,13 @@ public interface CardTradingJpaRepository extends JpaRepository<CardTradeEntity,
 		FROM CardTradeEntity t
 		WHERE t.horseId = :horseId
 		AND t.status = 'SOLD'
-		AND t.soldAt BETWEEN :sevenDaysAgo AND :oneDayAgo
+		AND FUNCTION('DATE', t.soldAt) BETWEEN :sevenDaysAgo AND :oneDayAgo
 		GROUP BY FUNCTION('DATE', t.soldAt)
 		ORDER BY FUNCTION('DATE', t.soldAt) DESC
 		""")
 	List<PriceHistoryResponse> findPriceHistory(
 		@Param("horseId") String horseId,
-		@Param("oneDayAgo") LocalDateTime oneDayAgo,
-		@Param("sevenDaysAgo") LocalDateTime sevenDaysAgo
+		@Param("oneDayAgo") LocalDate oneDayAgo,
+		@Param("sevenDaysAgo") LocalDate sevenDaysAgo
 	);
 }

@@ -1,60 +1,44 @@
 package com.example.grandehorse.domain.race.controller;
 
-import java.util.List;
 import java.util.Map;
 
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestAttribute;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.messaging.handler.annotation.Header;
+import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.simp.annotation.SubscribeMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.grandehorse.domain.race.controller.request.CreateRaceRoomDto;
-import com.example.grandehorse.domain.race.controller.response.RacePlayerDetailsResponse;
-import com.example.grandehorse.global.response.CommonResponse;
+import com.example.grandehorse.domain.race.controller.request.JoinRaceRoomDto;
 import com.example.grandehorse.domain.race.service.RaceService;
 
 import lombok.RequiredArgsConstructor;
 
 @RestController
-@RequestMapping("/races")
 @RequiredArgsConstructor
 public class RaceController {
 	private final RaceService raceService;
 
-	@PostMapping("")
-	public ResponseEntity<CommonResponse<String>> createRaceRoom(
-		@RequestBody CreateRaceRoomDto createRaceRoomDto,
-		@RequestParam("userId") int userId
-	) {
-		raceService.createRaceRoom(createRaceRoomDto, userId);
-		return CommonResponse.success("방이 성공적으로 생성되었습니다.");
+	@SubscribeMapping("/waiting_rooms")
+	public void broadcastRaceRooms() {
+		raceService.broadcastRaceRooms();
 	}
 
-	@PostMapping("/join/{roomId}")
-	public ResponseEntity<CommonResponse<String>> joinRaceRoom(
-		@PathVariable("roomId") String roomId,
-		@RequestAttribute("userId") int userId
+	@MessageMapping("/createRoom")
+	public void createRaceRoom(
+		CreateRaceRoomDto createRaceRoomDto,
+		@Header("simpSessionAttributes") Map<String, Object> sessionAttributes,
+		@Header("simpSessionId") String sessionId
 	) {
-		raceService.joinRaceRoom(roomId, userId);
-		return CommonResponse.success("방 참가에 성공했습니다.");
+		int userId = (int)sessionAttributes.get("userId");
+		raceService.createRaceRoom(createRaceRoomDto, userId, sessionId);
 	}
 
-	@GetMapping("")
-	public ResponseEntity<CommonResponse<Map<String, Map<Object, Object>>>> getRaceRooms() {
-		Map<String, Map<Object, Object>> gameRooms = raceService.getAllRaceRooms();
-		return CommonResponse.success(gameRooms);
-	}
-
-	@GetMapping("{roomId}")
-	public ResponseEntity<CommonResponse<List<RacePlayerDetailsResponse>>> getRacePlayersDetails(
-		@PathVariable("roomId") String roomId
+	@MessageMapping("/joinRoom")
+	public void joinRaceRoom(
+		JoinRaceRoomDto joinRaceRoomDto,
+		@Header("simpSessionAttributes") Map<String, Object> sessionAttributes
 	) {
-		List<RacePlayerDetailsResponse> playersDetails = raceService.getRacePlayersDetails(roomId);
-		return CommonResponse.listSuccess(playersDetails);
+		int userId = (int)sessionAttributes.get("userId");
+		raceService.joinRaceRoom(joinRaceRoomDto.getRoomId(), userId);
 	}
 }
