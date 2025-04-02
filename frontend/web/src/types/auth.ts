@@ -11,3 +11,32 @@ export interface KakaoLoginResponseType {
   // A2, 블랙리스트에 등록된 토큰으로 로그인 시,  AuthenticationException
   data: null;
 }
+
+export interface OAuthCallbackResponse {
+  errorCode: string;
+  data: {
+    redirectUrl: '/' | '/register';
+    user?: {
+      nickname?: string;
+      provider?: 'KAKAO' | 'SSAFY';
+    } | null;
+  };
+}
+
+export interface OAuthLoginResponse {
+  isRegistered: boolean;
+  user: {
+    nickname?: string;
+    provider?: 'KAKAO' | 'SSAFY';
+  } | null;
+}
+
+export interface AutoLoginResponse {
+  headers?: Headers;
+  data?: {
+    user: {
+      nickname?: string;
+      provider?: 'KAKAO' | 'SSAFY';
+    } | null;
+  };
+}
