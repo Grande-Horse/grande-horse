@@ -8,8 +8,8 @@ export const apiGet = <U>(url: string, params?: Record<string, any>): Promise<U>
   return apiRequest<null, U>('GET', url, null, params);
 };
 
-export const apiPost = <T>(url: string, data: T) => {
-  return apiRequest<T, null>('POST', url, data);
+export const apiPost = <T, U>(url: string, data: T): Promise<U> => {
+  return apiRequest<T, U>('POST', url, data);
 };
 
 export const apiPut = <T>(url: string, data: T) => {
