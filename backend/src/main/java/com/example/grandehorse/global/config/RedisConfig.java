@@ -1,4 +1,4 @@
-package com.example.grandehorse.infrastructure.config;
+package com.example.grandehorse.global.config;
 
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
