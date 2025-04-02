@@ -89,30 +89,38 @@
   --font-primary: 'DungGeunMo';
   --container-base: 480px;
   --container-modal: 320px;
-  --container-modal: 320px;
   --radius-sm: 1rem;
   
-  --animate-moveCloudUpper: moveCloudUpper 300s linear infinite;
-  --animate-moveCloudLower: moveCloudLower 2000s linear infinite;
+  --inset-shadow-xs: inset 0 0 4px rgba(1, 1, 1, 0.25);
+}
 
-  --inset-shadow-xs: inset 0 0 4px rgba(1, 1, 1, 0.25); 
 
-  @keyframes moveCloudLower {
-    from {
-      background-position: 0 0;
-    }
-    to {
-      background-position: 100% 0;
-    }
+@keyframes moveCloudUpper {
+  from {
+    background-position: 0 0;
   }
 
-  @keyframes moveCloudUpper {
-    from {
-      background-position: 0 0;
-    }
-    to {
-      background-position: 100% 0;
-    }
+  to {
+    background-position: 100% 0;
+  }
+}
+@keyframes moveCloudLower {
+  from {
+    background-position: 0 0;
+  }
+
+  to {
+    background-position: -100% 0;
+  }
+}
+
+@layer utilities {
+  .animate-moveCloudUpper {
+    animation: moveCloudUpper 300s linear infinite;
+  }
+
+  .animate-moveCloudLower {
+    animation: moveCloudLower 2000s linear infinite;
   }
 }
 
@@ -141,3 +149,4 @@
   }
 
 }
+
