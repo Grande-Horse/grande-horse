@@ -2,24 +2,13 @@ import Tabs from '@/components/ui/Tabs';
 import { marketTabList } from '@/constants/tabList';
 import PurchasePanel from '@/components/market/panels/PurchasePanel';
 import SellPanel from '@/components/market/panels/SellPanel';
-import { Suspense } from 'react';
-import Loading from '@/components/ui/Loading';
-import ErrorBoundary from '@/components/ui/errorBoundary/ErrorBoundary';
-import Error from '@/components/ui/Error';
 import CoinPanel from '@/components/market/panels/CoinPanel';
 import CardpackPanel from '@/components/market/panels/CardpackPanel';
 
 const MarketPage: React.FC = () => {
   return (
     <div className='h-body overflow-y-auto'>
-      <ErrorBoundary renderFallback={(error) => <Error errorMessage={error?.message} />}>
-        <Suspense fallback={<Loading />}>
-          <Tabs
-            tabList={marketTabList}
-            tabPanels={[<CardpackPanel />, <CoinPanel />, <PurchasePanel />, <SellPanel />]}
-          />
-        </Suspense>
-      </ErrorBoundary>
+      <Tabs tabList={marketTabList} tabPanels={[<CardpackPanel />, <CoinPanel />, <PurchasePanel />, <SellPanel />]} />
     </div>
   );
 };

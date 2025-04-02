@@ -1,7 +1,7 @@
 import PriceLineChart from '@/components/charts/PriceLineChart';
 import Dropdown from '@/components/ui/dropdown/Dropdown';
 import Input from '@/components/ui/Input';
-import { rankMap } from '@/constants/rank';
+import { rankMap, rankNameMap } from '@/constants/rank';
 import PurchaseItem from '@/components/market/items/PurchaseItem';
 import { PriceHistoryType } from '@/types/trading';
 import { useEffect, useState } from 'react';
@@ -14,12 +14,13 @@ import { useInView } from 'react-intersection-observer';
 
 const PurchasePanel: React.FC = () => {
   const [rank, setRank] = useState<string>('');
+  const [keyword, setKeyword] = useState<string>('');
   const [search, setSearch] = useState<string>('');
 
   const { data, fetchNextPage, hasNextPage } = useGetAllHorseTrading(rank, search);
 
   const [priceHistory, setPriceHistory] = useState<PriceHistoryType[]>([]);
-  const [isPriceHistoryOpen, serIsPriceHistoryOpen] = useState<boolean>(false);
+  const [selectedHorse, setSelectedHorse] = useState<string>('');
 
   const [error, setError] = useState<Error | null>(null);
 
@@ -35,8 +36,16 @@ const PurchasePanel: React.FC = () => {
     }
   }, [inView]);
 
-  const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setSearch(e.target.value);
+  const handleSearch = () => {
+    setSearch(keyword);
+  };
+
+  const handleKeywordChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setKeyword(e.target.value);
+  };
+
+  const handleRankChange = (rank: string) => {
+    setRank(rankNameMap[rank as keyof typeof rankNameMap]);
   };
 
   const fetchPriceHistory = async (horseId: string) => {
@@ -49,16 +58,18 @@ const PurchasePanel: React.FC = () => {
   };
 
   const handlePriceHistoryClick = async (horseId: string) => {
-    if (!isPriceHistoryOpen) {
+    if (!selectedHorse) {
       await fetchPriceHistory(horseId);
+      setSelectedHorse(horseId);
+    } else {
+      setSelectedHorse('');
     }
-    serIsPriceHistoryOpen((prev) => !prev);
   };
 
   return (
     <div className='h-full'>
       <section className='flex h-1/3 flex-col items-center justify-center gap-4'>
-        {isPriceHistoryOpen && priceHistory.length > 0 ? (
+        {selectedHorse && priceHistory.length > 0 ? (
           <PriceLineChart priceHistory={priceHistory} />
         ) : (
           <>
@@ -72,12 +83,12 @@ const PurchasePanel: React.FC = () => {
         <Dropdown
           options={Object.values(rankMap)}
           value={rank}
-          onChange={setRank}
+          onChange={handleRankChange}
           placeholder='등급 선택'
           className='w-2/5'
         />
-        <Input value={search} onChange={handleSearchChange} />
-        <SearchIcon className='cursor-pointer' />
+        <Input value={keyword} onChange={handleKeywordChange} />
+        <SearchIcon onClick={handleSearch} className='cursor-pointer' />
       </div>
 
       <section className='divide-y-1 divide-black'>
@@ -86,7 +97,7 @@ const PurchasePanel: React.FC = () => {
             <PurchaseItem
               key={item.tradeId}
               item={item}
-              isPriceHistoryOpen={isPriceHistoryOpen}
+              isPriceHistoryOpen={selectedHorse !== ''}
               onPriceHistoryClick={() => handlePriceHistoryClick(item.id)}
             />
           ))

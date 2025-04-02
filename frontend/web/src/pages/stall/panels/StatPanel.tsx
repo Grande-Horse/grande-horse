@@ -22,7 +22,7 @@ const StatPanel: React.FC = () => {
     {
       icon: <RankIcon />,
       label: '등급',
-      value: rankMap[selectedHorse.rank as keyof typeof rankMap],
+      value: rankMap[selectedHorse.horseRank as keyof typeof rankMap],
     },
     { icon: <WeightIcon />, label: '체중', value: selectedHorse.weight + 'kg' },
     { icon: <SpeedIcon />, label: '속도', value: selectedHorse.speed + 'km/h' },
@@ -34,7 +34,11 @@ const StatPanel: React.FC = () => {
     <div className='flex h-full flex-col'>
       <section className='my-5 flex gap-4'>
         <div className='flex-1'>
-          <HorseProfileCard name={selectedHorse.name} rank={selectedHorse.rank} coatColor={selectedHorse.coatColor} />
+          <HorseProfileCard
+            name={selectedHorse.name}
+            rank={selectedHorse.horseRank}
+            coatColor={selectedHorse.coatColor}
+          />
         </div>
 
         <div className='bg-gradient mr-8 flex flex-3 items-center rounded-sm p-2'>

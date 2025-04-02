@@ -4,7 +4,7 @@ export interface HorseType {
   id: string;
   name: string;
   coatColor: CoatColorType;
-  rank: RankType;
+  horseRank: RankType;
   weight: number;
   speed: number;
   acceleration: number;
@@ -14,7 +14,7 @@ export interface HorseType {
 export type RankType = keyof typeof rankMap;
 export type RankKrType = (typeof rankMap)[keyof typeof rankMap];
 
-export type CoatColorType = 'black' | 'white' | 'brown' | 'darkbrown' | 'gray';
+export type CoatColorType = 'black' | 'brown' | 'gray' | 'darkbrown' | 'lightbrown';
 
 export interface PastureHorsePositionType {
   x: number;

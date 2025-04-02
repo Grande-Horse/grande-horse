@@ -14,7 +14,7 @@ interface SmallHorseCardProps {
 }
 
 const SmallHorseCard: React.FC<SmallHorseCardProps> = ({
-  horse: { name, coatColor, rank, weight, speed, acceleration, stamina },
+  horse: { name, coatColor, horseRank: rank, weight, speed, acceleration, stamina },
   onHorseCardClick,
 }) => {
   const horseStats = [

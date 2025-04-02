@@ -1,5 +1,9 @@
+import ErrorBoundary from '@/components/ui/errorBoundary/ErrorBoundary';
+import Loading from '@/components/ui/Loading';
 import useTabs from '@/hooks/useTabs';
 import { TabType } from '@/types/tabList';
+import { Suspense } from 'react';
+import Error from '@/components/ui/Error';
 
 interface TabsProps {
   tabList: TabType<string>[];
@@ -22,7 +26,9 @@ const Tabs: React.FC<TabsProps> = ({ tabList, tabPanels }) => {
           </div>
         ))}
       </div>
-      {tabPanels[activeTab]}
+      <ErrorBoundary renderFallback={(error) => <Error errorMessage={error?.message} />}>
+        <Suspense fallback={<Loading />}>{tabPanels[activeTab]}</Suspense>
+      </ErrorBoundary>
     </>
   );
 };

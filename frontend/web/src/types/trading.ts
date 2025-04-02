@@ -2,9 +2,9 @@ import { HorseType } from '@/types/horse';
 
 export interface PriceHistoryType {
   date: string;
-  averagePrice: number | null;
-  highestPrice: number | null;
-  lowestPrice: number | null;
+  averagePrice: number;
+  highestPrice: number;
+  lowestPrice: number;
 }
 
 export interface TradingItemType extends HorseType {

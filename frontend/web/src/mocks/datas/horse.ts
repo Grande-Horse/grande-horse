@@ -4,7 +4,7 @@ export const horseMockData: HorseType = {
   id: '1',
   name: '굿필승',
   coatColor: 'gray',
-  rank: 'epic',
+  horseRank: 'epic',
   weight: 100,
   speed: 100,
   acceleration: 220,

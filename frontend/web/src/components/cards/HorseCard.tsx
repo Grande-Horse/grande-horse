@@ -13,7 +13,7 @@ interface HorseCardProps {
 }
 
 const HorseCard: React.FC<HorseCardProps> = ({
-  horse: { name, coatColor, rank, weight, speed, acceleration, stamina },
+  horse: { name, coatColor, horseRank: rank, weight, speed, acceleration, stamina },
 }) => {
   const horseStats = [
     {
