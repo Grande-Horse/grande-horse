@@ -13,7 +13,7 @@ const InfoPanel = ({ selectedIndex, selectedHorse }: { selectedIndex: number; se
     {
       icon: <RankIcon />,
       label: '등급',
-      value: rankMap[selectedHorse?.rank as keyof typeof rankMap],
+      value: rankMap[selectedHorse?.horseRank as keyof typeof rankMap],
     },
     { icon: <WeightIcon />, label: '체중', value: selectedHorse?.weight + 'kg' },
     { icon: <SpeedIcon />, label: '속도', value: selectedHorse?.speed + 'km/h' },
@@ -27,7 +27,11 @@ const InfoPanel = ({ selectedIndex, selectedHorse }: { selectedIndex: number; se
       <section className='flex h-full w-full py-5 pr-5'>
         {selectedHorse && (
           <div className='h-full'>
-            <HorseProfileCard name={selectedHorse.name} rank={selectedHorse.rank} coatColor={selectedHorse.coatColor} />
+            <HorseProfileCard
+              name={selectedHorse.name}
+              rank={selectedHorse.horseRank}
+              coatColor={selectedHorse.coatColor}
+            />
           </div>
         )}
 

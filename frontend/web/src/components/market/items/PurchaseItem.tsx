@@ -4,6 +4,7 @@ import CoinIcon from '@/assets/icons/coinIcon.svg?react';
 import StatBar from '@/components/charts/StatBar';
 import { purchaseHorse } from '@/services/trading';
 import { RegisteredItemType } from '@/types/trading';
+import DotHorseCard from '@/components/cards/DotHorseCard';
 
 interface PurchaseItemProps {
   item: RegisteredItemType;
@@ -12,7 +13,7 @@ interface PurchaseItemProps {
 }
 
 const PurchaseItem: React.FC<PurchaseItemProps> = ({
-  item: { id, name, coatColor, rank, speed, acceleration, stamina, tradeId, price, registeredAt },
+  item: { id, name, coatColor, horseRank: rank, speed, acceleration, stamina, tradeId, price, registeredAt },
   isPriceHistoryOpen = false,
   onPriceHistoryClick,
 }) => {
@@ -27,8 +28,9 @@ const PurchaseItem: React.FC<PurchaseItemProps> = ({
 
   return (
     <div className='flex gap-5 p-5'>
-      {/* TODO: 말 카드 */}
-      <div className='bg-primary h-60 w-50'></div>
+      <div className='w-2/7'>
+        <DotHorseCard id={id} name={name} coatColor={coatColor} horseRank={rank} />
+      </div>
 
       <div className='flex grow flex-col justify-between'>
         <div className='flex items-center justify-between'>
