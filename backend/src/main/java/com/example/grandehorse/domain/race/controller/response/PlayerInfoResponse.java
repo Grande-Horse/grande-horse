@@ -1,4 +1,4 @@
-package com.example.grandehorse.domain.race.service;
+package com.example.grandehorse.domain.race.controller.response;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class PlayerInfo {
+public class PlayerInfoResponse {
 	private String userNickname;
 
 	private String horseName;

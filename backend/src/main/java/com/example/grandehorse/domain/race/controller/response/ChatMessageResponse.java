@@ -1,4 +1,4 @@
-package com.example.grandehorse.domain.race.service;
+package com.example.grandehorse.domain.race.controller.response;
 
 import java.time.LocalTime;
 
@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class ChatMessage {
+public class ChatMessageResponse {
 	private String sender;
 
 	private String message;

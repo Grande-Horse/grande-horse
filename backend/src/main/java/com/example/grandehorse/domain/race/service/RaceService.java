@@ -20,6 +20,9 @@ import com.example.grandehorse.domain.card.service.CardService;
 import com.example.grandehorse.domain.horse.entity.HorseEntity;
 import com.example.grandehorse.domain.horse.service.HorseService;
 import com.example.grandehorse.domain.race.controller.request.CreateRaceRoomRequest;
+import com.example.grandehorse.domain.race.controller.response.ChatMessageResponse;
+import com.example.grandehorse.domain.race.controller.response.PlayerInfoResponse;
+import com.example.grandehorse.domain.race.controller.response.RaceRoomResponse;
 import com.example.grandehorse.domain.user.service.UserService;
 import com.example.grandehorse.global.exception.CustomError;
 import com.example.grandehorse.global.exception.RaceException;
@@ -50,8 +53,8 @@ public class RaceService {
 	}
 
 	public void broadcastRaceRooms() {
-		Map<String, Map<String, Object>> raceRooms = getRaceRooms();
-		messagingTemplate.convertAndSend("/topic/waiting_rooms", raceRooms);
+		List<RaceRoomResponse> raceRooms = getRaceRooms();
+		messagingTemplate.convertAndSend("/topic/waiting_rooms", Map.of("raceRooms", raceRooms));
 	}
 
 	public void createRaceRoom(
@@ -68,10 +71,11 @@ public class RaceService {
 
 		HashOperations<String, String, Object> hashOps = websocketRedisTemplate.opsForHash();
 		Map<String, Object> raceRoom = Map.of(
+			"roomId", roomId,
 			"roomName", createRaceRoomDto.getRoomName(),
 			"currentPlayers", 0,
 			"maxPlayers", createRaceRoomDto.getMaxPlayers(),
-			"rankRestriction", createRaceRoomDto.getRankRestriction(),
+			"rankRestriction", createRaceRoomDto.getRankRestriction().toLowerCase(),
 			"bettingCoin", createRaceRoomDto.getBettingCoin()
 		);
 		hashOps.putAll(roomKey, raceRoom);
@@ -122,7 +126,7 @@ public class RaceService {
 			throw new RaceException(CustomError.NOT_ALL_PLAYERS_READY);
 		}
 
-		sendSystemMessage(roomId, "[알림] 경주가 시작됩니다!" );
+		sendSystemMessage(roomId, "[알림] 경주가 시작됩니다!");
 	}
 
 	public void leaveRaceRoom(Long roomId, int userId) {
@@ -161,25 +165,32 @@ public class RaceService {
 			.atZone(ZoneId.systemDefault())
 			.toLocalTime();
 
-		ChatMessage chatMessage = new ChatMessage(userNickname, message, time);
+		ChatMessageResponse chatMessage = new ChatMessageResponse(userNickname, message, time);
 		messagingTemplate.convertAndSend("/topic/race_room/" + roomId + "/chat", chatMessage);
 	}
 
-	private Map<String, Map<String, Object>> getRaceRooms() {
+	private List<RaceRoomResponse> getRaceRooms() {
 		Set<String> keys = websocketRedisTemplate.keys(RACE_ROOM_PREFIX + "*");
 
 		if (keys.isEmpty()) {
-			return Map.of();
+			return List.of();
 		}
 
 		HashOperations<String, String, Object> hashOps = websocketRedisTemplate.opsForHash();
-		return keys
-			.stream()
-			.collect(
-				Collectors.toMap(
-					key -> key.replace(RACE_ROOM_PREFIX, ""),
-					key -> hashOps.entries(key)
-				));
+
+		return keys.stream()
+			.map(key -> {
+				Map<String, Object> roomData = hashOps.entries(key);
+				return new RaceRoomResponse(
+					Long.valueOf(roomData.get("roomId").toString()),
+					roomData.get("roomName").toString(),
+					Integer.parseInt(roomData.get("currentPlayers").toString()),
+					Integer.parseInt(roomData.get("maxPlayers").toString()),
+					roomData.get("rankRestriction").toString(),
+					Integer.parseInt(roomData.get("bettingCoin").toString())
+				);
+			})
+			.collect(Collectors.toList());
 	}
 
 	private void removeUserFromRoom(String roomKey, String userKey, int userId) {
@@ -263,7 +274,7 @@ public class RaceService {
 			+ "redis.call('HSET', userKey, 'horseStamina', horseStamina)\n"
 			+ "redis.call('HSET', userKey, 'isReady', 'false')\n"
 			+ "redis.call('HSET', userKey, 'isRoomOwner', tostring(isRoomOwner))\n"
-			+ "redis.call('SADD', roomKey .. ':players', userId)\n"
+			+ "redis.call('RPUSH', roomKey .. ':players', userId)\n"
 			+ "redis.call('HINCRBY', roomKey, 'currentPlayers', 1)\n"
 			+ "return 1";
 	}
@@ -277,17 +288,17 @@ public class RaceService {
 	}
 
 	private void broadcastPlayersInfo(Long roomId, String roomKey) {
-		Set<Object> playerIds = websocketRedisTemplate.opsForSet().members(roomKey + ":players");
-		List<PlayerInfo> playersInfo = playerIds.stream()
+		List<Object> playerIds = websocketRedisTemplate.opsForList().range(roomKey + ":players", 0, -1);
+		List<PlayerInfoResponse> playersInfo = playerIds.stream()
 			.map(id -> getPlayerInfo(roomKey, id))
 			.collect(Collectors.toList());
 		messagingTemplate.convertAndSend("/topic/race_room/" + roomId, playersInfo);
 	}
 
-	private PlayerInfo getPlayerInfo(String roomKey, Object id) {
+	private PlayerInfoResponse getPlayerInfo(String roomKey, Object id) {
 		String userKey = roomKey + ":user:" + id;
 		Map<Object, Object> playerInfo = websocketRedisTemplate.opsForHash().entries(userKey);
-		return PlayerInfo.builder()
+		return PlayerInfoResponse.builder()
 			.userNickname((String)playerInfo.get("userNickname"))
 			.horseName((String)playerInfo.get("horseName"))
 			.horseColor((String)playerInfo.get("horseColor"))
@@ -331,7 +342,7 @@ public class RaceService {
 		LocalTime time = Instant.ofEpochMilli(millis)
 			.atZone(ZoneId.systemDefault())
 			.toLocalTime();
-		ChatMessage chatMessage = new ChatMessage("SYSTEM", message, time);
+		ChatMessageResponse chatMessage = new ChatMessageResponse("SYSTEM", message, time);
 
 		messagingTemplate.convertAndSend("/topic/race_room/" + roomId + "/chat", chatMessage);
 	}
