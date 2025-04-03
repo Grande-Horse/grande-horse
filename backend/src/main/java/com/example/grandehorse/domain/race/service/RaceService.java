@@ -1,16 +1,20 @@
 package com.example.grandehorse.domain.race.service;
 
+import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.time.LocalTime;
 import java.time.ZoneId;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.data.redis.core.Cursor;
 import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.core.ScanOptions;
 import org.springframework.data.redis.core.script.RedisScript;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
@@ -170,7 +174,23 @@ public class RaceService {
 	}
 
 	private List<RaceRoomResponse> getRaceRooms() {
-		Set<String> keys = websocketRedisTemplate.keys(RACE_ROOM_PREFIX + "*");
+		Cursor<byte[]> cursor = websocketRedisTemplate.getConnectionFactory()
+			.getConnection()
+			.scan(ScanOptions.scanOptions().match(RACE_ROOM_PREFIX + "*").count(100).build());
+
+		List<String> keys = new ArrayList<>();
+		while (cursor.hasNext()) {
+			String key = new String(cursor.next(), StandardCharsets.UTF_8);
+
+			String type = websocketRedisTemplate.getConnectionFactory()
+				.getConnection()
+				.type(key.getBytes(StandardCharsets.UTF_8))
+				.toString();
+
+			if ("hash".equals(type)) {
+				keys.add(key);
+			}
+		}
 
 		if (keys.isEmpty()) {
 			return List.of();
@@ -186,7 +206,7 @@ public class RaceService {
 					roomData.get("roomName").toString(),
 					Integer.parseInt(roomData.get("currentPlayers").toString()),
 					Integer.parseInt(roomData.get("maxPlayers").toString()),
-					roomData.get("rankRestriction").toString(),
+					roomData.get("rankRestriction").toString().toLowerCase(),
 					Integer.parseInt(roomData.get("bettingCoin").toString())
 				);
 			})
@@ -201,18 +221,23 @@ public class RaceService {
 
 	private void assignNewOwner(Long roomId, String roomKey, Set<Object> remainingPlayers) {
 		Object newOwnerId = remainingPlayers.iterator().next();
-		String ownerKey = roomKey + ":owner";
+		String newUserKey = roomKey + ":user:" + newOwnerId;
 
-		websocketRedisTemplate.opsForHash().put(ownerKey, "isRoomOwner", "true");
+		websocketRedisTemplate.opsForHash().put(newUserKey, "isRoomOwner", "true");
 
-		String userKey = roomKey + ":user:" + newOwnerId;
-		String newOwnerNickname = getUserNickname(userKey);
+		String newOwnerNickname = getUserNickname(newUserKey);
 		String message = "[알림] " + newOwnerNickname + "님이 새로운 방장이 되었습니다.";
 		sendSystemMessage(roomId, message);
 	}
 
-	private String executeJoinScript(String roomKey, int userId, CardEntity cardEntity, HorseEntity horseEntity,
-		String userNickname, Boolean isRoomOwner) {
+	private String executeJoinScript(
+		String roomKey,
+		int userId,
+		CardEntity cardEntity,
+		HorseEntity horseEntity,
+		String userNickname,
+		Boolean isRoomOwner
+	) {
 		String script = getJoinRaceRoomScript();
 		RedisScript<String> redisScript = RedisScript.of(script, String.class);
 		return websocketRedisTemplate.execute(
