@@ -1,27 +1,23 @@
 import HorseProfileCard from '@/components/cards/HorseProfileCard';
 import Dropdown from '@/components/ui/dropdown/Dropdown';
 import { rankMap, rankNameMap } from '@/constants/rank';
-import { useState } from 'react';
+import { Suspense, useState } from 'react';
 import CardList from '@/components/stall/list/CardList';
 import { HorseCardType } from '@/types/card';
 import RaceRecordChart from '@/components/charts/RaceRecordChart';
-import { useSuspenseQuery } from '@tanstack/react-query';
-import { queryKey } from '@/constants/queryKey';
-import { getRaceRecord } from '@/services/stall';
 import { horseCardMockData } from '@/mocks/datas/horse';
 import RankIcon from '@/assets/icons/rankIcon.svg?react';
 import WeightIcon from '@/assets/icons/weightIcon.svg?react';
 import SpeedIcon from '@/assets/icons/speedIcon.svg?react';
 import AccelerationIcon from '@/assets/icons/accelerationIcon.svg?react';
 import StaminaIcon from '@/assets/icons/staminaIcon.svg?react';
+import ErrorBoundary from '@/components/ui/errorBoundary/ErrorBoundary';
+import Loading from '@/components/ui/Loading';
+import Error from '@/components/ui/Error';
 
 const StatPanel: React.FC = () => {
   const [rank, setRank] = useState<string>('');
   const [selectedHorse, setSelectedHorse] = useState<HorseCardType>(horseCardMockData);
-  const { data } = useSuspenseQuery({
-    queryKey: [queryKey.RACE_RECORD, selectedHorse!.cardId],
-    queryFn: () => getRaceRecord(selectedHorse!.cardId),
-  });
 
   const handleCardClick = (horse: HorseCardType) => {
     setSelectedHorse(horse);
@@ -51,10 +47,14 @@ const StatPanel: React.FC = () => {
             />
           </div>
 
-          <div className='bg-gradient mr-8 flex flex-3 items-center rounded-sm p-2'>
-            <div className='m-auto w-7/8'>
-              <RaceRecordChart raceRecord={data} />
-            </div>
+          <div className='bg-gradient mr-8 flex flex-2 items-center rounded-sm p-2'>
+            <ErrorBoundary renderFallback={(error) => <Error errorMessage={error?.message} />}>
+              <Suspense fallback={<Loading />}>
+                <div className='m-auto w-7/8'>
+                  <RaceRecordChart cardId={selectedHorse.cardId} />
+                </div>
+              </Suspense>
+            </ErrorBoundary>
 
             {/* <ul className='flex h-full w-full flex-col justify-center pr-3 pl-2'>
               {horseStats.map((stat) => (
@@ -77,7 +77,11 @@ const StatPanel: React.FC = () => {
         <Dropdown options={Object.values(rankMap)} value={rank} onChange={setRank} placeholder='등급 선택' />
       </section>
 
-      <CardList rank={rankNameMap[rank as keyof typeof rankNameMap]} onClick={handleCardClick} />
+      <ErrorBoundary renderFallback={(error) => <Error errorMessage={error?.message} />}>
+        <Suspense fallback={<Loading />}>
+          <CardList rank={rankNameMap[rank as keyof typeof rankNameMap]} onClick={handleCardClick} />
+        </Suspense>
+      </ErrorBoundary>
     </div>
   );
 };

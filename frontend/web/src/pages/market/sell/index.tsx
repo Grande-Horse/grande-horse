@@ -50,7 +50,7 @@ const SellPage: React.FC = () => {
 
       <Tabs
         tabList={sellTabList}
-        tabPanels={[<PriceHistoryPanel horseId={horse.id} />, <TradeListPanel horseId={horse.id} />]}
+        tabPanels={[<PriceHistoryPanel horseId={horse.horseId} />, <TradeListPanel horseId={horse.id} />]}
       />
     </div>
   );
