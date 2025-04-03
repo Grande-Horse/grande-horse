@@ -15,11 +15,15 @@ import Loading from '@/components/ui/Loading';
 import Error from '@/components/ui/Error';
 
 const StatPanel: React.FC = () => {
-  const [rank, setRank] = useState<string>('');
+  const [rank, setRank] = useState<string>('all');
   const [selectedHorse, setSelectedHorse] = useState<HorseCardType>();
 
   const handleCardClick = (horse: HorseCardType) => {
     setSelectedHorse(horse);
+  };
+
+  const handleRankChange = (rank: string) => {
+    setRank(rankNameMap[rank as keyof typeof rankNameMap]);
   };
 
   const horseStats = [
@@ -30,7 +34,7 @@ const StatPanel: React.FC = () => {
     },
     { icon: <WeightIcon />, label: '체중', value: selectedHorse?.weight + 'kg' },
     { icon: <SpeedIcon />, label: '속도', value: selectedHorse?.speed + 'km/h' },
-    { icon: <AccelerationIcon />, label: '가속도', value: selectedHorse?.acceleration + 'km/s' },
+    { icon: <AccelerationIcon />, label: '가속도', value: selectedHorse?.acceleration + 'km/h' },
     { icon: <StaminaIcon />, label: '지구력', value: selectedHorse?.stamina + '%' },
   ];
 
@@ -73,12 +77,12 @@ const StatPanel: React.FC = () => {
       )}
 
       <section className='bg-primary p-4'>
-        <Dropdown options={Object.values(rankMap)} value={rank} onChange={setRank} placeholder='등급 선택' />
+        <Dropdown options={Object.values(rankMap)} value={rank} onChange={handleRankChange} />
       </section>
 
       <ErrorBoundary renderFallback={(error) => <Error errorMessage={error?.message} />}>
         <Suspense fallback={<Loading />}>
-          <CardList rank={rankNameMap[rank as keyof typeof rankNameMap]} onClick={handleCardClick} />
+          <CardList rank={rank} onClick={handleCardClick} />
         </Suspense>
       </ErrorBoundary>
     </div>

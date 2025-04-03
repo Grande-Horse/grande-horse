@@ -8,18 +8,18 @@ import { getMyHorseTrading } from '@/services/trading';
 import { ClipLoader } from 'react-spinners';
 import useModal from '@/components/ui/modal/useModal';
 import HorseSelectModalContent from '@/components/market/modal/HorseSelectModalContent';
-import { HorseType } from '@/types/horse';
 import { Suspense, useState } from 'react';
 import Loading from '@/components/ui/Loading';
+import { HorseCardType } from '@/types/card';
 
 const SellPanel: React.FC = () => {
   const { data, hasNextPage, ref } = useInfiniteScroll(queryKey.MY_TRADING, getMyHorseTrading);
-  const [selectedHorse, setSelectedHorse] = useState<HorseType | null>(null);
+  const [selectedHorse, setSelectedHorse] = useState<HorseCardType | null>(null);
 
   const { push } = useInternalRouter();
   const { openModal } = useModal();
 
-  const handleHorseCardClick = (horse: HorseType | null) => {
+  const handleHorseCardClick = (horse: HorseCardType | null) => {
     setSelectedHorse(horse);
   };
 

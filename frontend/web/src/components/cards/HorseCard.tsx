@@ -23,7 +23,7 @@ const HorseCard: React.FC<HorseCardProps> = ({
     },
     { icon: <WeightIcon />, label: '체중', value: weight + 'kg' },
     { icon: <SpeedIcon />, label: '속도', value: speed + 'km/h' },
-    { icon: <AccelerationIcon />, label: '가속도', value: acceleration + 'km/s' },
+    { icon: <AccelerationIcon />, label: '가속도', value: acceleration + 'km/h' },
     { icon: <StaminaIcon />, label: '지구력', value: stamina + '%' },
   ];
 

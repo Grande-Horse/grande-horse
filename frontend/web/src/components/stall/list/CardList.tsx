@@ -1,5 +1,6 @@
 import SmallHorseCard from '@/components/cards/SmallHorseCard';
 import { queryKey } from '@/constants/queryKey';
+import { rankNameMap } from '@/constants/rank';
 import useInfiniteScroll from '@/hooks/useQueries/useInfiniteScroll';
 import { getMyHorseCards } from '@/services/stall';
 import { HorseCardType } from '@/types/card';
@@ -11,7 +12,11 @@ interface CardListProps {
 }
 
 const CardList: React.FC<CardListProps> = ({ rank, onClick }) => {
-  const { data, hasNextPage, ref } = useInfiniteScroll(queryKey.MY_HORSE_CARDS, getMyHorseCards, rank);
+  const { data, hasNextPage, ref } = useInfiniteScroll(
+    queryKey.MY_HORSE_CARDS,
+    getMyHorseCards,
+    rankNameMap[rank as keyof typeof rankNameMap]
+  );
 
   return (
     <>

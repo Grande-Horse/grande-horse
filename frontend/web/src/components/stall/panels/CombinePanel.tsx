@@ -30,6 +30,11 @@ const CombinePanel: React.FC = () => {
       return;
     }
 
+    if (selectedHorses.find((sHorse) => sHorse.horseRank !== horse.horseRank)) {
+      alert('같은 등급의 카드로 합성할 수 있습니다.');
+      return;
+    }
+
     setSelectedHorses((prev) => [...prev, horse]);
   };
 
@@ -47,7 +52,7 @@ const CombinePanel: React.FC = () => {
     <div className='flex h-full flex-col divide-y divide-black'>
       {newCard && <CombineResult horseCard={newCard} onClick={() => setNewCard(null)} />}
 
-      <section className='flex w-full flex-col'>
+      <section className='flex w-full flex-col py-4'>
         <div className='grid grid-cols-3 place-items-center px-1 py-2'>
           {selectedHorses.map((horse) => (
             <SmallHorseCard horse={horse} onClick={handleRemoveCard} />
@@ -61,7 +66,7 @@ const CombinePanel: React.FC = () => {
         <Button
           onClick={handleCombine}
           disabled={selectedHorses.length !== MAX_COMBINE_NUM}
-          className='mt-3 mb-6 w-40 self-center'
+          className='mt-3 mb-2 w-40 self-center'
         >
           합성
         </Button>
