@@ -9,7 +9,7 @@ interface TradeItemProps {
 }
 
 const TradeItem: React.FC<TradeItemProps> = ({
-  item: { id, name, coatColor, horseRank: rank, speed, acceleration, stamina, tradeId, price, soldAt },
+  item: { horseId: id, name, coatColor, horseRank: rank, speed, acceleration, stamina, tradeId, price, soldAt },
 }) => {
   return (
     <div className='flex gap-5 p-5'>

@@ -1,7 +1,7 @@
 import { RaceRecordType } from '@/types/race';
 
 export const raceRecordMockData: RaceRecordType = {
-  first: 24,
-  second: 18,
-  third: 20,
+  totalFirstPlaces: 24,
+  totalSecondPlaces: 18,
+  totalThirdPlaces: 20,
 };

@@ -13,7 +13,7 @@ interface PurchaseItemProps {
 }
 
 const PurchaseItem: React.FC<PurchaseItemProps> = ({
-  item: { id, name, coatColor, horseRank: rank, speed, acceleration, stamina, tradeId, price, registeredAt },
+  item: { horseId: id, name, coatColor, horseRank: rank, speed, acceleration, stamina, tradeId, price, registeredAt },
   isPriceHistoryOpen = false,
   onPriceHistoryClick,
 }) => {

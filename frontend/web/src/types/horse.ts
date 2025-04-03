@@ -1,7 +1,7 @@
 import { rankMap } from '@/constants/rank';
 
 export interface HorseType {
-  id: string;
+  horseId: string;
   name: string;
   coatColor: CoatColorType;
   horseRank: RankType;
