@@ -102,11 +102,11 @@ public class RaceService {
 	public void toggleReadyStatus(Long roomId, int userId) {
 		String roomKey = RACE_ROOM_PREFIX + roomId;
 		String userKey = roomKey + ":user:" + userId;
-		String readyKey = userKey + ":isReady";
 
-		Boolean currentStatus = Boolean.valueOf((String)websocketRedisTemplate.opsForValue().get(readyKey));
+		Boolean currentStatus
+			= Boolean.valueOf((String)websocketRedisTemplate.opsForHash().get(userKey, "isReady"));
 		Boolean newStatus = !currentStatus;
-		websocketRedisTemplate.opsForValue().set(readyKey, String.valueOf(newStatus));
+		websocketRedisTemplate.opsForHash().put(userKey, "isReady", String.valueOf(newStatus));
 
 		broadcastPlayersInfo(roomId, roomKey);
 	}
@@ -134,20 +134,52 @@ public class RaceService {
 		Set<Object> remainingPlayers = websocketRedisTemplate.opsForSet().members(roomKey + ":players");
 		if (remainingPlayers.isEmpty()) {
 			websocketRedisTemplate.delete(roomKey);
+			sendSystemMessage(roomId, "DELETE");
 			return;
-		}
-
-		boolean isOwner = isUserOwner(userKey);
-		if (isOwner) {
-			assignNewOwner(roomId, roomKey, remainingPlayers);
 		}
 
 		String userNickname = getUserNickname(userKey);
 		String message = "[알림] " + userNickname + "님이 방을 떠났습니다.";
 		sendSystemMessage(roomId, message);
 
+		boolean isOwner = isUserOwner(userKey);
+		if (isOwner) {
+			assignNewOwner(roomId, roomKey, remainingPlayers);
+		}
+
 		broadcastPlayersInfo(roomId, roomKey);
 		broadcastRaceRooms();
+	}
+
+	public void sendChatMessage(Long roomId, int userId, String message) {
+		String roomKey = RACE_ROOM_PREFIX + roomId;
+		String userKey = roomKey + ":user:" + userId;
+		String userNickname = websocketRedisTemplate.opsForHash().get(userKey, "userNickname").toString();
+
+		long millis = System.currentTimeMillis();
+		LocalTime time = Instant.ofEpochMilli(millis)
+			.atZone(ZoneId.systemDefault())
+			.toLocalTime();
+
+		ChatMessage chatMessage = new ChatMessage(userNickname, message, time);
+		messagingTemplate.convertAndSend("/topic/race_room/" + roomId + "/chat", chatMessage);
+	}
+
+	private Map<String, Map<String, Object>> getRaceRooms() {
+		Set<String> keys = websocketRedisTemplate.keys(RACE_ROOM_PREFIX + "*");
+
+		if (keys.isEmpty()) {
+			return Map.of();
+		}
+
+		HashOperations<String, String, Object> hashOps = websocketRedisTemplate.opsForHash();
+		return keys
+			.stream()
+			.collect(
+				Collectors.toMap(
+					key -> key.replace(RACE_ROOM_PREFIX, ""),
+					key -> hashOps.entries(key)
+				));
 	}
 
 	private void removeUserFromRoom(String roomKey, String userKey, int userId) {
@@ -166,20 +198,6 @@ public class RaceService {
 		String newOwnerNickname = getUserNickname(userKey);
 		String message = "[알림] " + newOwnerNickname + "님이 새로운 방장이 되었습니다.";
 		sendSystemMessage(roomId, message);
-	}
-
-	public void sendChatMessage(Long roomId, int userId, String message) {
-		String roomKey = RACE_ROOM_PREFIX + roomId;
-		String userKey = roomKey + ":user:" + userId;
-		String userNickname = websocketRedisTemplate.opsForHash().get(userKey, "userNickname").toString();
-
-		long millis = System.currentTimeMillis();
-		LocalTime time = Instant.ofEpochMilli(millis)
-			.atZone(ZoneId.systemDefault())
-			.toLocalTime();
-
-		ChatMessage chatMessage = new ChatMessage(userNickname, message, time);
-		messagingTemplate.convertAndSend("/topic/race_room/" + roomId + "/chat", chatMessage);
 	}
 
 	private String executeJoinScript(String roomKey, int userId, CardEntity cardEntity, HorseEntity horseEntity,
@@ -202,23 +220,6 @@ public class RaceService {
 			userNickname,
 			isRoomOwner.toString()
 		);
-	}
-
-	private Map<String, Map<String, Object>> getRaceRooms() {
-		Set<String> keys = websocketRedisTemplate.keys(RACE_ROOM_PREFIX + "*");
-
-		if (keys.isEmpty()) {
-			return Map.of();
-		}
-
-		HashOperations<String, String, Object> hashOps = websocketRedisTemplate.opsForHash();
-		return keys
-			.stream()
-			.collect(
-				Collectors.toMap(
-					key -> key.replace(RACE_ROOM_PREFIX, ""),
-					key -> hashOps.entries(key)
-				));
 	}
 
 	private Boolean isRoomOwner(String roomKey, int userId) {
@@ -260,6 +261,7 @@ public class RaceService {
 			+ "redis.call('HSET', userKey, 'horseSpeed', horseSpeed)\n"
 			+ "redis.call('HSET', userKey, 'horseAcceleration', horseAcceleration)\n"
 			+ "redis.call('HSET', userKey, 'horseStamina', horseStamina)\n"
+			+ "redis.call('HSET', userKey, 'isReady', 'false')\n"
 			+ "redis.call('HSET', userKey, 'isRoomOwner', tostring(isRoomOwner))\n"
 			+ "redis.call('SADD', roomKey .. ':players', userId)\n"
 			+ "redis.call('HINCRBY', roomKey, 'currentPlayers', 1)\n"
@@ -291,6 +293,7 @@ public class RaceService {
 			.horseColor((String)playerInfo.get("horseColor"))
 			.horseRank((String)playerInfo.get("horseRank"))
 			.isRoomOwner(Boolean.parseBoolean((String)playerInfo.get("isRoomOwner")))
+			.isReady(Boolean.parseBoolean((String)playerInfo.get("isReady")))
 			.build();
 	}
 
@@ -324,6 +327,12 @@ public class RaceService {
 	}
 
 	private void sendSystemMessage(Long roomId, String message) {
-		messagingTemplate.convertAndSend("/topic/race_room/" + roomId + "/chat", message);
+		long millis = System.currentTimeMillis();
+		LocalTime time = Instant.ofEpochMilli(millis)
+			.atZone(ZoneId.systemDefault())
+			.toLocalTime();
+		ChatMessage chatMessage = new ChatMessage("SYSTEM", message, time);
+
+		messagingTemplate.convertAndSend("/topic/race_room/" + roomId + "/chat", chatMessage);
 	}
 }
