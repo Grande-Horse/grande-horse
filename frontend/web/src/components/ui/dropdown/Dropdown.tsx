@@ -2,6 +2,7 @@ import { useState } from 'react';
 import DownArrowIcon from '@/assets/icons/downArrowIcon.svg?react';
 import DropdownList from '@/components/ui/dropdown/DropdownList';
 import useClickOutsideRef from '@/hooks/useClickOutsideRef';
+import { rankMap } from '@/constants/rank';
 
 interface DropdownProps {
   options: readonly string[];
@@ -26,7 +27,7 @@ const Dropdown: React.FC<DropdownProps> = ({ options, value, onChange, placehold
         onClick={() => setIsOpen((prev) => !prev)}
         className='flex w-full cursor-pointer items-center justify-between rounded-sm border border-black bg-white'
       >
-        <p className='text-detail1 truncate pl-4 text-black'>{value || placeholder}</p>
+        <p className='text-detail1 truncate pl-4 text-black'>{rankMap[value as keyof typeof rankMap] || placeholder}</p>
         <div className='border-l border-black p-4'>
           <DownArrowIcon />
         </div>

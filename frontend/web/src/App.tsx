@@ -33,7 +33,6 @@ const AuthOnlyPage = ({ children }: { children: React.ReactNode }) => (
 const PublicPage = ({ children }: { children: React.ReactNode }) => (
   <ProtectedRoute requireAuth={false}>{children}</ProtectedRoute>
 );
-import RaceTrackRacePage from './pages/racetrack/room/race';
 
 function App() {
   const queryClient = new QueryClient();
@@ -122,7 +121,6 @@ function App() {
                     </PublicPage>
                   }
                 />
-                <Route path='/racetrack/room/:roomid/race' element={<RaceTrackRacePage />} />
               </Routes>
             </ModalProvider>
           </AuthContextProvider>

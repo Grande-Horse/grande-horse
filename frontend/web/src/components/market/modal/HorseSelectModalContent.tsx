@@ -21,7 +21,7 @@ const HorseSelectModalContent: React.FC<HorseSelectModalContentProps> = ({ selec
         {data?.pages.flatMap((page) =>
           page.items.map((item) => (
             <div className='relative'>
-              {selectedHorse?.id === item.id && (
+              {selectedHorse?.horseId === item.id && (
                 <div
                   key={item.id}
                   onClick={() => onHorseCardClick(null)}

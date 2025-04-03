@@ -2,18 +2,20 @@ import { rankMap } from '@/constants/rank';
 import CoinIcon from '@/assets/icons/coinIcon.svg?react';
 import StatBar from '@/components/charts/StatBar';
 import { SoldItemType } from '@/types/trading';
+import DotHorseCard from '@/components/cards/DotHorseCard';
 
 interface TradeItemProps {
   item: SoldItemType;
 }
 
 const TradeItem: React.FC<TradeItemProps> = ({
-  item: { id, name, coatColor, rank, speed, acceleration, stamina, tradeId, price, soldAt },
+  item: { horseId: id, name, coatColor, horseRank: rank, speed, acceleration, stamina, tradeId, price, soldAt },
 }) => {
   return (
     <div className='flex gap-5 p-5'>
-      {/* TODO: 말 카드 */}
-      <div className='bg-primary h-60 w-50'></div>
+      <div className='w-2/7'>
+        <DotHorseCard id={id} name={name} coatColor={coatColor} horseRank={rank} />
+      </div>
 
       <div className='flex grow flex-col justify-between'>
         <div className='flex items-center justify-between'>

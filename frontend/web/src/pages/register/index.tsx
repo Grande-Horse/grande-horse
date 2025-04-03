@@ -2,7 +2,7 @@ import Modal from '@/components/ui/modal/Modal';
 import Input from '@/components/ui/Input';
 import { Button } from '@/components/ui/Button';
 import { useNavigate } from 'react-router-dom';
-import useRegister from '../../hooks/useRegister';
+import useRegister from '@/hooks/useRegister';
 
 interface NicknameInputProps {
   nickname: string;
@@ -44,8 +44,12 @@ const RegisterForm = () => {
   const { state, setNickname, validateNickname, submitRegistration } = useRegister();
 
   const handleRegister = async () => {
-    await submitRegistration();
-    navigate('/');
+    const reponse = await submitRegistration();
+    if (reponse.errorCode === '') {
+      navigate('/', { replace: true });
+    } else {
+      console.error(state.isError);
+    }
   };
 
   return (

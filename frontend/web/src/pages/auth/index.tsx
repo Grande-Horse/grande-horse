@@ -3,7 +3,11 @@ import { oauthLogin } from '@/services/auth';
 import { useEffect, useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ClipLoader } from 'react-spinners';
+<<<<<<< HEAD
 import { AuthContext } from '../auth/AuthContextProvider';
+=======
+import { AuthContext } from '@/pages/auth/AuthContextProvider';
+>>>>>>> f397ca365844a74e9aa1e238439590013da644c3
 
 const AuthPage = () => {
   const [loading, setLoading] = useState(true);
@@ -15,7 +19,7 @@ const AuthPage = () => {
     const handleCallback = async () => {
       const queryParams = new URLSearchParams(window.location.search);
       const code = queryParams.get('code');
-      const provider = sessionStorage.getItem('oauthProvider') || 'SSAFY'; // 기본값 설정
+      const provider = sessionStorage.getItem('oauthProvider') || 'SSAFY';
 
       if (!code) {
         setError('인증 코드가 없습니다');
@@ -32,19 +36,16 @@ const AuthPage = () => {
 
         // 응답 데이터로 AuthContext 상태 업데이트
         // response?.data.redirectUrl === '/' 일 경우 등록된 사용자
-        if (response?.data.redirectUrl === '/') {
+        if (response?.redirectUrl === '/') {
           authContext?.dispatch({
             type: 'LOGIN_SUCCESS',
-            payload: { user: response.user },
           });
-          navigate('/');
-        } else if (response?.data.redirectUrl === '/register') {
+        } else if (response?.redirectUrl === '/register') {
           authContext?.dispatch({
             type: 'REGISTER_REQUIRED',
-            payload: { user: response.user },
           });
-          navigate('/register');
         }
+        navigate(response?.redirectUrl, { replace: true });
       } catch (error) {
         console.error('OAuth 로그인 실패:', error);
         setError('로그인 처리 중 오류가 발생했습니다');
@@ -60,7 +61,7 @@ const AuthPage = () => {
   if (loading) {
     return (
       <div className='flex h-screen w-full flex-col items-center justify-center gap-4'>
-        <ClipLoader size={36} color='#3D4B63' />
+        <ClipLoader size={50} color='#FFF' />
         <span className='text-body1'>로그인 처리 중입니다...</span>
       </div>
     );

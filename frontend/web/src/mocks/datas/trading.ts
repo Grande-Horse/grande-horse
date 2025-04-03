@@ -1,13 +1,13 @@
 import { PriceHistoryType, TradingItemType } from '@/types/trading';
 
 export const tradingItemMockData: TradingItemType = {
-  id: '1',
+  horseId: '1',
   name: '굿필승',
   coatColor: 'gray',
-  rank: 'epic',
+  horseRank: 'epic',
   weight: 100,
-  speed: 100,
-  acceleration: 220,
+  speed: 80,
+  acceleration: 120,
   stamina: 160,
   tradeId: 1,
   price: 500,

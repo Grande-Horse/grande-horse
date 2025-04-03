@@ -4,8 +4,17 @@ import CoinCashIcon from '@/assets/icons/coinCashIcon.svg?react';
 import CoinCashIcon2 from '@/assets/icons/coinCashIcon2.svg?react';
 import CoinCashIcon3 from '@/assets/icons/coinCashIcon3.svg?react';
 import { Button } from '@/components/ui/Button';
+import { payByPortone } from '@/services/portone/payService';
+import { confirmCashPay, initCashPay } from '@/services/coin';
+import { PayConfirmInfoType, PayInitInfoType } from '@/types/pay';
 
 const CoinPanel: React.FC = () => {
+  const handlePayButtonClick = async (coinId: number) => {
+    const payInitInfo: PayInitInfoType = await initCashPay(coinId);
+    const payConfirmInfo: PayConfirmInfoType = payByPortone(payInitInfo);
+    await confirmCashPay(payConfirmInfo);
+  };
+
   return (
     <div className='flex flex-col divide-y divide-black'>
       <div className='flex gap-8 px-8 py-6'>
@@ -37,7 +46,9 @@ const CoinPanel: React.FC = () => {
         <div className='flex h-40 grow flex-col justify-center gap-3.5 pt-1.5'>
           <p className='text-stroke'>500코인</p>
           <p className='text-stroke'>500원</p>
-          <Button className='self-end px-12'>충전</Button>
+          <Button onClick={() => handlePayButtonClick(1)} className='self-end px-12'>
+            충전
+          </Button>
         </div>
       </div>
 
@@ -48,7 +59,9 @@ const CoinPanel: React.FC = () => {
         <div className='flex h-40 grow flex-col justify-center gap-3.5 pt-1.5'>
           <p className='text-stroke'>2500코인</p>
           <p className='text-stroke'>2500원</p>
-          <Button className='self-end px-12'>충전</Button>
+          <Button onClick={() => handlePayButtonClick(2)} className='self-end px-12'>
+            충전
+          </Button>
         </div>
       </div>
 
@@ -59,7 +72,9 @@ const CoinPanel: React.FC = () => {
         <div className='flex h-40 grow flex-col justify-center gap-3.5 pt-1.5'>
           <p className='text-stroke'>5000코인</p>
           <p className='text-stroke'>5000원</p>
-          <Button className='self-end px-12'>충전</Button>
+          <Button onClick={() => handlePayButtonClick(3)} className='self-end px-12'>
+            충전
+          </Button>
         </div>
       </div>
     </div>

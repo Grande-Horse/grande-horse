@@ -1,5 +1,6 @@
 import { createContext, useReducer, useContext, useEffect } from 'react';
 import { autoLogin, oauthLogin, registerUser } from '@/services/auth';
+import { useNavigate } from 'react-router-dom';
 
 interface AuthState {
   isAuthenticated: boolean;
@@ -52,6 +53,7 @@ const authReducer = (state: AuthState, action: AuthAction): AuthState => {
         ...state,
         isAuthenticated: true,
         isLoggedIn: true,
+        isRegistered: true,
         loading: false,
         error: null,
       };
@@ -97,6 +99,7 @@ export const useAuth = () => {
 
 export const AuthContextProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [state, dispatch] = useReducer(authReducer, initialState);
+  const navigate = useNavigate();
 
   const { VITE_SSAFY_CLIENT_ID, VITE_SSAFY_REDIRECT_URI, VITE_KAKAO_CLIENT_ID, VITE_KAKAO_REDIRECT_URI } = import.meta
     .env;
@@ -122,22 +125,19 @@ export const AuthContextProvider: React.FC<{ children: React.ReactNode }> = ({ c
   };
 
   const handleAutoLogin = async () => {
-    try {
-      dispatch({ type: 'SET_LOADING', payload: true });
-      const response = await autoLogin();
-
-      if (response.data?.redirectUrl === '/') {
-        dispatch({ type: 'AUTH_SUCCESS' }); // OAuth 인증됨
-        dispatch({ type: 'LOGIN_SUCCESS' }); // 로그인 완료
-      } else if (response.data?.redirectUrl === '/register') {
-        dispatch({ type: 'AUTH_SUCCESS' }); // OAuth 인증됨
-        dispatch({ type: 'REGISTER_REQUIRED' }); // 회원가입 필요
-      } else {
-        dispatch({ type: 'LOGOUT' });
-      }
-    } catch (error) {
-      dispatch({ type: 'SET_ERROR', payload: '자동 로그인 실패' });
-    }
+    // try {
+    //   dispatch({ type: 'SET_LOADING', payload: true });
+    //   const response = await autoLogin();
+    //   if (response.errorCode === '') {
+    //     dispatch({ type: 'LOGIN_SUCCESS' }); // 로그인 완료
+    //     navigate('/');
+    //   } else {
+    //     dispatch({ type: 'LOGOUT' });
+    //     navigate('/');
+    //   }
+    // } catch (error) {
+    //   dispatch({ type: 'SET_ERROR', payload: '자동 로그인 실패' });
+    // }
   };
 
   const handleRegister = async (nickname: string) => {

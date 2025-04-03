@@ -2,8 +2,8 @@ import kakaoLogo from '@/assets/images/kakao-logo.png';
 import { useNavigate } from 'react-router-dom';
 import ssafyLogo from '@/assets/images/ssafy-logo.png';
 import { useEffect, useContext } from 'react';
-import { AuthContext } from '../auth/AuthContextProvider';
-
+import { AuthContext } from '@/pages/auth/AuthContextProvider';
+import { ClipLoader } from 'react-spinners';
 
 const cloudBgImages = {
   upper: `bg-[url(@/assets/images/backgrounds/landingBgCloudUpper.png)]`,
@@ -60,14 +60,18 @@ const LandingPage: React.FC = () => {
   const authContext = useContext(AuthContext);
   const navigate = useNavigate();
 
-
   useEffect(() => {
     if (authContext?.state.isAuthenticated) {
       navigate('/');
     }
   }, [authContext?.state.isAuthenticated, navigate]);
 
-  if (authContext?.state.loading) return <div>로딩 중...</div>;
+  if (authContext?.state.loading)
+    return (
+      <div className='flex h-screen w-full items-center justify-center'>
+        <ClipLoader color='#FFF' size={50} />
+      </div>
+    );
 
   return (
     <div

@@ -1,6 +1,7 @@
 import { Bar } from 'react-chartjs-2';
 import { Chart as ChartJS, CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend } from 'chart.js';
 import { RaceRecordType } from '@/types/race';
+import { raceRecordNameMap } from '@/constants/stall';
 
 ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend);
 ChartJS.defaults.font.size = 10;
@@ -13,7 +14,7 @@ interface RaceRecordChartProps {
 
 const RaceRecordChart: React.FC<RaceRecordChartProps> = ({ raceRecord }) => {
   const chartData = {
-    labels: Object.keys(raceRecord),
+    labels: Object.keys(raceRecord).map((key) => raceRecordNameMap[key as keyof typeof raceRecordNameMap]),
     datasets: [
       {
         label: '순위별 달성 횟수',

@@ -1,5 +1,7 @@
 export interface RaceRecordType {
-  first: number;
-  second: number;
-  third: number;
+  totalFirstPlaces: number;
+  totalSecondPlaces: number;
+  totalThirdPlaces: number;
+  totalRaces?: number;
+  totalPrize?: number;
 }

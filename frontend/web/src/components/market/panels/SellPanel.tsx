@@ -34,7 +34,7 @@ const SellPanel: React.FC = () => {
       ),
       onConfirm: () => {
         if (selectedHorse) {
-          push(`/market/sell/${selectedHorse.id}`);
+          push(`/market/sell/${selectedHorse.horseId}`);
         }
       },
       onCancel: () => {

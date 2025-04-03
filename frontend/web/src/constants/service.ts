@@ -1,1 +1,1 @@
-export const CURSOR_LIMIT = 20;
+export const CURSOR_LIMIT = 24;
