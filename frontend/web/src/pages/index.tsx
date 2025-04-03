@@ -55,12 +55,6 @@ const HomePage: React.FC = () => {
     );
   };
 
-  const authContext = useContext(AuthContext);
-
-  useEffect(() => {
-    console.log('HomePage - AuthContext 상태:', authContext?.state);
-  }, [authContext?.state]);
-
   return (
     <div className='flex h-full flex-col items-center bg-[linear-gradient(to_bottom,rgba(173,193,254,0.8),rgba(114,147,255,0.8))]'>
       <div className='h-full'>
