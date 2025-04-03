@@ -3,11 +3,7 @@ import { oauthLogin } from '@/services/auth';
 import { useEffect, useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ClipLoader } from 'react-spinners';
-<<<<<<< HEAD
-import { AuthContext } from '../auth/AuthContextProvider';
-=======
 import { AuthContext } from '@/pages/auth/AuthContextProvider';
->>>>>>> f397ca365844a74e9aa1e238439590013da644c3
 
 const AuthPage = () => {
   const [loading, setLoading] = useState(true);
