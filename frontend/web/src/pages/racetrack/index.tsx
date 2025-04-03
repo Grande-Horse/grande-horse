@@ -1,23 +1,29 @@
+import { useEffect, useRef, useState } from 'react';
+import SockJS from 'sockjs-client';
+import { Client } from '@stomp/stompjs';
+
 import { Button } from '@/components/ui/Button';
 import useModal from '@/components/ui/modal/useModal';
 import RoomList from '@/components/racetrack/RoomList';
 import { RoomCreateModalContent, RoomCreateModalTitle } from '@/components/racetrack/RoomCreateModal';
 
-import { RoomData } from '@/types/room';
+import { type RoomData } from '@/types/room';
 import { roomMockData } from '@/mocks/datas/room';
-import { useState } from 'react';
+
+const { VITE_WEBSOCKET_URL } = import.meta.env;
 
 const RacetrackPage = () => {
   const { openModal } = useModal();
 
-  // useQuery으로 변경예정
-  const [roomList, setRoomList] = useState(roomMockData);
+  const [roomList, setRoomList] = useState<RoomData[]>([]);
 
   const [newRoom, setNewRoom] = useState<RoomData>({
-    batting: 0,
-    maxPlayers: 0,
-    rank: '',
-    title: '',
+    roomId: 0,
+    roomName: '',
+    rankRestriction: 'normal',
+    bettingCoin: 0,
+    currentPlayers: 0,
+    maxPlayers: 6,
   });
 
   const handleConfirm = async (updatedRoom) => {
@@ -47,33 +53,73 @@ const RacetrackPage = () => {
       confirmText: '생성',
       content: <RoomCreateModalContent newRoom={newRoom} setNewRoom={setNewRoom} />,
       onConfirm: () => {
-        setNewRoom((prevNewRoom) => {
-          const updatedRoom = { ...prevNewRoom };
-          handleConfirm(updatedRoom);
-          return updatedRoom;
-        });
+        // if (clientRef.current) {
+        //   clientRef.current.publish({ destination: '/app/createRoom', body: JSON.stringify(newRoom) });
+        //   clientRef.current.subscribe('/queue/subscribe', () => {
+        //     // 방장
+        //     console.log('zz');
+
+        //     // roomid 받기
+        //   });
+        // }
+
+        // setNewRoom((prevNewRoom) => {
+        //   const updatedRoom = { ...prevNewRoom };
+        //   handleConfirm(updatedRoom);
+        //   return updatedRoom;
+        // });
         setNewRoom({
-          batting: 0,
-          maxPlayers: 0,
-          players: 0,
-          rank: '',
-          title: '',
+          roomId: 0,
+          roomName: '',
+          rankRestriction: '',
+          bettingCoin: 0,
+          currentPlayers: 0,
+          maxPlayers: 6,
         });
       },
       onCancel: () => {
         setNewRoom({
-          batting: 0,
-          maxPlayers: 0,
-          players: 0,
-          rank: '',
-          title: '',
+          roomId: 0,
+          roomName: '',
+          rankRestriction: '',
+          bettingCoin: 0,
+          currentPlayers: 0,
+          maxPlayers: 6,
         });
       },
     });
   };
 
+  const clientRef = useRef<Client | null>(null);
+
+  useEffect(() => {
+    if (clientRef.current) return;
+    const socket = new SockJS(VITE_WEBSOCKET_URL);
+    const client = new Client({
+      webSocketFactory: () => socket,
+      onConnect: () => {
+        console.log('연결');
+        // 연결과 동시에 구독하기 (대기방 목록 보여주기)
+        client.subscribe('/topic/waiting_rooms', (message) => {
+          // const data = JSON.parse(message.body).rooms;
+          setRoomList(roomMockData);
+        });
+      },
+    });
+
+    clientRef.current = client;
+    client.activate();
+
+    return () => {
+      if (clientRef.current) {
+        clientRef.current.deactivate();
+        clientRef.current = null;
+      }
+    };
+  }, []);
+
   return (
-    <div className='relative flex h-[calc(100dvh-12rem)] flex-col gap-5 p-5'>
+    <div className='h-body relative flex flex-col gap-5 p-5'>
       <div className='bg-background flex h-16 w-full justify-end'>
         <Button onClick={handleClick}>
           <p className='px-10'>방 생성</p>

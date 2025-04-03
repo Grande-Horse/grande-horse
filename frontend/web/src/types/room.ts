@@ -1,10 +1,10 @@
 import { RankType } from '@/types/horse';
 
 export interface RoomData {
-  id?: number;
-  title: string;
-  rank: RankType | '';
-  batting: number;
-  players?: number;
+  roomId?: number;
+  roomName: string;
+  rankRestriction: RankType | '';
+  bettingCoin: number;
+  currentPlayers?: number;
   maxPlayers: number;
 }
