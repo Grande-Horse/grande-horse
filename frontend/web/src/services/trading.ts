@@ -49,7 +49,7 @@ export const getPriceHistory = async (horseId: string): Promise<PriceHistoryType
 };
 
 export const sellHorse = async (horse: SellHorseRequest) => {
-  apiPost<SellHorseRequest>('/tradings', horse);
+  apiPost<SellHorseRequest, null>('/tradings', horse);
 };
 
 export const purchaseHorse = async (tradeId: number) => {
