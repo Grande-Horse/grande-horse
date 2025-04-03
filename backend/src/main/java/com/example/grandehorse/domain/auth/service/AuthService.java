@@ -18,8 +18,8 @@ import com.example.grandehorse.global.util.CookieUtil;
 
 @Service
 public class AuthService {
-	private final static String HOME_URL = "/";
-	private final static String REGISTER_URL = "/register";
+	private static final String HOME_URL = "/";
+	private static final String REGISTER_URL = "/register";
 
 	private final JwtTokenProvider jwtTokenProvider;
 	private final Map<String, OauthApiClient> oauthClients;

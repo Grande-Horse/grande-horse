@@ -27,7 +27,8 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 public class UserService {
-	private final static String SOCIAL_TOKEN = "socialToken";
+	private static final String SOCIAL_TOKEN = "socialToken";
+
 	private final UserJpaRepository userJpaRepository;
 	private final JwtTokenProvider jwtTokenProvider;
 
