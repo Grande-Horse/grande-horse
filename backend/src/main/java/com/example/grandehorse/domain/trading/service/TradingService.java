@@ -131,25 +131,27 @@ public class TradingService {
 		Map<LocalDate, PriceHistoryResponse> priceHistoryByDate = priceHistory.stream()
 			.collect(Collectors.toMap(PriceHistoryResponse::getDate, Function.identity()));
 
-		List<PriceHistoryResponse> completeList = new ArrayList<>();
+		priceHistory = fillMissingPriceHistory(sevenDaysAgo, oneDayAgo, priceHistoryByDate);
 
-		return CommonResponse.listSuccess(completeList);
+		return CommonResponse.listSuccess(priceHistory);
 	}
 
-	// private List<PriceHistoryResponse> fillMissingPriceHistory(
-	// 	R
-	// 	Map<LocalDate, PriceHistoryResponse> priceHistoryByDate
-	// ) {
-	// 	for (LocalDate date = sevenDaysAgo; !date.isAfter(oneDayAgo); date = date.plusDays(1)) {
-	// 		PriceHistoryResponse response = priceHistoryByDate.get(date);
-	// 		if (response == null) {
-	// 			completeList.add(new PriceHistoryResponse(0, 0.0, 0, date));
-	// 		} else {
-	// 			completeList.add(response);
-	// 		}
-	// 	}
-	// 	return
-	// }
+	private List<PriceHistoryResponse> fillMissingPriceHistory(
+		LocalDate sevenDaysAgo,
+		LocalDate oneDayAgo,
+		Map<LocalDate, PriceHistoryResponse> priceHistoryByDate
+	) {
+		List<PriceHistoryResponse> priceHistory = new ArrayList<>();
+		for (LocalDate date = sevenDaysAgo; !date.isAfter(oneDayAgo); date = date.plusDays(1)) {
+			PriceHistoryResponse response = priceHistoryByDate.get(date);
+			if (response == null) {
+				priceHistory.add(new PriceHistoryResponse(0, 0.0, 0, date));
+			} else {
+				priceHistory.add(response);
+			}
+		}
+		return priceHistory;
+	}
 
 	private void registerCardTrade(
 		CreateCardTradeDto createTradeDto,
