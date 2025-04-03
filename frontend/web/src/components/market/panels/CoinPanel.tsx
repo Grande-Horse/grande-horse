@@ -5,14 +5,13 @@ import CoinCashIcon2 from '@/assets/icons/coinCashIcon2.svg?react';
 import CoinCashIcon3 from '@/assets/icons/coinCashIcon3.svg?react';
 import { Button } from '@/components/ui/Button';
 import { payByPortone } from '@/services/portone/payService';
-import { confirmCashPay, initCashPay } from '@/services/coin';
-import { PayConfirmInfoType, PayInitInfoType } from '@/types/pay';
+import { initCashPay } from '@/services/coin';
+import { PayInitInfoType } from '@/types/pay';
 
 const CoinPanel: React.FC = () => {
   const handlePayButtonClick = async (coinId: number) => {
     const payInitInfo: PayInitInfoType = await initCashPay(coinId);
-    const payConfirmInfo: PayConfirmInfoType = payByPortone(payInitInfo);
-    await confirmCashPay(payConfirmInfo);
+    payByPortone(payInitInfo);
   };
 
   return (

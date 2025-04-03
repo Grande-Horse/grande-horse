@@ -9,12 +9,15 @@ import { rankMap, rankNameMap } from '@/constants/rank';
 import { HorseCardType } from '@/types/card';
 import { Suspense, useState } from 'react';
 import Error from '@/components/ui/Error';
+import { combineCards } from '@/services/stall';
+import CombineResult from '@/components/stall/CombineResult';
 
 const MAX_COMBINE_NUM = 3;
 
 const CombinePanel: React.FC = () => {
   const [rank, setRank] = useState<string>('');
   const [selectedHorses, setSelectedHorses] = useState<HorseCardType[]>([]);
+  const [newCard, setNewCard] = useState<HorseCardType | null>(null);
 
   const handleAddCard = (horse: HorseCardType) => {
     if (selectedHorses.length === 3) {
@@ -34,12 +37,16 @@ const CombinePanel: React.FC = () => {
     setSelectedHorses((prev) => prev.filter((sHorse) => sHorse.cardId !== horse.cardId));
   };
 
-  const handleCombine = () => {
-    // TODO: 합성 API 요청
+  const handleCombine = async () => {
+    const cardIds = selectedHorses.map((horse) => horse.cardId);
+    const newCard = await combineCards(cardIds);
+    setNewCard(newCard);
   };
 
   return (
     <div className='flex h-full flex-col divide-y divide-black'>
+      {newCard && <CombineResult horseCard={newCard} onClick={() => setNewCard(null)} />}
+
       <section className='flex w-full flex-col'>
         <div className='grid grid-cols-3 place-items-center px-1 py-2'>
           {selectedHorses.map((horse) => (

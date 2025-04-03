@@ -5,7 +5,6 @@ import { Suspense, useState } from 'react';
 import CardList from '@/components/stall/list/CardList';
 import { HorseCardType } from '@/types/card';
 import RaceRecordChart from '@/components/charts/RaceRecordChart';
-import { horseCardMockData } from '@/mocks/datas/horse';
 import RankIcon from '@/assets/icons/rankIcon.svg?react';
 import WeightIcon from '@/assets/icons/weightIcon.svg?react';
 import SpeedIcon from '@/assets/icons/speedIcon.svg?react';
@@ -17,7 +16,7 @@ import Error from '@/components/ui/Error';
 
 const StatPanel: React.FC = () => {
   const [rank, setRank] = useState<string>('');
-  const [selectedHorse, setSelectedHorse] = useState<HorseCardType>(horseCardMockData);
+  const [selectedHorse, setSelectedHorse] = useState<HorseCardType>();
 
   const handleCardClick = (horse: HorseCardType) => {
     setSelectedHorse(horse);
@@ -70,7 +69,7 @@ const StatPanel: React.FC = () => {
           </div>
         </section>
       ) : (
-        <div className='flex justify-center py-[6.9rem]'>능력치 및 전적을 확인할 말을 선택해 주세요!</div>
+        <div className='flex justify-center py-[7rem]'>능력치 및 전적을 확인할 말을 선택해 주세요!</div>
       )}
 
       <section className='bg-primary p-4'>

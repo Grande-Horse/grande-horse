@@ -1,9 +1,10 @@
-import { PayConfirmInfoType, PayInitInfoType } from '@/types/pay';
+import { confirmCashPay } from '@/services/coin';
+import { PayInitInfoType } from '@/types/pay';
 
 const { IMP } = window;
 const { VITE_BASE_URL, VITE_PORTONE_CODE, VITE_PORTONE_CHANNEL } = import.meta.env;
 
-export const payByPortone = ({ merchantUid, name, amount, orderedAt }: PayInitInfoType): PayConfirmInfoType => {
+export const payByPortone = ({ merchantUid, name, amount, orderedAt }: PayInitInfoType) => {
   IMP.init(VITE_PORTONE_CODE);
 
   return IMP.request_pay(
@@ -24,7 +25,8 @@ export const payByPortone = ({ merchantUid, name, amount, orderedAt }: PayInitIn
         impUid: response.imp_uid,
         merchantUid: response.merchant_uid,
       };
-      return payConfirmInfo;
+
+      await confirmCashPay(payConfirmInfo);
     }
   );
 };
