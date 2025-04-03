@@ -15,7 +15,7 @@ const CardList: React.FC<CardListProps> = ({ rank, onClick }) => {
 
   return (
     <>
-      <section className='grid grid-cols-3 place-items-center py-2'>
+      <section className='grid grid-cols-3 place-items-center px-1 py-2'>
         {data.pages.flatMap((page) =>
           page.items.map((item) => <SmallHorseCard key={item.tradeId} horse={item} onClick={onClick} />)
         )}
