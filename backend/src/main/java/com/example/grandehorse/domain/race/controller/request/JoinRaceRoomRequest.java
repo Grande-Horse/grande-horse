@@ -9,6 +9,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class JoinRaceRoomDto {
+public class JoinRaceRoomRequest {
 	private Long roomId;
 }

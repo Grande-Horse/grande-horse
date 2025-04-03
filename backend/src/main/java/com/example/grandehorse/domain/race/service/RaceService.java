@@ -1,5 +1,8 @@
 package com.example.grandehorse.domain.race.service;
 
+import java.time.Instant;
+import java.time.LocalTime;
+import java.time.ZoneId;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -16,7 +19,7 @@ import com.example.grandehorse.domain.card.entity.CardEntity;
 import com.example.grandehorse.domain.card.service.CardService;
 import com.example.grandehorse.domain.horse.entity.HorseEntity;
 import com.example.grandehorse.domain.horse.service.HorseService;
-import com.example.grandehorse.domain.race.controller.request.CreateRaceRoomDto;
+import com.example.grandehorse.domain.race.controller.request.CreateRaceRoomRequest;
 import com.example.grandehorse.domain.user.service.UserService;
 import com.example.grandehorse.global.exception.CustomError;
 import com.example.grandehorse.global.exception.RaceException;
@@ -52,7 +55,7 @@ public class RaceService {
 	}
 
 	public void createRaceRoom(
-		CreateRaceRoomDto createRaceRoomDto,
+		CreateRaceRoomRequest createRaceRoomDto,
 		int userId,
 		String sessionId
 	) {
@@ -89,8 +92,94 @@ public class RaceService {
 		String result = executeJoinScript(roomKey, userId, cardEntity, horseEntity, userNickname, isRoomOwner);
 		validateJoinResult(result);
 
+		String message = "[알림]" + userNickname + "님이 입장하셨습니다.";
+		sendSystemMessage(roomId, message);
+
 		broadcastPlayersInfo(roomId, roomKey);
 		broadcastRaceRooms();
+	}
+
+	public void toggleReadyStatus(Long roomId, int userId) {
+		String roomKey = RACE_ROOM_PREFIX + roomId;
+		String userKey = roomKey + ":user:" + userId;
+		String readyKey = userKey + ":isReady";
+
+		Boolean currentStatus = Boolean.valueOf((String)websocketRedisTemplate.opsForValue().get(readyKey));
+		Boolean newStatus = !currentStatus;
+		websocketRedisTemplate.opsForValue().set(readyKey, String.valueOf(newStatus));
+
+		broadcastPlayersInfo(roomId, roomKey);
+	}
+
+	public void startRace(Long roomId, int userId) {
+		String roomKey = RACE_ROOM_PREFIX + roomId;
+
+		if (!isRoomOwner(roomKey, userId)) {
+			throw new RaceException(CustomError.ONLY_OWNER_CAN_START_RACE);
+		}
+
+		if (!isAllPlayersReady(roomKey)) {
+			throw new RaceException(CustomError.NOT_ALL_PLAYERS_READY);
+		}
+
+		sendSystemMessage(roomId, "[알림] 경주가 시작됩니다!" );
+	}
+
+	public void leaveRaceRoom(Long roomId, int userId) {
+		String roomKey = RACE_ROOM_PREFIX + roomId;
+		String userKey = roomKey + ":user:" + userId;
+
+		removeUserFromRoom(roomKey, userKey, userId);
+
+		Set<Object> remainingPlayers = websocketRedisTemplate.opsForSet().members(roomKey + ":players");
+		if (remainingPlayers.isEmpty()) {
+			websocketRedisTemplate.delete(roomKey);
+			return;
+		}
+
+		boolean isOwner = isUserOwner(userKey);
+		if (isOwner) {
+			assignNewOwner(roomId, roomKey, remainingPlayers);
+		}
+
+		String userNickname = getUserNickname(userKey);
+		String message = "[알림] " + userNickname + "님이 방을 떠났습니다.";
+		sendSystemMessage(roomId, message);
+
+		broadcastPlayersInfo(roomId, roomKey);
+		broadcastRaceRooms();
+	}
+
+	private void removeUserFromRoom(String roomKey, String userKey, int userId) {
+		websocketRedisTemplate.opsForSet().remove(roomKey + ":players", userId);
+		websocketRedisTemplate.delete(userKey);
+		websocketRedisTemplate.opsForHash().increment(roomKey, "currentPlayers", -1);
+	}
+
+	private void assignNewOwner(Long roomId, String roomKey, Set<Object> remainingPlayers) {
+		Object newOwnerId = remainingPlayers.iterator().next();
+		String ownerKey = roomKey + ":owner";
+
+		websocketRedisTemplate.opsForHash().put(ownerKey, "isRoomOwner", "true");
+
+		String userKey = roomKey + ":user:" + newOwnerId;
+		String newOwnerNickname = getUserNickname(userKey);
+		String message = "[알림] " + newOwnerNickname + "님이 새로운 방장이 되었습니다.";
+		sendSystemMessage(roomId, message);
+	}
+
+	public void sendChatMessage(Long roomId, int userId, String message) {
+		String roomKey = RACE_ROOM_PREFIX + roomId;
+		String userKey = roomKey + ":user:" + userId;
+		String userNickname = websocketRedisTemplate.opsForHash().get(userKey, "userNickname").toString();
+
+		long millis = System.currentTimeMillis();
+		LocalTime time = Instant.ofEpochMilli(millis)
+			.atZone(ZoneId.systemDefault())
+			.toLocalTime();
+
+		ChatMessage chatMessage = new ChatMessage(userNickname, message, time);
+		messagingTemplate.convertAndSend("/topic/race_room/" + roomId + "/chat", chatMessage);
 	}
 
 	private String executeJoinScript(String roomKey, int userId, CardEntity cardEntity, HorseEntity horseEntity,
@@ -197,18 +286,44 @@ public class RaceService {
 		String userKey = roomKey + ":user:" + id;
 		Map<Object, Object> playerInfo = websocketRedisTemplate.opsForHash().entries(userKey);
 		return PlayerInfo.builder()
-			.userId(Integer.parseInt((String)id))
-			.cardId(Integer.parseInt((String)playerInfo.get("cardId")))
-			.horseId((String)playerInfo.get("horseId"))
 			.userNickname((String)playerInfo.get("userNickname"))
 			.horseName((String)playerInfo.get("horseName"))
 			.horseColor((String)playerInfo.get("horseColor"))
 			.horseRank((String)playerInfo.get("horseRank"))
-			.weight(Short.parseShort((String)playerInfo.get("horseWeight")))
-			.speed(Double.parseDouble((String)playerInfo.get("horseSpeed")))
-			.acceleration(Double.parseDouble((String)playerInfo.get("horseAcceleration")))
-			.stamina(Double.parseDouble((String)playerInfo.get("horseStamina")))
 			.isRoomOwner(Boolean.parseBoolean((String)playerInfo.get("isRoomOwner")))
 			.build();
+	}
+
+	private boolean isAllPlayersReady(String roomKey) {
+		Set<Object> playerIds = websocketRedisTemplate.opsForSet().members(roomKey + ":players");
+
+		for (Object id : playerIds) {
+			String userKey = roomKey + ":user:" + id;
+			String isOwner = (String)websocketRedisTemplate.opsForValue().get(userKey + ":isRoomOwner");
+
+			if ("true".equals(isOwner)) {
+				continue;
+			}
+
+			Boolean isReady = Boolean.valueOf((String)websocketRedisTemplate.opsForValue().get(userKey + ":isReady"));
+			if (!isReady) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	private String getUserNickname(String userKey) {
+		Object nicknameObj = websocketRedisTemplate.opsForHash().get(userKey, "userNickname");
+		return (nicknameObj != null) ? nicknameObj.toString() : "알 수 없는 유저";
+	}
+
+	private boolean isUserOwner(String userKey) {
+		Object isOwnerObj = websocketRedisTemplate.opsForHash().get(userKey, "isRoomOwner");
+		return isOwnerObj != null && Boolean.parseBoolean(isOwnerObj.toString());
+	}
+
+	private void sendSystemMessage(Long roomId, String message) {
+		messagingTemplate.convertAndSend("/topic/race_room/" + roomId + "/chat", message);
 	}
 }

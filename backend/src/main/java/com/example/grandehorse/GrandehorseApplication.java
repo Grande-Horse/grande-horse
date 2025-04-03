@@ -6,6 +6,6 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @SpringBootApplication
 public class GrandehorseApplication {
 	public static void main(String[] args) {
-		SpringApplication.run(GrandehorseApplication.class, args);
+		SpringApplication. run(GrandehorseApplication.class, args);
 	}
 }

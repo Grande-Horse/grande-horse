@@ -10,12 +10,6 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 @Builder
 public class PlayerInfo {
-	private Integer userId;
-
-	private Integer cardId;
-
-	private String horseId;
-
 	private String userNickname;
 
 	private String horseName;
@@ -24,15 +18,7 @@ public class PlayerInfo {
 
 	private String horseRank;
 
-	private Short weight;
-
-	private Double speed;
-
-	private Double acceleration;
-
-	private Double stamina;
-
-	private String getUserNickname;
-
 	private boolean isRoomOwner;
+
+	private boolean isReady;
 }
