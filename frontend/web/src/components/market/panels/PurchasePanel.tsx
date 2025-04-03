@@ -98,7 +98,7 @@ const PurchasePanel: React.FC = () => {
               key={item.tradeId}
               item={item}
               isPriceHistoryOpen={selectedHorse !== ''}
-              onPriceHistoryClick={() => handlePriceHistoryClick(item.id)}
+              onPriceHistoryClick={() => handlePriceHistoryClick(item.horseId)}
             />
           ))
         )}

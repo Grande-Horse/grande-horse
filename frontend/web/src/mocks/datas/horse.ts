@@ -1,7 +1,8 @@
+import { HorseCardType } from '@/types/card';
 import { HorseType } from '@/types/horse';
 
 export const horseMockData: HorseType = {
-  id: '1',
+  horseId: '1',
   name: '굿필승',
   coatColor: 'gray',
   horseRank: 'epic',
@@ -11,4 +12,11 @@ export const horseMockData: HorseType = {
   stamina: 160,
 };
 
+export const horseCardMockData: HorseCardType = {
+  ...horseMockData,
+  cardId: 2,
+  status: 0,
+};
+
 export const horseListMockData: HorseType[] = Array.from({ length: 22 }, () => horseMockData);
+export const horseCardListMockData: HorseCardType[] = Array.from({ length: 82 }, () => horseCardMockData);

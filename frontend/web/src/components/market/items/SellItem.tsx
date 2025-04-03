@@ -11,7 +11,7 @@ interface SellItemProps {
 }
 
 const SellItem: React.FC<SellItemProps> = ({
-  item: { id, name, coatColor, horseRank: rank, speed, acceleration, stamina, tradeId, price, soldAt },
+  item: { horseId: id, name, coatColor, horseRank: rank, speed, acceleration, stamina, tradeId, price, soldAt },
 }) => {
   const handleCancelHorseSelling = async () => {
     const tradeId = 3;
