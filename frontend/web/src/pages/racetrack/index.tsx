@@ -5,16 +5,16 @@ import { Client, StompSubscription } from '@stomp/stompjs';
 import { Button } from '@/components/ui/Button';
 import useModal from '@/components/ui/modal/useModal';
 import RoomList from '@/components/racetrack/RoomList';
-import { RoomCreateModalContent, RoomCreateModalTitle } from '@/components/racetrack/RoomCreateModal';
 
 import { type RoomData, type RoomCreateData } from '@/types/room';
 import { roomCreateResetData, roomListResetData } from '@/constants/room';
 import { useNavigate } from 'react-router-dom';
+import RoomCreateModal, { RoomCreateModalReturn } from '@/components/racetrack/RoomCreateModal';
+import { RankType } from '@/types/horse';
 
 const { VITE_WEBSOCKET_URL } = import.meta.env;
 
 const RacetrackPage = () => {
-  const { openModal } = useModal();
   const navigate = useNavigate();
 
   const [roomList, setRoomList] = useState<RoomData[]>(roomListResetData);
@@ -40,7 +40,7 @@ const RacetrackPage = () => {
     subscriptions.current.clear();
   };
 
-  const handleCreateRoom = () => {
+  const handleCreateRoom = (roomData: RoomCreateData) => {
     if (!clientRef.current) {
       console.warn('WebSocket client is not connected.');
       return;
@@ -57,7 +57,6 @@ const RacetrackPage = () => {
 
       clientRef.current?.publish({ destination: `/app/race_room/${id}/join` });
 
-      // '/user/queue/subscribe' 구독 해제
       unsubscribe('/user/queue/subscribe');
 
       navigate(`/racetrack/room/${id}`);
@@ -67,22 +66,29 @@ const RacetrackPage = () => {
 
     clientRef.current.publish({
       destination: '/app/createRoom',
-      body: JSON.stringify(newRoom),
+      body: JSON.stringify(roomData),
     });
-
-    setNewRoom(roomCreateResetData);
   };
 
   const handleClick = () => {
-    openModal({
-      title: <RoomCreateModalTitle />,
-      confirmText: '생성',
-      content: <RoomCreateModalContent newRoom={newRoom} setNewRoom={setNewRoom} />,
-      onConfirm: handleCreateRoom,
-      onCancel: () => {
-        setNewRoom(roomCreateResetData);
-      },
-    });
+    const handleClose = () => {
+      setNewRoom(roomCreateResetData);
+    };
+  };
+
+  const { ModalWrapper, openModal, closeModal } = useModal<RoomCreateModalReturn>();
+  const handleOpenModal = async () => {
+    const value = await openModal();
+    if (value) {
+      const payload = {
+        roomName: value.roomName,
+        maxPlayers: value.maxPlayers,
+        rankRestriction: value.rankRestriction as RankType,
+        bettingCoin: value.bettingCoin,
+      };
+
+      handleCreateRoom(payload);
+    }
   };
 
   useEffect(() => {
@@ -122,8 +128,11 @@ const RacetrackPage = () => {
 
   return (
     <div className='h-body relative flex flex-col gap-5 p-5'>
+      <ModalWrapper>
+        <RoomCreateModal close={closeModal} />
+      </ModalWrapper>
       <div className='bg-background flex h-16 w-full justify-end'>
-        <Button onClick={handleClick}>
+        <Button onClick={handleOpenModal}>
           <p className='px-10'>방 생성</p>
         </Button>
       </div>

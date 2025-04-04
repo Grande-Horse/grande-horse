@@ -1,60 +1,34 @@
-import { ReactNode, useCallback } from 'react';
-import Modal from '@/components/ui/modal/Modal';
-import { Button } from '@/components/ui/Button';
-import { useModalDispatchContext } from '@/components/ui/modal/ModalProvider';
+import ModalWrapper from '@/components/ui/modal/ModalWrapper';
+import { useState } from 'react';
 
-interface ModalOptions {
-  title?: ReactNode;
-  content: ReactNode;
-  onConfirm?: () => void;
-  onCancel?: () => void;
-  confirmText?: string;
-  cancelText?: string;
-}
+const useModal = <T,>() => {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [resolve, setResolve] = useState<(value: T | null) => void>();
 
-const useModal = () => {
-  const { open, close } = useModalDispatchContext();
+  const openModal = (): Promise<T | null> => {
+    setIsModalOpen(true);
+    return new Promise((res) => setResolve(() => res));
+  };
 
-  const openModal = useCallback(
-    ({ title, content, onConfirm, onCancel, confirmText = '확인', cancelText = '취소' }: ModalOptions) => {
-      const id = open(Modal, {
-        isOpen: true,
-        onClose: () => close(id),
-        children: (
-          <>
-            {title && <div className='text-body1 mb-6'>{title}</div>}
+  const closeModal = (value: T | null) => {
+    setIsModalOpen(false);
+    if (resolve) resolve(value);
+  };
 
-            <div className='w-full'>{content}</div>
-
-            <div className='flex gap-2 pt-6'>
-              <Button
-                variant='secondary'
-                onClick={() => {
-                  if (onCancel) onCancel();
-                  close(id);
-                }}
-              >
-                {cancelText}
-              </Button>
-              <Button
-                onClick={() => {
-                  if (onConfirm) onConfirm();
-                  close(id);
-                }}
-              >
-                {confirmText}
-              </Button>
-            </div>
-          </>
-        ),
-      });
-
-      return id;
-    },
-    [open, close]
-  );
-
-  return { openModal, closeModal: close };
+  return {
+    ModalWrapper: ({ children }: { children: React.ReactNode }) =>
+      isModalOpen ? (
+        <ModalWrapper
+          close={() => {
+            closeModal(null);
+          }}
+        >
+          {children}
+        </ModalWrapper>
+      ) : null,
+    openModal,
+    closeModal,
+  };
 };
 
 export default useModal;

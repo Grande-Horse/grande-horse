@@ -16,6 +16,11 @@ const Dropdown: React.FC<DropdownProps> = ({ options, value, onChange, placehold
   const [isOpen, setIsOpen] = useState(false);
   const ref = useClickOutsideRef<HTMLDivElement>(() => setIsOpen(false));
 
+  const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+    e.preventDefault();
+    setIsOpen((prev) => !prev);
+  };
+
   const handleClickOption = (option: string) => {
     onChange(option);
     setIsOpen(false);
@@ -24,7 +29,7 @@ const Dropdown: React.FC<DropdownProps> = ({ options, value, onChange, placehold
   return (
     <div className={`relative min-w-38 ${className}`} ref={ref}>
       <button
-        onClick={() => setIsOpen((prev) => !prev)}
+        onClick={handleClick}
         className='flex w-full cursor-pointer items-center justify-between rounded-sm border border-black bg-white'
       >
         <p className='text-detail1 truncate pl-4 text-black'>{value || placeholder}</p>
