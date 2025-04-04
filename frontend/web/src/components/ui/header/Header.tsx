@@ -1,3 +1,5 @@
+import { getMyCoin } from '@/services/coin';
+import { useQuery } from '@tanstack/react-query';
 import { DefaultContent, StallContent, RaceTrackContent, LandingContent } from '@/components/ui/header/HeaderContent';
 import { useLocation, useSearchParams } from 'react-router-dom';
 
@@ -8,7 +10,11 @@ const Header: React.FC = () => {
   const [searchParams] = useSearchParams();
 
   /* 재화(코인, 발걸음) api 연결 후 캐시 데이터로 저장*/
-  const coin = 100000;
+  const { data: { coin } = { coin: 0 } } = useQuery({
+    queryKey: ['coin'],
+    queryFn: getMyCoin,
+  });
+
   const foot = 100000;
 
   const contentMap = [

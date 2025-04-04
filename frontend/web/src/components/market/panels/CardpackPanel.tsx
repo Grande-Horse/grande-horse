@@ -5,8 +5,17 @@ import NormalCardpackIcon from '@/assets/icons/normalCardpackIcon.svg?react';
 import RareCardpackIcon from '@/assets/icons/rareCardpackIcon.svg?react';
 import EpicCardpackIcon from '@/assets/icons/epicCardpackIcon.svg?react';
 import UniqueCardpackIcon from '@/assets/icons/uniqueCardpackIcon.svg?react';
+import { buyCardpack, buyDailyCardpack } from '@/services/cardpack';
 
 const CardpackPanel: React.FC = () => {
+  const handleBuyButtonClick = async (cardpackId: number) => {
+    await buyCardpack(cardpackId);
+  };
+
+  const handleDailyCardpackButtonClick = async () => {
+    await buyDailyCardpack();
+  };
+
   return (
     <div className='flex flex-col divide-y divide-black'>
       <div className='flex gap-8 px-8 py-6'>
@@ -25,7 +34,9 @@ const CardpackPanel: React.FC = () => {
             </span>
           </div>
           <p className='text-stroke'>오늘의 말 6장 획득</p>
-          <Button className='self-end px-12'>구매</Button>
+          <Button onClick={handleDailyCardpackButtonClick} className='self-end px-12'>
+            구매
+          </Button>
         </div>
       </div>
 
@@ -45,7 +56,9 @@ const CardpackPanel: React.FC = () => {
             </span>
           </div>
           <p className='text-stroke'>노멀 등급 이하의 말 획득</p>
-          <Button className='self-end px-12'>구매</Button>
+          <Button onClick={() => handleBuyButtonClick(1)} className='self-end px-12'>
+            구매
+          </Button>
         </div>
       </div>
 
@@ -65,7 +78,9 @@ const CardpackPanel: React.FC = () => {
             </span>
           </div>
           <p className='text-stroke'>레어 등급 이하의 말 획득</p>
-          <Button className='self-end px-12'>구매</Button>
+          <Button onClick={() => handleBuyButtonClick(2)} className='self-end px-12'>
+            구매
+          </Button>
         </div>
       </div>
 
@@ -85,7 +100,9 @@ const CardpackPanel: React.FC = () => {
             </span>
           </div>
           <p className='text-stroke'>에픽 등급 이하의 말 획득</p>
-          <Button className='self-end px-12'>구매</Button>
+          <Button onClick={() => handleBuyButtonClick(3)} className='self-end px-12'>
+            구매
+          </Button>
         </div>
       </div>
 
@@ -105,7 +122,9 @@ const CardpackPanel: React.FC = () => {
             </span>
           </div>
           <p className='text-stroke'>유니크 등급 이하의 말 획득</p>
-          <Button className='self-end px-12'>구매</Button>
+          <Button onClick={() => handleBuyButtonClick(4)} className='self-end px-12'>
+            구매
+          </Button>
         </div>
       </div>
     </div>

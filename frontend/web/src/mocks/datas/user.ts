@@ -1,5 +1,9 @@
 import { RankType } from '@/types/horse';
 
+export const myCoin = {
+  coin: 1000,
+} as const;
+
 type CoatColorType = 'black' | 'lightbrown' | 'brown' | 'darkbrown' | 'gray';
 // api 연동전에 임시 타입
 interface User {
