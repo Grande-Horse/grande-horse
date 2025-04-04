@@ -27,14 +27,21 @@ const RoomCreateModal = ({ close }: RoomCreateModalProps) => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+
+    const roomName = roomNameInputRef.current?.value.trim() ?? '';
+    const maxPlayersNum = Number(maxPlayers) || 2;
+    const rank = rankRestriction || 'normal';
+
+    const bettingRaw = bettingCoinInputRef.current?.value ?? '';
+    const bettingCoin = Number(bettingRaw.trim().replace(/['"]/g, '')) || 0;
+
     close({
-      roomName: roomNameInputRef.current?.value ?? '',
-      maxPlayers: Number(maxPlayers) ?? 2,
-      rankRestriction: rankRestriction ?? 'normal',
-      bettingCoin: Number(bettingCoinInputRef.current?.value) ?? 0,
+      roomName,
+      maxPlayers: maxPlayersNum,
+      rankRestriction: rank,
+      bettingCoin,
     });
   };
-
   const closeModalWithoutSave = () => {
     close(null);
   };
