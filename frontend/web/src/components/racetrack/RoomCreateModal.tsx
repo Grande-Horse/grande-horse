@@ -50,7 +50,7 @@ const RoomCreateModal = ({ close }: RoomCreateModalProps) => {
   return (
     <div className='z-modal fixed inset-0 flex items-center justify-center'>
       <div className='bg-background max-w-modal flex w-full flex-col items-center justify-center rounded-lg px-10 py-14 text-white'>
-        <form className='flex w-full flex-col justify-center gap-3' onSubmit={handleSubmit}>
+        <form className='flex w-full flex-col items-center justify-center gap-3' onSubmit={handleSubmit}>
           <div className='text-heading4 text-stroke font-normal'>방 생성</div>
           <Input
             placeholder='제목'
@@ -59,14 +59,14 @@ const RoomCreateModal = ({ close }: RoomCreateModalProps) => {
             ref={roomNameInputRef}
           />
           <Dropdown
-            className='text-detail1'
+            className='text-detail1 w-full'
             options={PARTICIPANT_NUMBERS}
             placeholder='인원수'
             value={maxPlayers}
             onChange={(value) => handleDropDownOnChange(value, 'maxPlayers')}
           />
           <Dropdown
-            className='text-detail1'
+            className='text-detail1 w-full'
             options={Object.values(rankMap)}
             placeholder='등급'
             value={rankRestriction}
@@ -79,11 +79,13 @@ const RoomCreateModal = ({ close }: RoomCreateModalProps) => {
             ref={bettingCoinInputRef}
             className='text-detail1 placeholder:text-black'
           />
-          <div className='flex w-full justify-end gap-3'>
+          <div className='flex w-full justify-center gap-3'>
             <Button type='button' onClick={closeModalWithoutSave}>
               취소
             </Button>
-            <Button type='submit'>생성</Button>
+            <Button type='submit' disabled={!roomNameInputRef.current?.value}>
+              생성
+            </Button>
           </div>
         </form>
       </div>

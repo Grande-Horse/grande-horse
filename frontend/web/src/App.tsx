@@ -40,6 +40,7 @@ function App() {
       <GlobalLayout>
         <QueryClientProvider client={queryClient}>
           <AuthContextProvider>
+            <div id='modal-root' />
             <Routes>
               {/* 인증 + 회원가입 필요 */}
               <Route
