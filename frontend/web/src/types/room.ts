@@ -8,3 +8,10 @@ export interface RoomData {
   currentPlayers?: number;
   maxPlayers: number;
 }
+
+export interface RoomCreateData {
+  roomName: string;
+  rankRestriction: RankType | '';
+  bettingCoin: number;
+  maxPlayers: number;
+}
