@@ -8,8 +8,6 @@ import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.data.redis.listener.ChannelTopic;
-import org.springframework.data.redis.listener.RedisMessageListenerContainer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
 
 @Configuration
@@ -41,8 +39,8 @@ public class RedisConfig {
 	}
 
 	@Bean
-	@Qualifier("defaultRedisConnectionFactory")
-	public RedisConnectionFactory defaultRedisConnectionFactory() {
+	@Qualifier("redisConnectionFactory")
+	public RedisConnectionFactory redisConnectionFactory() {
 		RedisStandaloneConfiguration config = new RedisStandaloneConfiguration(defaultRedisHost, defaultRedisPort);
 		config.setPassword(defaultRedisPassword);
 		return new LettuceConnectionFactory(config);
@@ -50,20 +48,8 @@ public class RedisConfig {
 
 	@Bean
 	@Qualifier("websocketRedisTemplate")
-	public RedisTemplate<String, String> websocketRedisTemplate(
+	public RedisTemplate<String, Object> websocketRedisTemplate(
 		@Qualifier("websocketRedisConnectionFactory") RedisConnectionFactory redisConnectionFactory
-	) {
-		RedisTemplate<String, String> template = new RedisTemplate<>();
-		template.setConnectionFactory(redisConnectionFactory);
-		template.setKeySerializer(new StringRedisSerializer());
-		template.setValueSerializer(new StringRedisSerializer());
-		return template;
-	}
-
-	@Bean
-	@Qualifier("defaultRedisTemplate")
-	public RedisTemplate<String, Object> defaultRedisTemplate(
-		@Qualifier("defaultRedisConnectionFactory") RedisConnectionFactory redisConnectionFactory
 	) {
 		RedisTemplate<String, Object> template = new RedisTemplate<>();
 		template.setConnectionFactory(redisConnectionFactory);
@@ -73,16 +59,14 @@ public class RedisConfig {
 	}
 
 	@Bean
-	public ChannelTopic websocketTopic() {
-		return new ChannelTopic("game_rooms");
-	}
-
-	@Bean
-	public RedisMessageListenerContainer redisMessageListenerContainer(
-		@Qualifier("websocketRedisConnectionFactory") RedisConnectionFactory connectionFactory
+	@Qualifier("redisTemplate")
+	public RedisTemplate<String, Object> redisTemplate(
+		@Qualifier("redisConnectionFactory") RedisConnectionFactory redisConnectionFactory
 	) {
-		RedisMessageListenerContainer container = new RedisMessageListenerContainer();
-		container.setConnectionFactory(connectionFactory);
-		return container;
+		RedisTemplate<String, Object> template = new RedisTemplate<>();
+		template.setConnectionFactory(redisConnectionFactory);
+		template.setKeySerializer(new StringRedisSerializer());
+		template.setValueSerializer(new StringRedisSerializer());
+		return template;
 	}
 }

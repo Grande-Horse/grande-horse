@@ -17,8 +17,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-@Getter
 @Entity
+@Getter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -63,7 +63,7 @@ public class CardEntity {
 	@Column(name = "total_prize", nullable = false)
 	private int totalPrize;
 
-	@Column(name = "combination_id", nullable = false)
+	@Column(name = "combination_id")
 	private int combinationId;
 
 	@Column(name = "deleted_at")
@@ -77,6 +77,14 @@ public class CardEntity {
 		status = 1;
 	}
 
+	public void updateStatusToRace() {
+		status = 2;
+	}
+
+	public void updateStatusToRepresentative() {
+		status = 3;
+	}
+
 	public void updateOwner(int userId) {
 		this.userId = userId;
 		status = 0;
@@ -85,5 +93,10 @@ public class CardEntity {
 		raceCount = 0;
 		victoryCount = 0;
 		totalPrize = 0;
+	}
+
+	public void markAsCombined(int combinationId) {
+		this.deletedAt = LocalDateTime.now();
+		this.combinationId = combinationId;
 	}
 }
