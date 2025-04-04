@@ -13,7 +13,7 @@ import ClipLoader from 'react-spinners/ClipLoader';
 import { useInView } from 'react-intersection-observer';
 
 const PurchasePanel: React.FC = () => {
-  const [rank, setRank] = useState<string>('');
+  const [rank, setRank] = useState<string>('all');
   const [keyword, setKeyword] = useState<string>('');
   const [search, setSearch] = useState<string>('');
 
@@ -80,13 +80,7 @@ const PurchasePanel: React.FC = () => {
       </section>
 
       <div className='bg-primary flex items-center gap-4 border-t border-b border-black p-4'>
-        <Dropdown
-          options={Object.values(rankMap)}
-          value={rank}
-          onChange={handleRankChange}
-          placeholder='등급 선택'
-          className='w-2/5'
-        />
+        <Dropdown options={Object.values(rankMap)} value={rank} onChange={handleRankChange} className='w-2/5' />
         <Input value={keyword} onChange={handleKeywordChange} />
         <SearchIcon onClick={handleSearch} className='cursor-pointer' />
       </div>

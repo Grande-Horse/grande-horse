@@ -16,7 +16,7 @@ export const getAllHorseTrading = async (
     limit,
   };
 
-  return apiGet<CursorResponse<RegisteredItemType>>('/tradings', params);
+  return apiGet<CursorResponse<RegisteredItemType>>('/tradings/trade-cards', params);
 };
 
 export const getHorseTrading = async (

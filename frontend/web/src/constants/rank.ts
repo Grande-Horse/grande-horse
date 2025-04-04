@@ -1,4 +1,5 @@
 const rankTextColor = {
+  all: 'text-white',
   normal: 'text-normal',
   rare: 'text-rare',
   epic: 'text-epic',
@@ -7,6 +8,7 @@ const rankTextColor = {
 } as const;
 
 const rankMap = {
+  all: '전체',
   normal: '노멀',
   rare: '레어',
   epic: '에픽',
@@ -15,6 +17,7 @@ const rankMap = {
 } as const;
 
 const rankNameMap = {
+  전체: 'all',
   노멀: 'normal',
   레어: 'rare',
   에픽: 'epic',

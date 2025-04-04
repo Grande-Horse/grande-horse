@@ -1,18 +1,22 @@
 import { Button } from '@/components/ui/Button';
 import CoinIcon from '@/assets/icons/coinIcon.svg?react';
-import CardpackIcon from '@/assets/icons/cardpackIcon.svg?react';
+import DailyCardpackIcon from '@/assets/icons/dailyCardpackIcon.svg?react';
+import NormalCardpackIcon from '@/assets/icons/normalCardpackIcon.svg?react';
+import RareCardpackIcon from '@/assets/icons/rareCardpackIcon.svg?react';
+import EpicCardpackIcon from '@/assets/icons/epicCardpackIcon.svg?react';
+import UniqueCardpackIcon from '@/assets/icons/uniqueCardpackIcon.svg?react';
 
 const CardpackPanel: React.FC = () => {
   return (
     <div className='flex flex-col divide-y divide-black'>
       <div className='flex gap-8 px-8 py-6'>
         <div className='bg-primary flex h-40 w-40 items-center justify-center rounded-sm'>
-          <CardpackIcon width={70} height={70} />
+          <DailyCardpackIcon width={70} height={70} />
         </div>
         <div className='flex h-40 grow flex-col justify-center gap-2'>
           <div className='flex items-center justify-between'>
             <span className='text-stroke flex gap-3'>
-              <p>데일리</p>
+              <p className='text-legend'>데일리</p>
               <p>카드팩</p>
             </span>
             <span className='flex items-center gap-2'>
@@ -27,7 +31,7 @@ const CardpackPanel: React.FC = () => {
 
       <div className='flex gap-8 px-8 py-6'>
         <div className='bg-primary flex h-40 w-40 items-center justify-center rounded-sm'>
-          <CardpackIcon width={70} height={70} />
+          <NormalCardpackIcon width={70} height={70} />
         </div>
         <div className='flex h-40 grow flex-col justify-center gap-2'>
           <div className='flex items-center justify-between'>
@@ -47,7 +51,7 @@ const CardpackPanel: React.FC = () => {
 
       <div className='flex gap-8 px-8 py-6'>
         <div className='bg-primary flex h-40 w-40 items-center justify-center rounded-sm'>
-          <CardpackIcon width={70} height={70} />
+          <RareCardpackIcon width={70} height={70} />
         </div>
         <div className='flex h-40 grow flex-col justify-center gap-2'>
           <div className='flex items-center justify-between'>
@@ -67,7 +71,7 @@ const CardpackPanel: React.FC = () => {
 
       <div className='flex gap-8 px-8 py-6'>
         <div className='bg-primary flex h-40 w-40 items-center justify-center rounded-sm'>
-          <CardpackIcon width={70} height={70} />
+          <EpicCardpackIcon width={70} height={70} />
         </div>
         <div className='flex h-40 grow flex-col justify-center gap-2'>
           <div className='flex items-center justify-between'>
@@ -87,7 +91,7 @@ const CardpackPanel: React.FC = () => {
 
       <div className='flex gap-8 px-8 py-6'>
         <div className='bg-primary flex h-40 w-40 items-center justify-center rounded-sm'>
-          <CardpackIcon width={70} height={70} />
+          <UniqueCardpackIcon width={70} height={70} />
         </div>
         <div className='flex h-40 grow flex-col justify-center gap-2'>
           <div className='flex items-center justify-between'>

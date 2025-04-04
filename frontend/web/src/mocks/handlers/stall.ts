@@ -1,5 +1,5 @@
 import { CURSOR_LIMIT } from '@/constants/service';
-import { horseCardListMockData } from '@/mocks/datas/horse';
+import { horseCardListMockData, horseCardMockData } from '@/mocks/datas/horse';
 import { raceRecordMockData } from '@/mocks/datas/race';
 import { HorseCardType } from '@/types/card';
 import { RaceRecordType } from '@/types/race';
@@ -45,7 +45,17 @@ const raceRecordHandler: HttpResponseResolver = async (): Promise<StrictResponse
   });
 };
 
+const combineHandler: HttpResponseResolver = async (): Promise<StrictResponse<ApiResponse<HorseCardType>>> => {
+  await delay(1000);
+
+  return HttpResponse.json({
+    errorCode: null,
+    data: horseCardMockData,
+  });
+};
+
 export const handlers: RequestHandler[] = [
   http.get('/cards', HorseCardsHandler),
   http.get('/cards/:cardId/race-record', raceRecordHandler),
+  http.post('/cards/combine', combineHandler),
 ];

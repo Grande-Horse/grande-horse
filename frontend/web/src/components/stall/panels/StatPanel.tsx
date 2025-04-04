@@ -1,30 +1,29 @@
 import HorseProfileCard from '@/components/cards/HorseProfileCard';
 import Dropdown from '@/components/ui/dropdown/Dropdown';
 import { rankMap, rankNameMap } from '@/constants/rank';
-import { useState } from 'react';
+import { Suspense, useState } from 'react';
 import CardList from '@/components/stall/list/CardList';
 import { HorseCardType } from '@/types/card';
 import RaceRecordChart from '@/components/charts/RaceRecordChart';
-import { useSuspenseQuery } from '@tanstack/react-query';
-import { queryKey } from '@/constants/queryKey';
-import { getRaceRecord } from '@/services/stall';
-import { horseCardMockData } from '@/mocks/datas/horse';
 import RankIcon from '@/assets/icons/rankIcon.svg?react';
 import WeightIcon from '@/assets/icons/weightIcon.svg?react';
 import SpeedIcon from '@/assets/icons/speedIcon.svg?react';
 import AccelerationIcon from '@/assets/icons/accelerationIcon.svg?react';
 import StaminaIcon from '@/assets/icons/staminaIcon.svg?react';
+import ErrorBoundary from '@/components/ui/errorBoundary/ErrorBoundary';
+import Loading from '@/components/ui/Loading';
+import Error from '@/components/ui/Error';
 
 const StatPanel: React.FC = () => {
-  const [rank, setRank] = useState<string>('');
-  const [selectedHorse, setSelectedHorse] = useState<HorseCardType>(horseCardMockData);
-  const { data } = useSuspenseQuery({
-    queryKey: [queryKey.RACE_RECORD, selectedHorse!.cardId],
-    queryFn: () => getRaceRecord(selectedHorse!.cardId),
-  });
+  const [rank, setRank] = useState<string>('all');
+  const [selectedHorse, setSelectedHorse] = useState<HorseCardType>();
 
   const handleCardClick = (horse: HorseCardType) => {
     setSelectedHorse(horse);
+  };
+
+  const handleRankChange = (rank: string) => {
+    setRank(rankNameMap[rank as keyof typeof rankNameMap]);
   };
 
   const horseStats = [
@@ -35,7 +34,7 @@ const StatPanel: React.FC = () => {
     },
     { icon: <WeightIcon />, label: '체중', value: selectedHorse?.weight + 'kg' },
     { icon: <SpeedIcon />, label: '속도', value: selectedHorse?.speed + 'km/h' },
-    { icon: <AccelerationIcon />, label: '가속도', value: selectedHorse?.acceleration + 'km/s' },
+    { icon: <AccelerationIcon />, label: '가속도', value: selectedHorse?.acceleration + 'km/h' },
     { icon: <StaminaIcon />, label: '지구력', value: selectedHorse?.stamina + '%' },
   ];
 
@@ -51,10 +50,14 @@ const StatPanel: React.FC = () => {
             />
           </div>
 
-          <div className='bg-gradient mr-8 flex flex-3 items-center rounded-sm p-2'>
-            <div className='m-auto w-7/8'>
-              <RaceRecordChart raceRecord={data} />
-            </div>
+          <div className='bg-gradient mr-8 flex flex-2 items-center rounded-sm p-2'>
+            <ErrorBoundary renderFallback={(error) => <Error errorMessage={error?.message} />}>
+              <Suspense fallback={<Loading />}>
+                <div className='m-auto w-7/8'>
+                  <RaceRecordChart cardId={selectedHorse.cardId} />
+                </div>
+              </Suspense>
+            </ErrorBoundary>
 
             {/* <ul className='flex h-full w-full flex-col justify-center pr-3 pl-2'>
               {horseStats.map((stat) => (
@@ -70,14 +73,18 @@ const StatPanel: React.FC = () => {
           </div>
         </section>
       ) : (
-        <div className='flex justify-center py-[6.9rem]'>능력치 및 전적을 확인할 말을 선택해 주세요!</div>
+        <div className='flex justify-center py-[7rem]'>능력치 및 전적을 확인할 말을 선택해 주세요!</div>
       )}
 
       <section className='bg-primary p-4'>
-        <Dropdown options={Object.values(rankMap)} value={rank} onChange={setRank} placeholder='등급 선택' />
+        <Dropdown options={Object.values(rankMap)} value={rank} onChange={handleRankChange} />
       </section>
 
-      <CardList rank={rankNameMap[rank as keyof typeof rankNameMap]} onClick={handleCardClick} />
+      <ErrorBoundary renderFallback={(error) => <Error errorMessage={error?.message} />}>
+        <Suspense fallback={<Loading />}>
+          <CardList rank={rank} onClick={handleCardClick} />
+        </Suspense>
+      </ErrorBoundary>
     </div>
   );
 };

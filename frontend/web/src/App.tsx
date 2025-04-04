@@ -47,25 +47,25 @@ function App() {
                 <Route
                   path='/'
                   element={
-                    <ProtectedPage>
-                      <HomePage />
-                    </ProtectedPage>
+                    // <ProtectedPage>
+                    <HomePage />
+                    // </ProtectedPage>
                   }
                 />
                 <Route
                   path='/stall'
                   element={
-                    <ProtectedPage>
-                      <StallPage />
-                    </ProtectedPage>
+                    // <ProtectedPage>
+                    <StallPage />
+                    // </ProtectedPage>
                   }
                 />
                 <Route
                   path='/market'
                   element={
-                    <ProtectedPage>
-                      <MarketPage />
-                    </ProtectedPage>
+                    // <ProtectedPage>
+                    <MarketPage />
+                    // {/* </ProtectedPage> */}
                   }
                 />
                 <Route
@@ -79,17 +79,17 @@ function App() {
                 <Route
                   path='/racetrack'
                   element={
-                    <ProtectedPage>
-                      <RacetrackPage />
-                    </ProtectedPage>
+                    // <ProtectedPage>
+                    <RacetrackPage />
+                    // {/* </ProtectedPage> */}
                   }
                 />
                 <Route
                   path='/racetrack/room/:roomid'
                   element={
-                    <ProtectedPage>
-                      <RacetrackRoomPage />
-                    </ProtectedPage>
+                    // <ProtectedPage>
+                    <RacetrackRoomPage />
+                    // {/* </ProtectedPage> */}
                   }
                 />
 
