@@ -9,11 +9,29 @@ interface RoomItemProps {
 }
 
 const RoomItem: React.FC<RoomItemProps> = ({ room }) => {
+  const currentPlayers = room.currentPlayers || 1;
+  const isRoomFull = currentPlayers >= room.maxPlayers;
+
+  const Container = ({ children }: { children: React.ReactNode }) =>
+    isRoomFull ? (
+      <div
+        className='flex cursor-not-allowed items-center justify-between gap-5 rounded-xl bg-gray-400/30 p-9 text-gray-400 inset-shadow-xs'
+        aria-disabled
+      >
+        {children}
+      </div>
+    ) : (
+      <Link
+        to={`./room/${room.roomId}?title=${room.roomName}`}
+        state={{ roomId: room.roomId, maxPlayers: room.maxPlayers }}
+        className='flex items-center justify-between gap-5 rounded-xl bg-white/10 p-9 inset-shadow-xs inset-shadow-white/30 hover:bg-white/20 active:bg-white/30'
+      >
+        {children}
+      </Link>
+    );
+
   return (
-    <Link
-      to={`./room/${room.roomName}?title=${room.roomName}`}
-      className='flex items-center justify-between gap-5 rounded-xl bg-white/10 p-9 inset-shadow-xs inset-shadow-white/30 hover:bg-white/20 active:bg-white/30'
-    >
+    <Container>
       <p className='flex-1 truncate'>{room.roomName}</p>
       <div className='text-stroke flex items-center gap-3'>
         <p className={`${rankTextColor[room.rankRestriction === '' ? 'normal' : room.rankRestriction]}`}>
@@ -30,7 +48,7 @@ const RoomItem: React.FC<RoomItemProps> = ({ room }) => {
           </p>
         </div>
       </div>
-    </Link>
+    </Container>
   );
 };
 

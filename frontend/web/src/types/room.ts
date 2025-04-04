@@ -1,4 +1,4 @@
-import { RankType } from '@/types/horse';
+import { CoatColorType, RankType } from '@/types/horse';
 
 export interface RoomData {
   roomId?: number;
@@ -14,4 +14,13 @@ export interface RoomCreateData {
   rankRestriction: RankType | '';
   bettingCoin: number;
   maxPlayers: number;
+}
+
+export interface RoomJoinUserData {
+  horseColor: CoatColorType;
+  horseName: string;
+  horseRank: 'normal' | 'rare' | 'epic' | 'unique' | 'legend';
+  ready: boolean;
+  roomOwner: boolean;
+  userNickname: string;
 }

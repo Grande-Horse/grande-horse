@@ -1,17 +1,9 @@
-import { type RankType } from '@/types/horse';
-import { rankTextColor } from '@/constants/rank';
 import Horse from '@/components/racetrack/Horse';
+import { rankTextColor } from '@/constants/rank';
+import { type RoomJoinUserData } from '@/types/room';
 
-type CoatColorType = 'black' | 'lightbrown' | 'brown' | 'darkbrown' | 'gray';
-// api 연동전에 임시 타입
 interface UserCardProps {
-  user: {
-    id: number;
-    userName: string;
-    isReady: boolean;
-    coatColor: CoatColorType;
-    rank: RankType;
-  };
+  user: RoomJoinUserData;
 }
 
 const bgImageClass = {
@@ -25,13 +17,13 @@ const bgImageClass = {
 const UserCard: React.FC<UserCardProps> = ({ user }) => {
   return (
     <div
-      className={`${bgImageClass[user.rank]} ${rankTextColor[user.rank]} text-stroke flex flex-col items-center justify-between rounded-2xl bg-cover bg-center px-4 py-6`}
+      className={`${bgImageClass[user.horseRank]} ${rankTextColor[user.horseRank]} text-stroke flex flex-col items-center justify-between rounded-2xl bg-cover bg-center px-4 py-6`}
     >
       <p className='text-heading4 flex w-full items-center justify-center rounded-xl shadow-inner shadow-black/20'>
-        {user.userName}
+        {user.userNickname}
       </p>
-      <Horse color={user.coatColor} id={String(user.id)} />
-      <p className={`text-body1 ${user.isReady ? '' : 'invisible'}`}>준비완료</p>
+      <Horse color={user.horseColor} id={user.userNickname} />
+      <p className={`text-body1 ${user.ready ? '' : 'invisible'}`}>준비완료</p>
     </div>
   );
 };

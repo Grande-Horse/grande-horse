@@ -1,79 +1,36 @@
-import { useEffect, useRef, useState } from 'react';
-import SockJS from 'sockjs-client';
-import { Client, StompSubscription } from '@stomp/stompjs';
+import { useEffect, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 
 import { Button } from '@/components/ui/Button';
 import useModal from '@/components/ui/modal/useModal';
 import RoomList from '@/components/racetrack/RoomList';
-
-import { type RoomData, type RoomCreateData } from '@/types/room';
-import { roomCreateResetData, roomListResetData } from '@/constants/room';
-import { useNavigate } from 'react-router-dom';
 import RoomCreateModal, { RoomCreateModalReturn } from '@/components/racetrack/RoomCreateModal';
-import { RankType } from '@/types/horse';
 
-const { VITE_WEBSOCKET_URL } = import.meta.env;
+import { useStompClient } from '@/context/StompContext';
+import { type RoomData, type RoomCreateData } from '@/types/room';
+import { RankType } from '@/types/horse';
 
 const RacetrackPage = () => {
   const navigate = useNavigate();
 
-  const [roomList, setRoomList] = useState<RoomData[]>(roomListResetData);
-  const [newRoom, setNewRoom] = useState<RoomCreateData>(roomCreateResetData);
+  const { connected, publish, subscribe, unsubscribe } = useStompClient();
 
-  const clientRef = useRef<Client | null>(null);
-  const subscriptions = useRef<Map<string, StompSubscription>>(new Map());
-
-  // 특정 구독 해제 함수
-  const unsubscribe = (subId: string) => {
-    const sub = subscriptions.current.get(subId);
-    if (sub) {
-      clientRef.current?.unsubscribe(sub.id);
-      subscriptions.current.delete(subId);
-    }
-  };
-
-  // 모든 구독 해제 함수
-  const unsubscribeAll = () => {
-    subscriptions.current.forEach((sub) => {
-      clientRef.current?.unsubscribe(sub.id);
-    });
-    subscriptions.current.clear();
-  };
+  const [roomList, setRoomList] = useState<RoomData[]>([]);
 
   const handleCreateRoom = (roomData: RoomCreateData) => {
-    if (!clientRef.current) {
-      console.warn('WebSocket client is not connected.');
+    if (!connected) {
+      console.warn('STOMP 연결되지 않음. 방 생성 실패');
       return;
     }
 
-    const sub1 = clientRef.current.subscribe('/user/queue/subscribe', (message) => {
-      const id = JSON.parse(message.body);
-
-      const sub2 = clientRef.current?.subscribe(`/topic/race_room/${id}/chat`, () => {});
-      const sub3 = clientRef.current?.subscribe(`/topic/race_room/${id}`, () => {});
-
-      if (sub2) subscriptions.current.set(`/topic/race_room/${id}/chat`, sub2);
-      if (sub3) subscriptions.current.set(`/topic/race_room/${id}`, sub3);
-
-      clientRef.current?.publish({ destination: `/app/race_room/${id}/join` });
-
+    subscribe('/user/queue/subscribe', (roomId: string) => {
       unsubscribe('/user/queue/subscribe');
-
-      navigate(`/racetrack/room/${id}`);
+      navigate(`/racetrack/room/${roomId}?title=${roomData.roomName}`, {
+        state: { roomId, maxPlayers: roomData.maxPlayers },
+      });
     });
 
-    if (sub1) subscriptions.current.set('/user/queue/subscribe', sub1);
-
-    clientRef.current.publish({
-      destination: '/app/createRoom',
-      body: JSON.stringify(roomData),
-    });
-  };
-
-  const handleClick = () => {
-    const handleClose = () => {
-      setNewRoom(roomCreateResetData);
-    };
+    publish('/app/createRoom', roomData);
   };
 
   const { ModalWrapper, openModal, closeModal } = useModal<RoomCreateModalReturn>();
@@ -92,39 +49,12 @@ const RacetrackPage = () => {
   };
 
   useEffect(() => {
-    if (clientRef.current) return;
-
-    const socket = new SockJS(VITE_WEBSOCKET_URL);
-    const client = new Client({
-      webSocketFactory: () => socket,
-      onConnect: () => {
-        console.log('WebSocket 연결 성공');
-        clientRef.current = client;
-
-        const sub = client.subscribe('/topic/waiting_rooms', (message) => {
-          const data = JSON.parse(message.body);
-          console.log('대기방 목록 업데이트:', data.raceRooms);
-          setRoomList(data.raceRooms);
-        });
-
-        subscriptions.current.set('/topic/waiting_rooms', sub);
-      },
-      onStompError: (frame) => {
-        console.error('STOMP 오류 발생:', frame);
-      },
+    //이미 구독 중인 경우 처리 추가예정
+    subscribe('/topic/waiting_rooms', (data: { raceRooms: RoomData[] }) => {
+      console.log('대기실 목록 수신', data.raceRooms);
+      setRoomList(data.raceRooms);
     });
-
-    client.activate();
-
-    return () => {
-      if (clientRef.current) {
-        console.log('WebSocket 연결 해제');
-        clientRef.current.deactivate();
-        clientRef.current = null;
-      }
-      unsubscribeAll();
-    };
-  }, []);
+  }, [connected]);
 
   return (
     <div className='h-body relative flex flex-col gap-5 p-5'>

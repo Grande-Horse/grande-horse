@@ -1,17 +1,17 @@
+import { useRef, useState } from 'react';
 import Dropdown from '@/components/ui/dropdown/Dropdown';
 import { Button } from '@/components/ui/Button';
 import Input from '@/components/ui/Input';
 
 import { rankMap, rankNameMap } from '@/constants/rank';
-import { RoomCreateData } from '@/types/room';
-import { useRef, useState } from 'react';
+import { RankKrType, type RankType } from '@/types/horse';
 
 const PARTICIPANT_NUMBERS = ['2', '3', '4', '5', '6'];
 
 export type RoomCreateModalReturn = {
   roomName: string;
   maxPlayers: number;
-  rankRestriction: string;
+  rankRestriction: RankType;
   bettingCoin: number;
 };
 
@@ -22,7 +22,7 @@ type RoomCreateModalProps = {
 const RoomCreateModal = ({ close }: RoomCreateModalProps) => {
   const roomNameInputRef = useRef<HTMLInputElement>(null);
   const [maxPlayers, setMaxPlayers] = useState<string>('');
-  const [rankRestriction, setRankRestriction] = useState<string>('');
+  const [rankRestriction, setRankRestriction] = useState<RankKrType | ''>('');
   const bettingCoinInputRef = useRef<HTMLInputElement>(null);
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -30,7 +30,6 @@ const RoomCreateModal = ({ close }: RoomCreateModalProps) => {
 
     const roomName = roomNameInputRef.current?.value.trim() ?? '';
     const maxPlayersNum = Number(maxPlayers) || 2;
-    const rank = rankRestriction || 'normal';
 
     const bettingRaw = bettingCoinInputRef.current?.value ?? '';
     const bettingCoin = Number(bettingRaw.trim().replace(/['"]/g, '')) || 0;
@@ -38,7 +37,7 @@ const RoomCreateModal = ({ close }: RoomCreateModalProps) => {
     close({
       roomName,
       maxPlayers: maxPlayersNum,
-      rankRestriction: rank,
+      rankRestriction: rankRestriction ? rankNameMap[rankRestriction] : 'all',
       bettingCoin,
     });
   };
@@ -46,11 +45,11 @@ const RoomCreateModal = ({ close }: RoomCreateModalProps) => {
     close(null);
   };
 
-  const handleDropDownOnChange = (value: string, name: 'maxPlayers' | 'rankRestriction') => {
+  const handleDropDownOnChange = (value: string | RankKrType, name: 'maxPlayers' | 'rankRestriction') => {
     if (name === 'maxPlayers') {
-      setMaxPlayers(value);
+      setMaxPlayers(value as string);
     } else {
-      setRankRestriction(value);
+      setRankRestriction(value as RankKrType);
     }
   };
 

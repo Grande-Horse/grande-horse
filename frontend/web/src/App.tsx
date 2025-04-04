@@ -13,6 +13,7 @@ import RegisterPage from '@/pages/register';
 import AuthPage from '@/pages/auth';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ProtectedRoute } from '@/components/ProtectedRoute';
+import { StompProvider } from '@/context/StompContext';
 
 // 보호된 라우트 래퍼
 const ProtectedPage = ({ children }: { children: React.ReactNode }) => (
@@ -37,93 +38,87 @@ function App() {
   const queryClient = new QueryClient();
   return (
     <BrowserRouter>
-      <GlobalLayout>
-        <QueryClientProvider client={queryClient}>
-          <AuthContextProvider>
-            <div id='modal-root' />
-            <Routes>
-              {/* 인증 + 회원가입 필요 */}
-              <Route
-                path='/'
-                element={
-                  <ProtectedPage>
-                    <HomePage />
-                  </ProtectedPage>
-                }
-              />
-              <Route
-                path='/stall'
-                element={
-                  // <ProtectedPage>
-                  <StallPage />
-                  // </ProtectedPage>
-                }
-              />
-              <Route
-                path='/market'
-                element={
-                  // <ProtectedPage>
-                  <MarketPage />
-                  // {/* </ProtectedPage> */}
-                }
-              />
-              <Route
-                path='/market/sell/:horseId'
-                element={
-                  <ProtectedPage>
-                    <SellPage />
-                  </ProtectedPage>
-                }
-              />
-              <Route
-                path='/racetrack'
-                element={
-                  // <ProtectedPage>
-                  <RacetrackPage />
-                  // {/* </ProtectedPage> */}
-                }
-              />
-              <Route
-                path='/racetrack/room/:roomid'
-                element={
-                  // <ProtectedPage>
-                  <RacetrackRoomPage />
-                  // {/* </ProtectedPage> */}
-                }
-              />
+      <StompProvider>
+        <GlobalLayout>
+          <QueryClientProvider client={queryClient}>
+            <AuthContextProvider>
+              <Routes>
+                {/* 인증 + 회원가입 필요 */}
+                <Route
+                  path='/'
+                  element={
+                    <ProtectedPage>
+                      <HomePage />
+                    </ProtectedPage>
+                  }
+                />
+                <Route
+                  path='/stall'
+                  element={
+                    // <ProtectedPage>
+                    <StallPage />
+                    // </ProtectedPage>
+                  }
+                />
+                <Route
+                  path='/market'
+                  element={
+                    // <ProtectedPage>
+                    <MarketPage />
+                    // {/* </ProtectedPage> */}
+                  }
+                />
+                <Route
+                  path='/market/sell/:horseId'
+                  element={
+                    <ProtectedPage>
+                      <SellPage />
+                    </ProtectedPage>
+                  }
+                />
+                <Route
+                  path='/racetrack/*'
+                  element={
+                    <Routes>
+                      <Route index element={<RacetrackPage />} />
+                      <Route path='room/:roomid' element={<RacetrackRoomPage />} />
+                    </Routes>
+                  }
+                />
 
-              {/* 인증 필요 */}
-              <Route
-                path='/register'
-                element={
-                  <AuthOnlyPage>
-                    <RegisterPage />
-                  </AuthOnlyPage>
-                }
-              />
+                {/* 인증 필요 */}
+                <Route
+                  path='/register'
+                  element={
+                    <AuthOnlyPage>
+                      <RegisterPage />
+                    </AuthOnlyPage>
+                  }
+                />
 
-              {/* 공개 라우트 */}
-              <Route
-                path='/landing'
-                element={
-                  <PublicPage>
-                    <LandingPage />
-                  </PublicPage>
-                }
-              />
+                {/* 공개 라우트 */}
+                <Route
+                  path='/landing'
+                  element={
+                    <PublicPage>
+                      <LandingPage />
+                    </PublicPage>
+                  }
+                />
 
-              <Route
-                path='/auth'
-                element={
-                  <PublicPage>
-                    <AuthPage />
-                  </PublicPage>
-                }
-              />
-            </Routes>
-          </AuthContextProvider>
-        </QueryClientProvider>
-      </GlobalLayout>
+                <Route
+                  path='/auth'
+                  element={
+                    <PublicPage>
+                      <AuthPage />
+                    </PublicPage>
+                  }
+                />
+              </Routes>
+            </AuthContextProvider>
+          </QueryClientProvider>
+        </GlobalLayout>
+      </StompProvider>
     </BrowserRouter>
   );
 }
