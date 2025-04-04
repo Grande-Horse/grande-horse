@@ -150,3 +150,8 @@
 
 }
 
+
+html {
+  font-family: 'DungGeunMo';
+  src: url('/fonts/DungGeunMo.ttf');
+}
