@@ -5,6 +5,7 @@ import java.time.Instant;
 import java.time.LocalTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -16,6 +17,8 @@ import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ScanOptions;
 import org.springframework.data.redis.core.script.RedisScript;
+import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
+import org.springframework.messaging.simp.SimpMessageType;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
 import org.springframework.stereotype.Service;
 
@@ -75,30 +78,48 @@ public class RaceService {
 
 		HashOperations<String, String, Object> hashOps = websocketRedisTemplate.opsForHash();
 		Map<String, Object> raceRoom = Map.of(
-			"roomId", roomId,
+			"roomId", String.valueOf(roomId),
 			"roomName", createRaceRoomDto.getRoomName(),
-			"currentPlayers", 0,
-			"maxPlayers", createRaceRoomDto.getMaxPlayers(),
+			"currentPlayers", String.valueOf(0),
+			"maxPlayers", String.valueOf(createRaceRoomDto.getMaxPlayers()),
 			"rankRestriction", createRaceRoomDto.getRankRestriction().toLowerCase(),
-			"bettingCoin", createRaceRoomDto.getBettingCoin()
+			"bettingCoin", String.valueOf(createRaceRoomDto.getBettingCoin())
 		);
 		hashOps.putAll(roomKey, raceRoom);
 
 		String ownerKey = roomKey + ":owner";
-		websocketRedisTemplate.opsForValue().set(ownerKey, userId);
+		websocketRedisTemplate.opsForValue().set(ownerKey, String.valueOf(userId));
 
-		messagingTemplate.convertAndSendToUser(sessionId, "queue/subscribe", roomId);
+		String startKey = roomKey + ":start";
+		websocketRedisTemplate.opsForValue().set(startKey, "false");
+
+		SimpMessageHeaderAccessor headerAccessor = SimpMessageHeaderAccessor.create(SimpMessageType.MESSAGE);
+		headerAccessor.setSessionId(sessionId);
+		headerAccessor.setLeaveMutable(true);
+		messagingTemplate.convertAndSendToUser(sessionId, "/queue/subscribe", String.valueOf(roomId),
+			headerAccessor.getMessageHeaders());
 	}
 
-	public void joinRaceRoom(Long roomId, int userId) {
+	public void joinRaceRoom(Long roomId, int userId, String sessionId) {
 		String roomKey = RACE_ROOM_PREFIX + roomId;
+
+		if (!isRoomExisted(roomKey)) {
+			sendErrorMessage(sessionId, CustomError.RACE_ROOM_NOT_EXISTED.getErrorCode());
+		}
+		// 대표말 에러 체크
+		if (isRaceStarted(roomKey)) {
+			sendErrorMessage(sessionId, CustomError.RACE_ALREADY_START.getErrorCode());
+		}
+		if (isRoomHasSpace(roomKey)) {
+			sendErrorMessage(sessionId, CustomError.RACE_ROOM_MAX_PLAYER.getErrorCode());
+		}
+
 		CardEntity cardEntity = cardService.findRepresentativeCard(userId);
 		HorseEntity horseEntity = horseService.findHorseById(cardEntity.getHorseId());
 		String userNickname = userService.findNicknameById(userId);
 		Boolean isRoomOwner = isRoomOwner(roomKey, userId);
 
-		String result = executeJoinScript(roomKey, userId, cardEntity, horseEntity, userNickname, isRoomOwner);
-		validateJoinResult(result);
+		executeJoinScript(roomKey, userId, cardEntity, horseEntity, userNickname, isRoomOwner);
 
 		String message = "[알림]" + userNickname + "님이 입장하셨습니다.";
 		sendSystemMessage(roomId, message);
@@ -119,16 +140,19 @@ public class RaceService {
 		broadcastPlayersInfo(roomId, roomKey);
 	}
 
-	public void startRace(Long roomId, int userId) {
+	public void startRace(Long roomId, String sessionId, int userId) {
 		String roomKey = RACE_ROOM_PREFIX + roomId;
 
 		if (!isRoomOwner(roomKey, userId)) {
-			throw new RaceException(CustomError.ONLY_OWNER_CAN_START_RACE);
+			sendErrorMessage(sessionId, CustomError.ONLY_OWNER_CAN_START_RACE.getErrorCode());
 		}
 
 		if (!isAllPlayersReady(roomKey)) {
-			throw new RaceException(CustomError.NOT_ALL_PLAYERS_READY);
+			sendErrorMessage(sessionId, CustomError.NOT_ALL_PLAYERS_READY.getErrorCode());
 		}
+
+		String startKey = roomKey + ":start";
+		websocketRedisTemplate.opsForValue().set(startKey, "true");
 
 		sendSystemMessage(roomId, "[알림] 경주가 시작됩니다!");
 	}
@@ -150,9 +174,9 @@ public class RaceService {
 		String message = "[알림] " + userNickname + "님이 방을 떠났습니다.";
 		sendSystemMessage(roomId, message);
 
-		boolean isOwner = isUserOwner(userKey);
-		if (isOwner) {
-			assignNewOwner(roomId, roomKey, remainingPlayers);
+		boolean isRoomOwner = isRoomOwner(roomKey, userId);
+		if (isRoomOwner) {
+			assignNewRoomOwner(roomId, roomKey, remainingPlayers);
 		}
 
 		broadcastPlayersInfo(roomId, roomKey);
@@ -176,18 +200,13 @@ public class RaceService {
 	private List<RaceRoomResponse> getRaceRooms() {
 		Cursor<byte[]> cursor = websocketRedisTemplate.getConnectionFactory()
 			.getConnection()
-			.scan(ScanOptions.scanOptions().match(RACE_ROOM_PREFIX + "*").count(100).build());
+			.scan(ScanOptions.scanOptions().match(RACE_ROOM_PREFIX + "*").count(10).build());
 
 		List<String> keys = new ArrayList<>();
 		while (cursor.hasNext()) {
 			String key = new String(cursor.next(), StandardCharsets.UTF_8);
 
-			String type = websocketRedisTemplate.getConnectionFactory()
-				.getConnection()
-				.type(key.getBytes(StandardCharsets.UTF_8))
-				.toString();
-
-			if ("hash".equals(type)) {
+			if (key.matches("race_room:\\d+")) {
 				keys.add(key);
 			}
 		}
@@ -195,7 +214,6 @@ public class RaceService {
 		if (keys.isEmpty()) {
 			return List.of();
 		}
-
 		HashOperations<String, String, Object> hashOps = websocketRedisTemplate.opsForHash();
 
 		return keys.stream()
@@ -210,7 +228,25 @@ public class RaceService {
 					Integer.parseInt(roomData.get("bettingCoin").toString())
 				);
 			})
+			.sorted(Comparator.comparingLong(RaceRoomResponse::getRoomId).reversed())
 			.collect(Collectors.toList());
+	}
+
+	private boolean isRoomExisted(String roomKey) {
+		return websocketRedisTemplate.hasKey(roomKey);
+	}
+
+	private boolean isRaceStarted(String roomKey) {
+		String started = websocketRedisTemplate.opsForValue().get(roomKey + ":start").toString();
+		return "true".equals(started);
+	}
+
+	private boolean isRoomHasSpace(String roomKey) {
+		int currentPlayers
+			= Integer.parseInt(websocketRedisTemplate.opsForHash().get(roomKey, "currentPlayers").toString());
+		int maxPlayers
+			= Integer.parseInt(websocketRedisTemplate.opsForHash().get(roomKey, "maxPlayers").toString());
+		return currentPlayers >= maxPlayers;
 	}
 
 	private void removeUserFromRoom(String roomKey, String userKey, int userId) {
@@ -219,7 +255,7 @@ public class RaceService {
 		websocketRedisTemplate.opsForHash().increment(roomKey, "currentPlayers", -1);
 	}
 
-	private void assignNewOwner(Long roomId, String roomKey, Set<Object> remainingPlayers) {
+	private void assignNewRoomOwner(Long roomId, String roomKey, Set<Object> remainingPlayers) {
 		Object newOwnerId = remainingPlayers.iterator().next();
 		String newUserKey = roomKey + ":user:" + newOwnerId;
 
@@ -277,39 +313,28 @@ public class RaceService {
 			+ "local horseAcceleration = tonumber(ARGV[9])\n"
 			+ "local horseStamina = tonumber(ARGV[10])\n"
 			+ "local userNickname = ARGV[11]\n"
-			+ "local isRoomOwner = ARGV[12] == 'true'\n"
-			+ "local maxPlayers = tonumber(redis.call('HGET', roomKey, 'maxPlayers'))\n"
-			+ "local currentPlayers = tonumber(redis.call('HGET', roomKey, 'currentPlayers'))\n"
-			+ "if not maxPlayers or not currentPlayers then\n"
-			+ "    return redis.error_reply('RACE_ROOM_NOT_EXISTED')\n"
-			+ "end\n"
-			+ "if currentPlayers >= maxPlayers then\n"
-			+ "    return redis.error_reply('RACE_ROOM_MAX_PLAYER')\n"
-			+ "end\n"
+			+ "local isRoomOwner = ARGV[12]\n"
+
 			+ "local userKey = roomKey .. ':user:' .. userId\n"
-			+ "redis.call('HSET', userKey, 'cardId', cardId)\n"
-			+ "redis.call('HSET', userKey, 'horseId', horseId)\n"
-			+ "redis.call('HSET', userKey, 'userNickname', userNickname)\n"
-			+ "redis.call('HSET', userKey, 'horseName', horseName)\n"
-			+ "redis.call('HSET', userKey, 'horseColor', horseColor)\n"
-			+ "redis.call('HSET', userKey, 'horseRank', horseRank)\n"
-			+ "redis.call('HSET', userKey, 'horseWeight', horseWeight)\n"
-			+ "redis.call('HSET', userKey, 'horseSpeed', horseSpeed)\n"
-			+ "redis.call('HSET', userKey, 'horseAcceleration', horseAcceleration)\n"
-			+ "redis.call('HSET', userKey, 'horseStamina', horseStamina)\n"
-			+ "redis.call('HSET', userKey, 'isReady', 'false')\n"
-			+ "redis.call('HSET', userKey, 'isRoomOwner', tostring(isRoomOwner))\n"
+			+ "redis.call('HSET', userKey, \n"
+			+ "    'cardId', cardId, \n"
+			+ "    'horseId', horseId, \n"
+			+ "    'userNickname', userNickname, \n"
+			+ "    'horseName', horseName, \n"
+			+ "    'horseColor', horseColor, \n"
+			+ "    'horseRank', horseRank, \n"
+			+ "    'horseWeight', horseWeight, \n"
+			+ "    'horseSpeed', horseSpeed, \n"
+			+ "    'horseAcceleration', horseAcceleration, \n"
+			+ "    'horseStamina', horseStamina, \n"
+			+ "    'isReady', 'false', \n"
+			+ "    'isRoomOwner', isRoomOwner\n"
+			+ ")\n"
+
 			+ "redis.call('RPUSH', roomKey .. ':players', userId)\n"
 			+ "redis.call('HINCRBY', roomKey, 'currentPlayers', 1)\n"
-			+ "return 1";
-	}
 
-	private void validateJoinResult(String result) {
-		if ("RACE_ROOM_NOT_EXISTED".equals(result)) {
-			throw new RaceException(CustomError.RACE_ROOM_NOT_EXISTED);
-		} else if ("RACE_ROOM_MAX_PLAYER".equals(result)) {
-			throw new RaceException(CustomError.RACE_ROOM_MAX_PLAYER);
-		}
+			+ "return 'OK'";
 	}
 
 	private void broadcastPlayersInfo(Long roomId, String roomKey) {
@@ -357,11 +382,6 @@ public class RaceService {
 		return (nicknameObj != null) ? nicknameObj.toString() : "알 수 없는 유저";
 	}
 
-	private boolean isUserOwner(String userKey) {
-		Object isOwnerObj = websocketRedisTemplate.opsForHash().get(userKey, "isRoomOwner");
-		return isOwnerObj != null && Boolean.parseBoolean(isOwnerObj.toString());
-	}
-
 	private void sendSystemMessage(Long roomId, String message) {
 		long millis = System.currentTimeMillis();
 		LocalTime time = Instant.ofEpochMilli(millis)
@@ -370,5 +390,13 @@ public class RaceService {
 		ChatMessageResponse chatMessage = new ChatMessageResponse("SYSTEM", message, time);
 
 		messagingTemplate.convertAndSend("/topic/race_room/" + roomId + "/chat", chatMessage);
+	}
+
+	private void sendErrorMessage(String sessionId, String errorCode) {
+		SimpMessageHeaderAccessor headerAccessor = SimpMessageHeaderAccessor.create(SimpMessageType.MESSAGE);
+		headerAccessor.setSessionId(sessionId);
+		headerAccessor.setLeaveMutable(true);
+		messagingTemplate.convertAndSendToUser(
+			sessionId, "/queue/subscribe", errorCode, headerAccessor.getMessageHeaders());
 	}
 }

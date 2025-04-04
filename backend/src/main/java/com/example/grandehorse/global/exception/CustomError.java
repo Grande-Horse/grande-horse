@@ -46,6 +46,8 @@ public enum CustomError {
 	RACE_ROOM_MAX_PLAYER(HttpStatus.BAD_REQUEST, "R3", "최대 참여 가능 인원을 초과하였습니다."),
 	ONLY_OWNER_CAN_START_RACE(HttpStatus.BAD_REQUEST, "R4", "방장만이 게임을 시작할 수 있습니다."),
 	NOT_ALL_PLAYERS_READY(HttpStatus.BAD_REQUEST, "R5", "모든 유저가 준비하지 않았습니다."),
+	RACE_ALREADY_START(HttpStatus.BAD_REQUEST, "R6", "이미 경주가 시작된 방입니다"),
+	USER_NOT_OWNER_OF_RACE_ROOM(HttpStatus.BAD_REQUEST, "R7", "방장이 아닙니다."),
 
 	// 외부 API 관련 에러
 	EXTERNAL_SERVICE_PARSE_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "E1", "외부 API 응답 처리 중 오류가 발생했습니다.");

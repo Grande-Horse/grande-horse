@@ -47,10 +47,11 @@ public class RaceController {
 	@MessageMapping("/race_room/{roomId}/join")
 	public void joinRaceRoom(
 		@DestinationVariable Long roomId,
-		@Header("simpSessionAttributes") Map<String, Object> sessionAttributes
+		@Header("simpSessionAttributes") Map<String, Object> sessionAttributes,
+		@Header("simpSessionId") String sessionId
 	) {
 		int userId = (int) sessionAttributes.get("userId");
-		raceService.joinRaceRoom(roomId, userId);
+		raceService.joinRaceRoom(roomId, userId, sessionId);
 	}
 
 	/**
@@ -72,10 +73,11 @@ public class RaceController {
 	@MessageMapping("/race_room/{roomId}/start")
 	public void startRace(
 		@DestinationVariable Long roomId,
-		@Header("simpSessionAttributes") Map<String, Object> sessionAttributes
+		@Header("simpSessionAttributes") Map<String, Object> sessionAttributes,
+		@Header("simpSessionId") String sessionId
 	) {
 		int userId = (int) sessionAttributes.get("userId");
-		raceService.startRace(roomId, userId);
+		raceService.startRace(roomId, sessionId, userId);
 	}
 
 	/**
