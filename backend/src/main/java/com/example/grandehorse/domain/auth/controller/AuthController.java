@@ -1,6 +1,5 @@
 package com.example.grandehorse.domain.auth.controller;
 
-import java.io.IOException;
 import java.util.Map;
 
 import jakarta.servlet.http.HttpServletResponse;
@@ -31,35 +30,37 @@ public class AuthController {
 	public ResponseEntity<CommonResponse<String>> ssafyConnect(
 		@PathVariable String social,
 		HttpServletResponse response
-	) throws IOException {
+	) {
 		return CommonResponse.success(authService.getLoginUrl(social));
 	}
 
 	// 테스트용 API
 	@GetMapping("/ssafy/callback")
-	public ResponseEntity<CommonResponse<String>> ssafyCallback(@RequestParam("code") String code){
+	public ResponseEntity<CommonResponse<String>> ssafyCallback(@RequestParam("code") String code) {
 		return CommonResponse.success(code);
 	}
 
 	// 테스트용 API
 	@GetMapping("/kakao/callback")
-	public ResponseEntity<CommonResponse<String>> kakaoCallback(@RequestParam("code") String code){
+	public ResponseEntity<CommonResponse<String>> kakaoCallback(@RequestParam("code") String code) {
 		return CommonResponse.success(code);
 	}
 
 	@PostMapping("/login")
-	public ResponseEntity<CommonResponse<Map>> oauthCallback(
+	public ResponseEntity<CommonResponse<Map<String, String>>> oauthCallback(
 		@RequestBody SocialAuthorizationDto socialAuthorizationDto,
 		HttpServletResponse response
 	) {
-		return authService.processUserAuthentication(
-			socialAuthorizationDto,
-			response
+		return CommonResponse.success(
+			authService.processUserAuthentication(
+				socialAuthorizationDto,
+				response
+			)
 		);
 	}
 
 	@GetMapping("/auto-login")
-	public ResponseEntity<CommonResponse<Void>> autoLogin(HttpServletResponse response) throws IOException {
+	public ResponseEntity<CommonResponse<Void>> autoLogin(HttpServletResponse response) {
 		return CommonResponse.success(null);
 	}
 }

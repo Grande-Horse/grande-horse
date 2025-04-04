@@ -35,6 +35,15 @@ public enum CustomError {
 	CANNOT_CANCEL_TRADE_PERMISSION(HttpStatus.BAD_REQUEST, "T3", "거래(판매) 취소에 대한 권한이 없습니다."),
 
 	// 상품 관련 에러
+	PRODUCT_NOT_FOUND(HttpStatus.BAD_REQUEST, "P1", "존재하지 않는 상품입니다."),
+	PRODUCT_NOT_SELLING(HttpStatus.BAD_REQUEST, "P2", "현재 판매 중인 상품이 아닙니다."),
+
+	// 구매 관련 에러
+	EXPIRED_PURCHASE_REQUEST(HttpStatus.BAD_REQUEST, "PC1", "구매 요청이 만료되었습니다."),
+	PAYMENT_VERIFIED_BUT_REQUEST_MISSING(HttpStatus.BAD_REQUEST, "PC2", "결제는 완료되었지만 구매 요청 정보가 없습니다."),
+	INVALID_PAYMENT(HttpStatus.BAD_REQUEST, "PC3", "유효하지 않은 결제입니다."),
+	DUPLICATE_PURCHASE(HttpStatus.BAD_REQUEST, "PC4", "이미 처리된 구매 요청입니다."),
+	INVALID_PAYMENT_AMOUNT(HttpStatus.BAD_REQUEST, "PC5", "결제 금액이 일치하지 않습니다."),
 
 	// 카드 관련 에러
 	USER_NOT_OWNER_OF_CARD(HttpStatus.BAD_REQUEST, "CA1", "유저의 말카드가 아닙니다."),
@@ -56,7 +65,9 @@ public enum CustomError {
 	RACE_ROOM_MAX_PLAYER(HttpStatus.BAD_REQUEST, "R3", "최대 참여 가능 인원을 초과하였습니다."),
 
 	// 외부 API 관련 에러
-	EXTERNAL_SERVICE_PARSE_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "E1", "외부 API 응답 처리 중 오류가 발생했습니다.");
+	EXTERNAL_SERVICE_PARSE_ERROR(HttpStatus.BAD_REQUEST, "E1", "외부 API 응답 처리 중 오류가 발생했습니다."),
+	PORTONE_PAYMENT_LOOKUP_FAILED(HttpStatus.BAD_REQUEST, "E2", "결제 정보 조회 중 오류가 발생했습니다."),
+	PORTONE_PAYMENT_CANCEL_FAILED(HttpStatus.BAD_REQUEST, "E3", "결제 취소에 실패하였습니다.");
 
 	private final HttpStatus httpStatus;
 	private final String errorCode;

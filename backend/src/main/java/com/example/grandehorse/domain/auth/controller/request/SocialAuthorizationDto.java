@@ -12,10 +12,7 @@ public class SocialAuthorizationDto {
 	private String code;
 
 	@JsonCreator
-	public SocialAuthorizationDto(
-		@JsonProperty SocialProvider socialProvider,
-		@JsonProperty String code
-	) {
+	public SocialAuthorizationDto(@JsonProperty SocialProvider socialProvider, @JsonProperty String code) {
 		this.socialProvider = socialProvider;
 		this.code = code;
 	}
