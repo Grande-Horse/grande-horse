@@ -40,8 +40,8 @@ function App() {
   return (
     <BrowserRouter>
       <MusicProvider>
-        <GlobalLayout>
-          <QueryClientProvider client={queryClient}>
+        <QueryClientProvider client={queryClient}>
+          <GlobalLayout>
             <AuthContextProvider>
               <ModalProvider>
                 <Routes>
@@ -126,8 +126,8 @@ function App() {
                 </Routes>
               </ModalProvider>
             </AuthContextProvider>
-          </QueryClientProvider>
-        </GlobalLayout>
+          </GlobalLayout>
+        </QueryClientProvider>
       </MusicProvider>
     </BrowserRouter>
   );
