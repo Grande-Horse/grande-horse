@@ -1,7 +1,7 @@
-import { DefaultContent, StallContent, RaceTrackContent } from '@/components/ui/header/HeaderContent';
+import { DefaultContent, StallContent, RaceTrackContent, LandingContent } from '@/components/ui/header/HeaderContent';
 import { useLocation, useSearchParams } from 'react-router-dom';
 
-const commonStyle = 'flex items-center justify-between p-5 h-24 sticky top-0 z-header w-full bg-background';
+const commonStyle = 'flex items-center justify-between p-5 h-24 sticky top-0 z-header w-full';
 
 const Header: React.FC = () => {
   const { pathname } = useLocation();
@@ -19,6 +19,7 @@ const Header: React.FC = () => {
     },
     { path: '/racetrack', component: <DefaultContent coin={coin} foot={foot} /> },
     { path: '/stall', component: <StallContent title='마구간' /> },
+    { path: '/landing', component: <LandingContent /> },
   ];
 
   const content = contentMap.find((item) => pathname === item.path || pathname.startsWith(item.path))?.component;

@@ -22,7 +22,7 @@ const LandingPage: React.FC = () => {
 
   const CloudBg = ({ position }: CloudBgProps) => (
     <div
-      className={`${cloudBgImages[position]} absolute top-0 left-0 h-screen w-full bg-cover bg-repeat-x animate-moveCloud${position.charAt(0).toUpperCase() + position.slice(1)}`}
+      className={`${cloudBgImages[position]} w-base fixed -top-1 h-screen bg-cover bg-repeat-x animate-moveCloud${position.charAt(0).toUpperCase() + position.slice(1)}`}
     />
   );
 
@@ -34,24 +34,26 @@ const LandingPage: React.FC = () => {
 
   const LoginButton = ({ logo, text, onClick }: LoginButtonProps) => (
     <div
-      className={`relative flex w-sm items-center justify-center rounded-md p-4 text-black ${text === 'Kakao' ? 'bg-kakao' : 'bg-ssafy'}`}
+      className={`relative flex w-96 items-center justify-center rounded-sm p-4 text-black inset-shadow-sm inset-shadow-white/30 ${text === 'Kakao' ? 'bg-kakao' : 'bg-ssafy'}`}
       onClick={onClick}
     >
       <img className='absolute left-5 min-h-8 w-8' alt={`${text} 로그인`} src={logo} />
-      <span className='flex w-full justify-center'>{text} 로그인</span>
+      <span className='text-body1 flex w-full justify-center'>{text} Login</span>
     </div>
   );
 
   const TitlePanel = () => {
     return (
-      <div
-        className={`absolute top-0 left-1/2 aspect-300/278 w-2/3 -translate-x-1/2 transform ${bgImages.titlePanel} bg-contain bg-center bg-no-repeat`}
-      >
-        <div className='absolute top-[70%] right-0 left-0 -translate-y-1/2'>
-          <h1 className='text-stroke text-heading1 flex flex-col items-center justify-center px-20 text-nowrap'>
-            <span className='w-full text-start'>그런데</span>
-            <span className='w-full text-end'>말입니다</span>
-          </h1>
+      <div className='w-base fixed top-0 h-screen'>
+        <div
+          className={`absolute top-0 left-1/2 aspect-square w-3/5 -translate-x-1/2 transform ${bgImages.titlePanel} bg-contain bg-center bg-no-repeat`}
+        >
+          <div className='absolute top-[70%] right-0 left-0 -translate-y-1/2'>
+            <h1 className='text-stroke text-heading3 flex flex-col items-center justify-center px-20 text-nowrap'>
+              <span className='-translate-x-1/2'>그런데</span>
+              <span className='translate-x-1/3'>말입니다</span>
+            </h1>
+          </div>
         </div>
       </div>
     );
@@ -74,9 +76,8 @@ const LandingPage: React.FC = () => {
     );
 
   return (
-    <div
-      className={`relative flex h-screen w-full flex-col items-center justify-center overflow-hidden ${bgImages.landscape} bg-cover bg-repeat-x`}
-    >
+    <div className={`relative flex h-[calc(100vh-6rem)] w-full flex-col items-center justify-center overflow-hidden`}>
+      <div className={`w-base fixed top-0 h-screen ${bgImages.landscape} bg-cover bg-repeat-x`}></div>
       <CloudBg position='upper' />
       <CloudBg position='lower' />
       <TitlePanel />
