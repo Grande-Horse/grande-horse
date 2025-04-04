@@ -1,5 +1,5 @@
 import { Button } from '@/components/ui/Button';
-import { rankMap } from '@/constants/rank';
+import { rankMap, rankTextColor } from '@/constants/rank';
 import CoinIcon from '@/assets/icons/coinIcon.svg?react';
 import StatBar from '@/components/charts/StatBar';
 import { cancelHorseSelling } from '@/services/trading';
@@ -31,7 +31,7 @@ const SellItem: React.FC<SellItemProps> = ({
 
       <div className='flex grow flex-col justify-between'>
         <div className='flex items-center justify-between'>
-          <p>{rankMap[rank]}</p>
+          <p className={`text-stroke ${rankTextColor[rank]}`}>{rankMap[rank]}</p>
           <span className='flex items-center gap-2'>
             <CoinIcon width={18} />
             <p>{price}</p>

@@ -73,7 +73,7 @@ const cancelHorseSellingHandler: HttpResponseResolver = async (): Promise<Strict
 };
 
 export const handlers: RequestHandler[] = [
-  http.get('/tradings', HorseTradingHandler),
+  http.get('/tradings/trade-cards', HorseTradingHandler),
   http.get('/tradings/registered-cards', HorseTradingHandler),
   http.get('/tradings/:hordeId/sold-cards', HorseTradingHandler),
   http.get('/tradings/:horseId/price-history', priceHistoryHandler),

@@ -17,7 +17,7 @@ const InfoPanel = ({ selectedIndex, selectedHorse }: { selectedIndex: number; se
     },
     { icon: <WeightIcon />, label: '체중', value: selectedHorse?.weight + 'kg' },
     { icon: <SpeedIcon />, label: '속도', value: selectedHorse?.speed + 'km/h' },
-    { icon: <AccelerationIcon />, label: '가속도', value: selectedHorse?.acceleration + 'km/s' },
+    { icon: <AccelerationIcon />, label: '가속도', value: selectedHorse?.acceleration + 'km/h' },
     { icon: <StaminaIcon />, label: '지구력', value: selectedHorse?.stamina + '%' },
   ];
   return (

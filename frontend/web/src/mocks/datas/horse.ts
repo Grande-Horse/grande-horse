@@ -5,11 +5,11 @@ export const horseMockData: HorseType = {
   horseId: '1',
   name: '굿필승',
   coatColor: 'gray',
-  horseRank: 'epic',
-  weight: 100,
+  horseRank: 'rare',
+  weight: 150,
   speed: 100,
-  acceleration: 220,
-  stamina: 160,
+  acceleration: 120,
+  stamina: 100,
 };
 
 export const horseCardMockData: HorseCardType = {

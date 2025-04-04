@@ -22,7 +22,7 @@ const SmallHorseCard: React.FC<SmallHorseCardProps> = ({ horse, onClick }) => {
     },
     { icon: <WeightIcon width={10} height={10} />, label: '체중', value: horse.weight + 'kg' },
     { icon: <SpeedIcon width={10} height={10} />, label: '속도', value: horse.speed + 'km/h' },
-    { icon: <AccelerationIcon width={10} height={10} />, label: '가속도', value: horse.acceleration + 'km/s' },
+    { icon: <AccelerationIcon width={10} height={10} />, label: '가속도', value: horse.acceleration + 'km/h' },
     { icon: <StaminaIcon width={10} height={10} />, label: '지구력', value: horse.stamina + '%' },
   ];
 

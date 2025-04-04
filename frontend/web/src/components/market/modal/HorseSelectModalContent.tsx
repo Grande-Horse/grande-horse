@@ -1,19 +1,18 @@
 import SmallHorseCard from '@/components/cards/SmallHorseCard';
 import { queryKey } from '@/constants/queryKey';
 import useInfiniteScroll from '@/hooks/useQueries/useInfiniteScroll';
-import { getMyHorseTrading } from '@/services/trading';
-import { HorseType } from '@/types/horse';
 import { ClipLoader } from 'react-spinners';
 import SelectedIcon from '@/assets/icons/selectedIcon.svg?react';
+import { getMyHorseCards } from '@/services/stall';
+import { HorseCardType } from '@/types/card';
 
 interface HorseSelectModalContentProps {
-  selectedHorse: HorseType | null;
-  onHorseCardClick: (horse: HorseType | null) => void;
+  selectedHorse: HorseCardType | null;
+  onHorseCardClick: (horse: HorseCardType | null) => void;
 }
 
 const HorseSelectModalContent: React.FC<HorseSelectModalContentProps> = ({ selectedHorse, onHorseCardClick }) => {
-  // TODO: 추후 내 말 전체 목록 조회 API로 변경
-  const { data, hasNextPage, ref } = useInfiniteScroll(queryKey.MY_TRADING, getMyHorseTrading);
+  const { data, hasNextPage, ref } = useInfiniteScroll(queryKey.MY_HORSE_CARDS, getMyHorseCards, 'all');
 
   return (
     <div className='max-h-[36rem] overflow-y-auto'>
@@ -30,7 +29,7 @@ const HorseSelectModalContent: React.FC<HorseSelectModalContentProps> = ({ selec
                   <SelectedIcon />
                 </div>
               )}
-              <SmallHorseCard key={item.id} horse={item} onHorseCardClick={() => onHorseCardClick(item)} />
+              <SmallHorseCard key={item.id} horse={item} onClick={onHorseCardClick} />
             </div>
           ))
         )}
