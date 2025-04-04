@@ -23,13 +23,13 @@ import lombok.NoArgsConstructor;
 })
 public class CashOrderEntity {
 	@Id
-	private int id; // 해당 칼럼에는 PG사의 주문번호를 저장해야 합니다.
+	private String id; // 해당 칼럼에는 PG사의 주문번호를 저장해야 합니다.
 
 	@Column(name = "user_id", nullable = false)
 	private int userId;
 
 	@Column(name = "product_id", nullable = false)
-	private int productId;
+	private Byte productId;
 
 	@Column(name = "name", length = 60, nullable = false)
 	private String name;
@@ -40,7 +40,7 @@ public class CashOrderEntity {
 	@Column(name = "acquired_coin", nullable = false)
 	private int acquiredCoin;
 
-	@Column(name = "pay_method", length = 12, nullable = false)
+	@Column(name = "pay_method", length = 12)
 	private String payMethod;
 
 	@Enumerated(EnumType.STRING)

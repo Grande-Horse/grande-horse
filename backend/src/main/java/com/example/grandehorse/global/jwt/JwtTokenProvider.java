@@ -1,8 +1,12 @@
 package com.example.grandehorse.global.jwt;
 
+import java.nio.charset.StandardCharsets;
+import java.security.Key;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+
+import javax.crypto.spec.SecretKeySpec;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -21,10 +25,14 @@ import lombok.extern.slf4j.Slf4j;
 public class JwtTokenProvider {
 	private static final int SOCIALTOKEN_EXPIRATION = 5; // 5분
 	private static final int ACCESSTOKEN_EXPIRATION = 30; // 30분
-	private static final int REFRESHTOKEN_EXPIRATION = 43_200; // 30주일
+	private static final int REFRESHTOKEN_EXPIRATION = 43_200; // 30일
 
 	@Value("${JWT_SECRETKEY}")
 	private String secretKey;
+
+	private Key getSigningKey() {
+		return new SecretKeySpec(secretKey.getBytes(StandardCharsets.UTF_8), SignatureAlgorithm.HS256.getJcaName());
+	}
 
 	public String generateJwt(Map<String, Object> payload, int expiration) {
 		Claims claims = Jwts.claims();
@@ -34,27 +42,20 @@ public class JwtTokenProvider {
 			.setHeaderParam(Header.TYPE, Header.JWT_TYPE)
 			.setClaims(claims)
 			.setExpiration(new Date(System.currentTimeMillis() + 1000L * 60 * expiration))
-			.signWith(SignatureAlgorithm.HS256, secretKey)
+			.signWith(getSigningKey(), SignatureAlgorithm.HS256)
 			.compact();
 	}
 
 	public void validateToken(String token) {
 		try {
-			Jwts.parserBuilder()
-				.setSigningKey(secretKey)
-				.build()
-				.parseClaimsJws(token);
+			Jwts.parserBuilder().setSigningKey(getSigningKey()).build().parseClaimsJws(token);
 		} catch (Exception e) {
 			throw new AuthException(CustomError.INVALID_TOKEN);
 		}
 	}
 
 	private Claims getClaims(String token) {
-		return Jwts.parserBuilder()
-			.setSigningKey(secretKey)
-			.build()
-			.parseClaimsJws(token)
-			.getBody();
+		return Jwts.parserBuilder().setSigningKey(getSigningKey()).build().parseClaimsJws(token).getBody();
 	}
 
 	public int getIdFromToken(String token) {
@@ -68,36 +69,28 @@ public class JwtTokenProvider {
 	}
 
 	public long getExpiration(String token) {
-		Claims claims = Jwts.parser()
-			.setSigningKey(secretKey)
+		Claims claims = Jwts.parserBuilder()
+			.setSigningKey(getSigningKey())
+			.build()
 			.parseClaimsJws(token)
 			.getBody();
 		return claims.getExpiration().getTime();
 	}
 
 	public String generateAccessToken(int id) {
-		String accessToken = generateJwt(
-			Map.of("id", id),
-			ACCESSTOKEN_EXPIRATION
-		);
+		String accessToken = generateJwt(Map.of("id", id), ACCESSTOKEN_EXPIRATION);
 		log.info("Generated access token by {}: {}", id, accessToken);
 		return accessToken;
 	}
 
 	public String generateRefreshToken(int id) {
-		String refreshToken = generateJwt(
-			Map.of("id", id),
-			REFRESHTOKEN_EXPIRATION
-		);
+		String refreshToken = generateJwt(Map.of("id", id), REFRESHTOKEN_EXPIRATION);
 		log.info("Generated refresh token by {}: {}", id, refreshToken);
 		return refreshToken;
 	}
 
 	public String generateSocialToken(Map<String, Object> payload) {
-		String socialToken = generateJwt(
-			payload,
-			SOCIALTOKEN_EXPIRATION
-		);
+		String socialToken = generateJwt(payload, SOCIALTOKEN_EXPIRATION);
 		log.info("Generated social token by {}: {}", payload.get("socialId"), socialToken);
 		return socialToken;
 	}

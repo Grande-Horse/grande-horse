@@ -22,7 +22,7 @@ import lombok.NoArgsConstructor;
 public class CashPurchaseEntity {
 	@Id
 	@Column(name = "cash_order_id", nullable = false)
-	private int cashOrderId;
+	private String cashOrderId;
 
 	@Column(name = "user_id", nullable = false)
 	private int userId;

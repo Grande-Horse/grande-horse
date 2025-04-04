@@ -1,4 +1,4 @@
-package com.example.grandehorse.infrastructure.config;
+package com.example.grandehorse.global.config;
 
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -8,7 +8,14 @@ import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.connection.RedisStandaloneConfiguration;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
 import org.springframework.data.redis.serializer.StringRedisSerializer;
+
+import com.example.grandehorse.global.redis.dto.CashOrderRedisDto;
+import com.fasterxml.jackson.annotation.JsonAutoDetect;
+import com.fasterxml.jackson.annotation.PropertyAccessor;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 
 @Configuration
 public class RedisConfig {
@@ -67,6 +74,30 @@ public class RedisConfig {
 		template.setConnectionFactory(redisConnectionFactory);
 		template.setKeySerializer(new StringRedisSerializer());
 		template.setValueSerializer(new StringRedisSerializer());
+		return template;
+	}
+
+	@Bean
+	@Qualifier("cashOrderRedisTemplate")
+	public RedisTemplate<String, CashOrderRedisDto> cashOrderRedisTemplate(
+		@Qualifier("redisConnectionFactory") RedisConnectionFactory redisConnectionFactory
+	) {
+		RedisTemplate<String, CashOrderRedisDto> template = new RedisTemplate<>();
+		template.setConnectionFactory(redisConnectionFactory);
+
+		ObjectMapper objectMapper = new ObjectMapper();
+		objectMapper.registerModule(new JavaTimeModule());
+		objectMapper.setVisibility(PropertyAccessor.ALL, JsonAutoDetect.Visibility.ANY);
+		objectMapper.disable(com.fasterxml.jackson.databind.SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+
+		GenericJackson2JsonRedisSerializer serializer = new GenericJackson2JsonRedisSerializer(objectMapper);
+
+		template.setKeySerializer(new StringRedisSerializer());
+		template.setValueSerializer(serializer);
+		template.setHashKeySerializer(new StringRedisSerializer());
+		template.setHashValueSerializer(serializer);
+
+		template.afterPropertiesSet();
 		return template;
 	}
 }

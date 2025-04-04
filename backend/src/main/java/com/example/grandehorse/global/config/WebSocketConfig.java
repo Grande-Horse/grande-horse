@@ -1,4 +1,4 @@
-package com.example.grandehorse.config;
+package com.example.grandehorse.global.config;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
