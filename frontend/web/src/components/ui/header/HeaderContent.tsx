@@ -87,12 +87,12 @@ const RaceTrackContent: React.FC<DefaultContentProps> = ({ coin, foot }) => {
 };
 
 const RaceTrackRoomContent: React.FC<RaceTrackRoomContentProps> = ({ title, state }) => {
-  const { goBack } = useInternalRouter();
+  const { replace } = useInternalRouter();
   const { unsubscribeAll, publish } = useStompClient();
   const handleClick = () => {
     publish(`/app/race_room/${state.roomId}/leave`);
     unsubscribeAll();
-    goBack();
+    replace('/racetrack');
   };
   return (
     <>

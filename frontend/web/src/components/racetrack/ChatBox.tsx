@@ -1,40 +1,28 @@
 import { useEffect, useRef, useState } from 'react';
 import { Button } from '@/components/ui/Button';
 import Input from '@/components/ui/Input';
-import { rankTextColor } from '@/constants/rank';
-import { type RankType } from '@/types/horse';
+import { useStompClient } from '@/context/StompContext';
 
 interface Chat {
-  id: number;
-  userName: string;
-  rank: RankType;
+  sender: string;
   message: string;
+  time: string;
 }
 
-const chatMockData: Chat[] = [
-  { id: 1, userName: '굿필승', rank: 'normal', message: '안녕하세요' },
-  { id: 2, userName: '굿굿필승', rank: 'rare', message: '안녕하세요' },
-  { id: 3, userName: '런스피드', rank: 'unique', message: '이 방이 핫하다고해서 들어왔습니다.' },
-  { id: 1, userName: '굿필승', rank: 'normal', message: '한 마리 더 들어오면 시작할게요.' },
-];
+interface ChatBoxProps {
+  roomId: number;
+  chatContent: Chat[];
+}
 
-const ChatBox: React.FC = () => {
-  const [chatContent, setChatContent] = useState<Chat[]>(chatMockData);
+const ChatBox: React.FC<ChatBoxProps> = ({ roomId, chatContent }) => {
   const [message, setMessage] = useState('');
   const ulRef = useRef<HTMLUListElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
 
-  // 채팅을 치는 유저 아이디 (캐시되어있는 개인정보 이용)
-  const User = {
-    id: 1,
-    userName: '굿필승',
-    rank: 'normal' as RankType,
-  };
+  const { publish } = useStompClient();
 
   const handleEnterOnClick = () => {
-    setChatContent((prev) => {
-      return [...prev, { ...User, message }];
-    });
+    publish(`/app/race_room/${roomId}/chat`, message);
     setMessage('');
   };
 
@@ -63,7 +51,7 @@ const ChatBox: React.FC = () => {
         {chatContent.map((chat) => {
           return (
             <li key={`chat ${Math.random()}`} className='flex gap-3'>
-              <p className={`${rankTextColor[chat.rank]}`}>{chat.userName}:</p>
+              <p className=''>{chat.sender}:</p>
               <p className='flex-1'>{chat.message}</p>
             </li>
           );

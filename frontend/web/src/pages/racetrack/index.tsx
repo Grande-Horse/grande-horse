@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 import { Button } from '@/components/ui/Button';
 import useModal from '@/components/ui/modal/useModal';
@@ -23,12 +23,17 @@ const RacetrackPage = () => {
       return;
     }
 
-    subscribe('/user/queue/subscribe', (roomId: string) => {
-      unsubscribe('/user/queue/subscribe');
-      navigate(`/racetrack/room/${roomId}?title=${roomData.roomName}`, {
-        state: { roomId, maxPlayers: roomData.maxPlayers },
-      });
-    });
+    subscribe(
+      '/user/queue/subscribe',
+      (roomId: string) => {
+        navigate(`/racetrack/room/${roomId}?title=${roomData.roomName}`, {
+          state: { roomId, maxPlayers: roomData.maxPlayers },
+        });
+      },
+      (error) => {
+        console.log(error, '방 생성 에러');
+      }
+    );
 
     publish('/app/createRoom', roomData);
   };
@@ -49,12 +54,22 @@ const RacetrackPage = () => {
   };
 
   useEffect(() => {
-    //이미 구독 중인 경우 처리 추가예정
     subscribe('/topic/waiting_rooms', (data: { raceRooms: RoomData[] }) => {
-      console.log('대기실 목록 수신', data.raceRooms);
       setRoomList(data.raceRooms);
     });
+    publish('/app/waiting_rooms');
+
+    return () => {
+      unsubscribe('/topic/waiting_rooms');
+    };
   }, [connected]);
+
+  useEffect(() => {
+    if (roomList.length === 0) return;
+    roomList.forEach((room) => {
+      publish(`/app/race_room/${room.roomId}/leave`);
+    });
+  }, [roomList]);
 
   return (
     <div className='h-body relative flex flex-col gap-5 p-5'>

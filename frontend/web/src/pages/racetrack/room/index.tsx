@@ -1,41 +1,63 @@
 import { useEffect, useState } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 
 import { useStompClient } from '@/context/StompContext';
 import ChatBox from '@/components/racetrack/ChatBox';
 import RoomLobby from '@/components/racetrack/RoomLobby';
 import { type RoomJoinUserData } from '@/types/room';
 
+interface Chat {
+  sender: string;
+  message: string;
+  time: string;
+}
+
 const RacetrackRoomPage = () => {
+  const navigate = useNavigate();
   const { state } = useLocation();
+
   const { connected, publish, subscribe, unsubscribe } = useStompClient();
   const [users, setUsers] = useState<RoomJoinUserData[]>([]);
   const [maxPlayers, setMaxPlayers] = useState<number>(6);
+  const [roomId, setRoomId] = useState<number>(0);
+
+  const [chatContent, setChatContent] = useState<Chat[]>([]);
 
   useEffect(() => {
-    if (!connected) {
-      //재연결시도 (stomp)
-    }
     if (!state) {
-      console.error('Url로 바로 접근함');
+      navigate('/racetrack', { replace: true });
       return;
     }
     const roomId = state.roomId;
     const maxPlayers = state.maxPlayers;
 
-    subscribe(`/topic/race_room/${roomId}/chat`, () => {});
-    subscribe(`/topic/race_room/${roomId}`, (data: RoomJoinUserData[]) => {
+    setMaxPlayers(maxPlayers);
+    setRoomId(roomId);
+
+    const chatPath = `/topic/race_room/${roomId}/chat`;
+    const usersPath = `/topic/race_room/${roomId}`;
+
+    subscribe(chatPath, (data: Chat) => {
+      setChatContent((prev) => {
+        return [...prev, data];
+      });
+    });
+    subscribe(usersPath, (data: RoomJoinUserData[]) => {
       setUsers(data);
-      setMaxPlayers(maxPlayers);
     });
 
     publish(`/app/race_room/${roomId}/join`);
-  }, []);
+
+    return () => {
+      unsubscribe(chatPath);
+      unsubscribe(usersPath);
+    };
+  }, [connected]);
 
   return (
     <div className='flex h-[calc(100dvh-6rem)] flex-col gap-5 p-5'>
       <RoomLobby users={users} maxPlayers={maxPlayers}>
-        <ChatBox />
+        <ChatBox roomId={roomId} chatContent={chatContent} />
       </RoomLobby>
     </div>
   );
