@@ -13,8 +13,9 @@ import RegisterPage from '@/pages/register';
 import AuthPage from '@/pages/auth';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ProtectedRoute } from '@/components/ProtectedRoute';
-import { StompProvider } from '@/context/StompContext';
+import { StompProvider } from '@/contexts/StompContext';
 import { MusicProvider } from '@/contexts/musicContext';
+import RaceTrackRacePage from '@/pages/racetrack/room/race';
 
 // 보호된 라우트 래퍼
 const ProtectedPage = ({ children }: { children: React.ReactNode }) => (
@@ -39,10 +40,10 @@ function App() {
   const queryClient = new QueryClient();
   return (
     <BrowserRouter>
-      <MusicProvider>
-        <StompProvider>
-          <GlobalLayout>
-            <QueryClientProvider client={queryClient}>
+      <QueryClientProvider client={queryClient}>
+        <MusicProvider>
+          <StompProvider>
+            <GlobalLayout>
               <AuthContextProvider>
                 <Routes>
                   {/* 인증 + 회원가입 필요 */}
@@ -84,6 +85,7 @@ function App() {
                       <Routes>
                         <Route index element={<RacetrackPage />} />
                         <Route path='room/:roomid' element={<RacetrackRoomPage />} />
+                        <Route path='room/:roomid/race' element={<RaceTrackRacePage />} />
                       </Routes>
                     }
                   />
@@ -118,10 +120,10 @@ function App() {
                   />
                 </Routes>
               </AuthContextProvider>
-            </QueryClientProvider>
-          </GlobalLayout>
-        </StompProvider>
-      </MusicProvider>
+            </GlobalLayout>
+          </StompProvider>
+        </MusicProvider>
+      </QueryClientProvider>
     </BrowserRouter>
   );
 }

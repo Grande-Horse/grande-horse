@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 
-import { useStompClient } from '@/context/StompContext';
+import { useStompClient } from '@/contexts/StompContext';
 import ChatBox from '@/components/racetrack/ChatBox';
 import RoomLobby from '@/components/racetrack/RoomLobby';
 import { type RoomJoinUserData } from '@/types/room';
@@ -56,7 +56,7 @@ const RacetrackRoomPage = () => {
 
   return (
     <div className='flex h-[calc(100dvh-6rem)] flex-col gap-5 p-5'>
-      <RoomLobby users={users} maxPlayers={maxPlayers}>
+      <RoomLobby roomId={roomId} users={users} maxPlayers={maxPlayers}>
         <ChatBox roomId={roomId} chatContent={chatContent} />
       </RoomLobby>
     </div>
