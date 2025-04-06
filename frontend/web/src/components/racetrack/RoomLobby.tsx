@@ -6,14 +6,15 @@ interface RoomLobbyProps {
   children: React.ReactNode;
   users: RoomJoinUserData[];
   maxPlayers: number;
+  roomId: number;
 }
 
-const RoomLobby: React.FC<RoomLobbyProps> = ({ children, users, maxPlayers }) => {
+const RoomLobby: React.FC<RoomLobbyProps> = ({ roomId, children, users, maxPlayers }) => {
   return (
     <>
       <RoomCardList users={users} maxPlayers={maxPlayers} />
       {children}
-      <RoomActionButtons />
+      <RoomActionButtons roomId={roomId} users={users} />
     </>
   );
 };

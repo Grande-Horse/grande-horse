@@ -1,24 +1,24 @@
 import { Button } from '@/components/ui/Button';
 
 interface RoomReadyButtonProps {
-  isHost: boolean;
-  isReady: boolean;
+  isHost?: boolean;
+  isReady?: boolean;
   onReadyClick: () => void;
-  onCancelClick: () => void;
   onStartClick: () => void;
+  allUsersReady?: boolean;
 }
 
 const RoomReadyButton: React.FC<RoomReadyButtonProps> = ({
   isHost,
   isReady,
   onReadyClick,
-  onCancelClick,
   onStartClick,
+  allUsersReady,
 }) => {
   if (isHost) {
-    return <HostButton onClick={onStartClick} />;
+    return <HostButton onClick={onStartClick} disabled={!allUsersReady} />;
   } else {
-    return <UserButton isReady={isReady} onReadyClick={onReadyClick} onCancelClick={onCancelClick} />;
+    return <UserButton isReady={isReady} onReadyClick={onReadyClick} />;
   }
 };
 
@@ -26,26 +26,26 @@ export default RoomReadyButton;
 
 interface HostButtonProps {
   onClick: () => void;
+  disabled?: boolean;
 }
 
-const HostButton: React.FC<HostButtonProps> = ({ onClick }) => {
+const HostButton: React.FC<HostButtonProps> = ({ onClick, disabled }) => {
   return (
-    <Button onClick={onClick} className='w-full' variant='primary'>
+    <Button onClick={onClick} disabled={disabled} className='w-full' variant='primary'>
       경기 시작
     </Button>
   );
 };
 
 interface UserButtonProps {
-  isReady: boolean;
+  isReady?: boolean;
   onReadyClick: () => void;
-  onCancelClick: () => void;
 }
 
-const UserButton: React.FC<UserButtonProps> = ({ isReady, onReadyClick, onCancelClick }) => {
-  if (!isReady) {
+const UserButton: React.FC<UserButtonProps> = ({ isReady, onReadyClick }) => {
+  if (isReady) {
     return (
-      <Button onClick={onCancelClick} className={'text-darkgray border-darkgray bg-secondary w-full cursor-pointer'}>
+      <Button onClick={onReadyClick} className={'text-darkgray border-darkgray bg-secondary w-full cursor-pointer'}>
         준비취소
       </Button>
     );
