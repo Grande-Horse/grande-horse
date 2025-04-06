@@ -23,7 +23,7 @@ public class RaceController {
 	 * 대기방 목록을 갱신하여 모든 구독자에게 전송하는 메서드
 	 * 새로운 방이 생성되거나 변경될 때마다 호출
 	 */
-	@SubscribeMapping("/waiting_rooms")
+	@MessageMapping("/waiting_rooms")
 	public void broadcastRaceRooms() {
 		raceService.broadcastRaceRooms();
 	}
@@ -100,5 +100,14 @@ public class RaceController {
 	) {
 		int userId = (int) sessionAttributes.get("userId");
 		raceService.sendChatMessage(roomId, userId, message);
+	}
+
+	@MessageMapping("/race_room/{roomId}/game")
+	public void playGame(
+			@DestinationVariable Long roomId,
+			@Header("simpSessionAttributes") Map<String, Object> sessionAttributes
+	) {
+		int userId = (int) sessionAttributes.get("userId");
+		raceService.playGame(roomId, userId);
 	}
 }

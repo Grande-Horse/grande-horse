@@ -7,16 +7,8 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor
 @AllArgsConstructor
-public class RaceRoomResponse {
-	private Long roomId;
+public class PlayerRaceProgress {
+    private int userId;
 
-	private String roomName;
-
-	private int currentPlayers;
-
-	private int maxPlayers;
-
-	private String rankRestriction;
-
-	private int bettingCoin;
+    private double distance;
 }

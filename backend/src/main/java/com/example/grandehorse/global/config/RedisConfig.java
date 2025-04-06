@@ -67,12 +67,10 @@ public class RedisConfig {
 		objectMapper.enable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
 		objectMapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
 
-		GenericJackson2JsonRedisSerializer serializer = new GenericJackson2JsonRedisSerializer(objectMapper);
-
 		template.setKeySerializer(new StringRedisSerializer());
-		template.setValueSerializer(serializer);
+		template.setValueSerializer(new StringRedisSerializer());
 		template.setHashKeySerializer(new StringRedisSerializer());
-		template.setHashValueSerializer(serializer);
+		template.setHashValueSerializer(new StringRedisSerializer());
 
 		template.afterPropertiesSet();
 

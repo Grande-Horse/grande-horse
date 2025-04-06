@@ -9,7 +9,9 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class PlayerInfoResponse {
+public class PlayerInfo {
+	private int userId;
+
 	private String userNickname;
 
 	private String horseName;
