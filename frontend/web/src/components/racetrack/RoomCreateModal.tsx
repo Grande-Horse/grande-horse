@@ -8,16 +8,16 @@ import { RankKrType, type RankType } from '@/types/horse';
 
 const PARTICIPANT_NUMBERS = ['2', '3', '4', '5', '6'];
 
-export type RoomCreateModalReturn = {
+interface RoomCreateModalReturn {
   roomName: string;
   maxPlayers: number;
   rankRestriction: RankType;
   bettingCoin: number;
-};
+}
 
-type RoomCreateModalProps = {
+interface RoomCreateModalProps {
   close: (value: RoomCreateModalReturn | null) => void;
-};
+}
 
 const RoomCreateModal = ({ close }: RoomCreateModalProps) => {
   const roomNameInputRef = useRef<HTMLInputElement>(null);
@@ -85,11 +85,11 @@ const RoomCreateModal = ({ close }: RoomCreateModalProps) => {
             ref={bettingCoinInputRef}
             className='text-detail1 placeholder:text-black'
           />
-          <div className='flex w-full justify-center gap-3'>
-            <Button type='button' onClick={closeModalWithoutSave}>
+          <div className='flex w-full gap-3 pt-5'>
+            <Button type='button' className='flex-1' onClick={closeModalWithoutSave}>
               취소
             </Button>
-            <Button type='submit' disabled={!roomNameInputRef.current?.value}>
+            <Button type='submit' className='flex-1' disabled={!roomNameInputRef.current?.value}>
               생성
             </Button>
           </div>
@@ -98,4 +98,4 @@ const RoomCreateModal = ({ close }: RoomCreateModalProps) => {
     </div>
   );
 };
-export default RoomCreateModal;
+export { RoomCreateModal, type RoomCreateModalReturn };
