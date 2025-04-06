@@ -51,6 +51,7 @@ public class RaceController {
 		@Header("simpSessionId") String sessionId
 	) {
 		int userId = (int) sessionAttributes.get("userId");
+		sessionAttributes.put("roomId", roomId);
 		raceService.joinRaceRoom(roomId, userId, sessionId);
 	}
 
@@ -90,6 +91,14 @@ public class RaceController {
 	) {
 		int userId = (int) sessionAttributes.get("userId");
 		raceService.leaveRaceRoom(roomId, userId);
+	}
+
+	@MessageMapping("/force_leave")
+	public void forceLeaveRoom(
+			@Header("simpSessionAttributes") Map<String, Object> sessionAttributes
+	) {
+		int userId = (int) sessionAttributes.get("userId");
+		raceService.forceLeaveRoom(userId);
 	}
 
 	@MessageMapping("/race_room/{roomId}/chat")

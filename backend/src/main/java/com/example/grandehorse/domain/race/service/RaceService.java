@@ -186,6 +186,22 @@ public class RaceService {
         broadcastRaceRooms();
     }
 
+    public void forceLeaveRoom(int userId) {
+        String userRoomKey = "user:" + userId + ":room";
+        String roomKey = (String) websocketRedisTemplate.opsForValue().get(userRoomKey);
+
+        if (roomKey == null) {
+            return;
+        }
+
+        Long roomId = Long.parseLong(roomKey.replace(RACE_ROOM_PREFIX, ""));
+
+        leaveRaceRoom(roomId, userId);
+
+        websocketRedisTemplate.delete(userRoomKey);
+    }
+
+
     public void sendChatMessage(Long roomId, int userId, String message) {
         String roomKey = RACE_ROOM_PREFIX + roomId;
         String userKey = roomKey + ":user:" + userId;
@@ -396,6 +412,9 @@ public class RaceService {
 
                 + "redis.call('RPUSH', roomKey .. ':players', userId)\n"
                 + "redis.call('HINCRBY', roomKey, 'currentPlayers', 1)\n"
+
+                + "local userRoomKey = 'user:' .. userId .. ':room'\n"
+                + "redis.call('SET', userRoomKey, roomKey)\n"
 
                 + "return 'OK'";
     }
