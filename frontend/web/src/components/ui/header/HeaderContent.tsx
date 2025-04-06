@@ -3,7 +3,7 @@ import CoinIcon from '@/assets/icons/coinIcon.svg?react';
 import FootIcon from '@/assets/icons/footIcon.svg?react';
 import SoundIcon from '@/assets/icons/soundIcon.svg?react';
 import { useMusic } from '@/contexts/musicContext';
-import { useStompClient } from '@/context/StompContext';
+import { useStompClient } from '@/contexts/StompContext';
 import useInternalRouter from '@/hooks/useInternalRouter';
 
 interface DefaultContentProps {
@@ -71,7 +71,6 @@ const StallContent: React.FC<TitleContentProps> = ({ title }) => {
 };
 
 const RaceTrackContent: React.FC<DefaultContentProps> = ({ coin, foot }) => {
-  const { isPlaying, togglePlay } = useMusic();
   const { goBack } = useInternalRouter();
   const { unsubscribeAll } = useStompClient();
 
@@ -101,6 +100,7 @@ const RaceTrackContent: React.FC<DefaultContentProps> = ({ coin, foot }) => {
 };
 
 const RaceTrackRoomContent: React.FC<RaceTrackRoomContentProps> = ({ title, state }) => {
+  const { isPlaying, togglePlay } = useMusic();
   const { replace } = useInternalRouter();
   const { unsubscribeAll, publish } = useStompClient();
   const handleClick = () => {
