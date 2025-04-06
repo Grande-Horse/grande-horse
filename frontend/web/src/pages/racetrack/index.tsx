@@ -1,17 +1,18 @@
 import { useEffect, useState } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useNavigate, useNavigationType } from 'react-router-dom';
 
 import { Button } from '@/components/ui/Button';
 import useModal from '@/components/ui/modal/useModal';
 import RoomList from '@/components/racetrack/RoomList';
-import RoomCreateModal, { RoomCreateModalReturn } from '@/components/racetrack/RoomCreateModal';
+import { RoomCreateModal, type RoomCreateModalReturn } from '@/components/racetrack/RoomCreateModal';
 
-import { useStompClient } from '@/context/StompContext';
+import { useStompClient } from '@/contexts/StompContext';
 import { type RoomData, type RoomCreateData } from '@/types/room';
 import { RankType } from '@/types/horse';
 
 const RacetrackPage = () => {
   const navigate = useNavigate();
+  const navigationType = useNavigationType();
 
   const { connected, publish, subscribe, unsubscribe } = useStompClient();
 
@@ -59,17 +60,14 @@ const RacetrackPage = () => {
     });
     publish('/app/waiting_rooms');
 
+    if (navigationType === 'POP') {
+      publish('/app/force_leave');
+    }
+
     return () => {
       unsubscribe('/topic/waiting_rooms');
     };
   }, [connected]);
-
-  useEffect(() => {
-    if (roomList.length === 0) return;
-    roomList.forEach((room) => {
-      publish(`/app/race_room/${room.roomId}/leave`);
-    });
-  }, [roomList]);
 
   return (
     <div className='h-body relative flex flex-col gap-5 p-5'>
