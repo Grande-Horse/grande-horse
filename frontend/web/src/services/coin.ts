@@ -1,4 +1,4 @@
-import { apiPost } from '@/services/apiService';
+import { apiGet, apiPost } from '@/services/apiService';
 import { PayConfirmInfoType, PayInitInfoType } from '@/types/pay';
 
 export const initCashPay = async (coinId: number): Promise<PayInitInfoType> => {
@@ -8,4 +8,8 @@ export const initCashPay = async (coinId: number): Promise<PayInitInfoType> => {
 
 export const confirmCashPay = async (payConfirmInfo: PayConfirmInfoType) => {
   apiPost<PayConfirmInfoType, null>('/purchases/coin/cash/confirm', payConfirmInfo);
+};
+
+export const getMyCoin = async (): Promise<{ coin: number }> => {
+  return apiGet<{ coin: number }>('/users/coin');
 };

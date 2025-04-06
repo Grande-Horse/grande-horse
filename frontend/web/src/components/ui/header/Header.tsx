@@ -1,19 +1,26 @@
+import { getMyCoin } from '@/services/coin';
+import { useQuery } from '@tanstack/react-query';
 import {
   DefaultContent,
   StallContent,
   RaceTrackContent,
+  LandingContent,
   RaceTrackRoomContent,
 } from '@/components/ui/header/HeaderContent';
 import { useLocation, useSearchParams } from 'react-router-dom';
 
-const commonStyle = 'flex items-center justify-between p-5 h-24 sticky top-0 z-header w-full bg-background';
+const commonStyle = 'flex items-center justify-between p-5 h-24 sticky top-0 z-header w-full';
 
 const Header: React.FC = () => {
   const { pathname, state } = useLocation();
   const [searchParams] = useSearchParams();
 
   /* 재화(코인, 발걸음) api 연결 후 캐시 데이터로 저장*/
-  const coin = 100000;
+  const { data: { coin } = { coin: 0 } } = useQuery({
+    queryKey: ['coin'],
+    queryFn: getMyCoin,
+  });
+
   const foot = 100000;
 
   const contentMap = [
@@ -24,6 +31,7 @@ const Header: React.FC = () => {
     },
     { path: '/racetrack', component: <RaceTrackContent coin={coin} foot={foot} /> },
     { path: '/stall', component: <StallContent title='마구간' /> },
+    { path: '/landing', component: <LandingContent /> },
   ];
 
   const dynamicRacePath = /^\/racetrack\/room\/([^/]+)\/race$/;
