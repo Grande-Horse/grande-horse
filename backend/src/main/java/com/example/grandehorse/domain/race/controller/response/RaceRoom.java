@@ -19,4 +19,6 @@ public class RaceRoom {
 	private String rankRestriction;
 
 	private int bettingCoin;
+
+	private boolean start;
 }

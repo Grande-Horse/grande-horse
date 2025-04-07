@@ -329,7 +329,8 @@ public class RaceService {
 					Integer.parseInt(roomData.get("currentPlayers").toString()),
 					Integer.parseInt(roomData.get("maxPlayers").toString()),
 					roomData.get("rankRestriction").toString().toLowerCase(),
-					Integer.parseInt(roomData.get("bettingCoin").toString())
+					Integer.parseInt(roomData.get("bettingCoin").toString()),
+					Boolean.parseBoolean(roomData.get("start").toString())
 				);
 			})
 			.sorted(Comparator.comparingLong(RaceRoom::getRoomId).reversed())
@@ -355,7 +356,7 @@ public class RaceService {
 	}
 
 	private boolean isRaceStarted(String roomKey) {
-		String started = websocketRedisTemplate.opsForValue().get(roomKey + ":start").toString();
+		String started = websocketRedisTemplate.opsForHash().get(roomKey, "start").toString();
 		return "true".equals(started);
 	}
 
