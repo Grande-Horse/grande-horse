@@ -2,6 +2,7 @@ import { getMyCoin } from '@/services/coin';
 import { useQuery } from '@tanstack/react-query';
 import { DefaultContent, StallContent, RaceTrackContent, LandingContent } from '@/components/ui/header/HeaderContent';
 import { useLocation, useSearchParams } from 'react-router-dom';
+import { queryKey } from '@/constants/queryKey';
 
 const commonStyle = 'flex items-center justify-between p-5 h-24 sticky top-0 z-header w-full';
 
@@ -10,11 +11,12 @@ const Header: React.FC = () => {
   const [searchParams] = useSearchParams();
 
   /* 재화(코인, 발걸음) api 연결 후 캐시 데이터로 저장*/
-  const { data: { coin } = { coin: 0 } } = useQuery({
-    queryKey: ['coin'],
+  const { data } = useQuery({
+    queryKey: [queryKey.COIN],
     queryFn: getMyCoin,
   });
 
+  const coin = data?.coin ?? 0;
   const foot = 100000;
 
   const contentMap = [

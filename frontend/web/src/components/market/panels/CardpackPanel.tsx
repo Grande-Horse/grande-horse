@@ -6,10 +6,21 @@ import RareCardpackIcon from '@/assets/icons/rareCardpackIcon.svg?react';
 import EpicCardpackIcon from '@/assets/icons/epicCardpackIcon.svg?react';
 import UniqueCardpackIcon from '@/assets/icons/uniqueCardpackIcon.svg?react';
 import { buyCardpack, buyDailyCardpack } from '@/services/cardpack';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { queryKey } from '@/constants/queryKey';
 
 const CardpackPanel: React.FC = () => {
-  const handleBuyButtonClick = async (cardpackId: number) => {
-    await buyCardpack(cardpackId);
+  const queryClient = useQueryClient();
+
+  const mutation = useMutation({
+    mutationFn: (cardpackId: number) => buyCardpack(cardpackId),
+    onSuccess: () => {
+      queryClient.refetchQueries({ queryKey: [queryKey.COIN] });
+    },
+  });
+
+  const handleBuyButtonClick = (cardpackId: number) => {
+    mutation.mutate(cardpackId);
   };
 
   const handleDailyCardpackButtonClick = async () => {
@@ -55,8 +66,8 @@ const CardpackPanel: React.FC = () => {
               <p>100</p>
             </span>
           </div>
-          <p className='text-stroke'>노멀 등급 이하의 말 획득</p>
-          <Button onClick={() => handleBuyButtonClick(1)} className='self-end px-12'>
+          <p className='text-stroke'>노멀 등급 이상의 말 획득</p>
+          <Button onClick={() => handleBuyButtonClick(2)} className='self-end px-12'>
             구매
           </Button>
         </div>
@@ -77,8 +88,8 @@ const CardpackPanel: React.FC = () => {
               <p>300</p>
             </span>
           </div>
-          <p className='text-stroke'>레어 등급 이하의 말 획득</p>
-          <Button onClick={() => handleBuyButtonClick(2)} className='self-end px-12'>
+          <p className='text-stroke'>레어 등급 이상의 말 획득</p>
+          <Button onClick={() => handleBuyButtonClick(3)} className='self-end px-12'>
             구매
           </Button>
         </div>
@@ -99,8 +110,8 @@ const CardpackPanel: React.FC = () => {
               <p>500</p>
             </span>
           </div>
-          <p className='text-stroke'>에픽 등급 이하의 말 획득</p>
-          <Button onClick={() => handleBuyButtonClick(3)} className='self-end px-12'>
+          <p className='text-stroke'>에픽 등급 이상의 말 획득</p>
+          <Button onClick={() => handleBuyButtonClick(4)} className='self-end px-12'>
             구매
           </Button>
         </div>
@@ -121,8 +132,8 @@ const CardpackPanel: React.FC = () => {
               <p>1000</p>
             </span>
           </div>
-          <p className='text-stroke'>유니크 등급 이하의 말 획득</p>
-          <Button onClick={() => handleBuyButtonClick(4)} className='self-end px-12'>
+          <p className='text-stroke'>유니크 등급 이상의 말 획득</p>
+          <Button onClick={() => handleBuyButtonClick(5)} className='self-end px-12'>
             구매
           </Button>
         </div>

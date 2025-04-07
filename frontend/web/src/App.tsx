@@ -12,10 +12,12 @@ import RacetrackPage from '@/pages/racetrack';
 import RacetrackRoomPage from '@/pages/racetrack/room';
 import RegisterPage from '@/pages/register';
 import AuthPage from '@/pages/auth';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
+import { QueryClientProvider } from '@tanstack/react-query';
 import { ProtectedRoute } from '@/components/ProtectedRoute';
 import { MusicProvider } from '@/contexts/musicContext';
 import { HorseProvider } from '@/contexts/pastureHorseContext';
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
+import { getQueryClient } from '@/queryClient';
 
 // 보호된 라우트 래퍼
 const ProtectedPage = ({ children }: { children: React.ReactNode }) => (
@@ -37,7 +39,8 @@ const PublicPage = ({ children }: { children: React.ReactNode }) => (
 );
 
 function App() {
-  const queryClient = new QueryClient();
+  const queryClient = getQueryClient();
+
   return (
     <BrowserRouter>
       <MusicProvider>
@@ -45,6 +48,7 @@ function App() {
           <GlobalLayout>
             <AuthContextProvider>
               <ModalProvider>
+                <ReactQueryDevtools initialIsOpen={true} />
                 <Routes>
                   {/* 인증 + 회원가입 필요 */}
                   <Route
