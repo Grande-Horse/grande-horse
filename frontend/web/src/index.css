@@ -221,5 +221,23 @@
     content: '.';
     animation: dot-animation 2s infinite steps(1);
   }
+
+  
+
+  @keyframes slide {
+    0% { background-position: 0% 0; }
+    100% { background-position: 100% 0; }
+  }
+  
+  .animate-slide {
+    animation: slide 8s linear infinite;
+    background-size: cover;
+  }
+
 }
 
+
+html {
+  font-family: 'DungGeunMo';
+  src: url('/fonts/DungGeunMo.ttf');
+}

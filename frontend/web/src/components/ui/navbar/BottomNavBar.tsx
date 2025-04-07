@@ -7,7 +7,7 @@ const BottomNavBar: React.FC = () => {
   const rootActiveStyle = 'bg-transparent';
   const rootHoverStyle = 'hover:bg-transparent';
 
-  const excludedPaths = [{ path: '/landing' }, { path: '/racetrack/room' }, { path: '/racetrack/room/race' }];
+  const excludedPaths = [{ path: '/landing' }, { path: '/racetrack/room' }];
   const isNotRender = excludedPaths.some((item) => pathname.startsWith(item.path));
   const isRoot = pathname === '/';
 

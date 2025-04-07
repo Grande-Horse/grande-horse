@@ -1,81 +1,81 @@
+import { useEffect, useState } from 'react';
+import { useNavigate, useNavigationType } from 'react-router-dom';
+
 import { Button } from '@/components/ui/Button';
 import useModal from '@/components/ui/modal/useModal';
 import RoomList from '@/components/racetrack/RoomList';
-import { RoomCreateModalContent, RoomCreateModalTitle } from '@/components/racetrack/RoomCreateModal';
+import { RoomCreateModal, type RoomCreateModalReturn } from '@/components/racetrack/RoomCreateModal';
 
-import { RoomData } from '@/types/room';
-import { roomMockData } from '@/mocks/datas/room';
-import { useState } from 'react';
+import { useStompClient } from '@/contexts/StompContext';
+import { type RoomData, type RoomCreateData } from '@/types/room';
+import { RankType } from '@/types/horse';
 
 const RacetrackPage = () => {
-  const { openModal } = useModal();
+  const navigate = useNavigate();
+  const navigationType = useNavigationType();
 
-  // useQuery으로 변경예정
-  const [roomList, setRoomList] = useState(roomMockData);
+  const { connected, publish, subscribe, unsubscribe } = useStompClient();
 
-  const [newRoom, setNewRoom] = useState<RoomData>({
-    batting: 0,
-    maxPlayers: 0,
-    rank: '',
-    title: '',
-  });
+  const [roomList, setRoomList] = useState<RoomData[]>([]);
 
-  const handleConfirm = async (updatedRoom) => {
-    try {
-      const response = await fetch('/api/rooms', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(updatedRoom), // 새로운 방 데이터를 JSON으로 전송
-      });
+  const handleCreateRoom = (roomData: RoomCreateData) => {
+    if (!connected) {
+      console.warn('STOMP 연결되지 않음. 방 생성 실패');
+      return;
+    }
 
-      if (!response.ok) {
-        throw new Error('방 생성에 실패했습니다.');
+    subscribe(
+      '/user/queue/subscribe',
+      (roomId: string) => {
+        navigate(`/racetrack/room/${roomId}?title=${roomData.roomName}`, {
+          state: { roomId, maxPlayers: roomData.maxPlayers },
+        });
+      },
+      (error) => {
+        console.log(error, '방 생성 에러');
       }
+    );
 
-      const data = await response.json();
-      console.log('방 생성 성공:', data);
-    } catch (error) {
-      console.error('에러 발생:', error);
+    publish('/app/createRoom', roomData);
+  };
+
+  const { ModalWrapper, openModal, closeModal } = useModal<RoomCreateModalReturn>();
+  const handleOpenModal = async () => {
+    const value = await openModal();
+    if (value) {
+      const payload = {
+        roomName: value.roomName,
+        maxPlayers: value.maxPlayers,
+        rankRestriction: value.rankRestriction as RankType,
+        bettingCoin: value.bettingCoin,
+      };
+
+      handleCreateRoom(payload);
     }
   };
 
-  const handleClick = () => {
-    openModal({
-      title: <RoomCreateModalTitle />,
-      confirmText: '생성',
-      content: <RoomCreateModalContent newRoom={newRoom} setNewRoom={setNewRoom} />,
-      onConfirm: () => {
-        setNewRoom((prevNewRoom) => {
-          const updatedRoom = { ...prevNewRoom };
-          handleConfirm(updatedRoom);
-          return updatedRoom;
-        });
-        setNewRoom({
-          batting: 0,
-          maxPlayers: 0,
-          players: 0,
-          rank: '',
-          title: '',
-        });
-      },
-      onCancel: () => {
-        setNewRoom({
-          batting: 0,
-          maxPlayers: 0,
-          players: 0,
-          rank: '',
-          title: '',
-        });
-      },
+  useEffect(() => {
+    subscribe('/topic/waiting_rooms', (data: { raceRooms: RoomData[] }) => {
+      setRoomList(data.raceRooms);
     });
-  };
+    publish('/app/waiting_rooms');
+
+    if (navigationType === 'POP') {
+      publish('/app/force_leave');
+    }
+
+    return () => {
+      unsubscribe('/topic/waiting_rooms');
+    };
+  }, [connected]);
 
   return (
-    <div className='relative flex h-[calc(100dvh-12rem)] flex-col gap-5 p-5'>
+    <div className='h-body relative flex flex-col gap-5 p-5'>
+      <ModalWrapper>
+        <RoomCreateModal close={closeModal} />
+      </ModalWrapper>
       <div className='bg-background flex h-16 w-full justify-end'>
-        <Button onClick={handleClick}>
+        <Button onClick={handleOpenModal}>
           <p className='px-10'>방 생성</p>
         </Button>
       </div>
