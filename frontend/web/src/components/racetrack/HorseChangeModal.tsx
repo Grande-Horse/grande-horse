@@ -21,6 +21,9 @@ const HorseChangeModal: React.FC<HorseChangeModalProps> = ({ close }) => {
   } as const;
 
   const [selectedHorseId, setSelectedHorseId] = useState<string | null>(null);
+
+  const [activeHorseStates, setActiveHorseStates] = useState<boolean[]>(new Array(userMockData.length).fill(false));
+
   const handleCardClick = (horseId: string) => {
     setSelectedHorseId((prevId) => (prevId === horseId ? null : horseId));
   };
@@ -29,12 +32,21 @@ const HorseChangeModal: React.FC<HorseChangeModalProps> = ({ close }) => {
     setSelectedHorseId(null);
   };
 
+  const setActiveHorse = (index: number, isActive: boolean) => {
+    setActiveHorseStates((prev) => {
+      const newStates = [...prev];
+      newStates[index] = isActive;
+      return newStates;
+    });
+  };
+
   return (
     <>
       <div className='text-heading4 text-stroke pb-5 font-normal'>대표말 변경</div>
       <div className='mb-4 grid grid-cols-3 gap-5'>
         {userMockData.map((horse, idx) => {
           const isSelected = String(horse.id) === selectedHorseId;
+          const isActiveHorse = activeHorseStates[idx];
           return (
             <div className='relative' key={`change ${idx}`}>
               {isSelected && (
@@ -48,12 +60,20 @@ const HorseChangeModal: React.FC<HorseChangeModalProps> = ({ close }) => {
               <div
                 key={`horse ${idx}`}
                 onClick={() => handleCardClick(String(horse.id))}
+                onMouseLeave={() => setActiveHorse(idx, false)}
+                onMouseEnter={() => setActiveHorse(idx, true)}
+                onTouchStart={() => setActiveHorse(idx, true)}
                 className={`${bgImageClass[horse.rank]} outline-secondary flex cursor-pointer flex-col items-center justify-center rounded-2xl bg-cover bg-center pt-5 hover:outline-4 hover:outline-dashed active:outline-dashed`}
               >
                 <p className='text-detail2 text-stroke flex w-full items-center justify-center rounded-xl shadow-inner shadow-black/20'>
                   {horse.userName}
                 </p>
-                <Horse id={String(Math.random())} color={horse.coatColor} key={horse.id} direction='change' />
+                <Horse
+                  color={horse.coatColor}
+                  key={horse.id}
+                  direction='right'
+                  state={isActiveHorse ? 'run' : 'idle'}
+                />
               </div>
             </div>
           );
