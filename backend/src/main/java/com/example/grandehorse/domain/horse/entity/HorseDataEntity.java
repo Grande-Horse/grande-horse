@@ -32,8 +32,8 @@ public class HorseDataEntity {
 	@Column(name = "latest_rank", length = 20, nullable = false)
 	private String latestRank;
 
-	@Column(name = "avg_weight", nullable = false)
-	private short avgWeight;
+	@Column(name = "weight", nullable = false)
+	private short weight;
 
 	@Column(name = "avg_s1f_time", nullable = false)
 	private double avgS1fTime;

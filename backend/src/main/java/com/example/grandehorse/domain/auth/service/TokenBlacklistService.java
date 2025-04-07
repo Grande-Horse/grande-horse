@@ -14,14 +14,14 @@ import com.example.grandehorse.global.jwt.JwtTokenProvider;
 public class TokenBlacklistService {
 	private static final String BLACKLIST_PREFIX = "blacklist:";
 
-	private final RedisTemplate<String, Object> redisTemplate;
+	private final RedisTemplate<String, Object> userRedisTemplate;
 	private final JwtTokenProvider jwtTokenProvider;
 
 	public TokenBlacklistService(
-		@Qualifier("redisTemplate") RedisTemplate<String, Object> redisTemplate,
+		@Qualifier("redisTemplate") RedisTemplate<String, Object> userRedisTemplate,
 		JwtTokenProvider jwtTokenProvider
 	) {
-		this.redisTemplate = redisTemplate;
+		this.userRedisTemplate = userRedisTemplate;
 		this.jwtTokenProvider = jwtTokenProvider;
 	}
 
@@ -29,16 +29,15 @@ public class TokenBlacklistService {
 		long expiration = (jwtTokenProvider.getExpiration(token) - System.currentTimeMillis()) / 1000;
 		if (expiration > 0) {
 			String key = BLACKLIST_PREFIX + token;
-			redisTemplate.opsForValue()
+			userRedisTemplate.opsForValue()
 				.set(key, "true", expiration, TimeUnit.SECONDS);
 		}
 	}
 
 	public void validateTokenBlacklisted(String token) {
 		String key = BLACKLIST_PREFIX + token;
-		if (Boolean.TRUE.equals(redisTemplate.hasKey(key))) {
+		if (Boolean.TRUE.equals(userRedisTemplate.hasKey(key))) {
 			throw new AuthException(CustomError.BLACKLISTED_TOKEN);
 		}
 	}
 }
-

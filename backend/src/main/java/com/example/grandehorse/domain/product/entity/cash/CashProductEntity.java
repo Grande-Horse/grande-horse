@@ -7,8 +7,12 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
+import com.example.grandehorse.global.exception.CustomError;
+import com.example.grandehorse.global.exception.ProductException;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
@@ -16,10 +20,11 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "cash_product")
+@Getter
 public class CashProductEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private byte id;
+	private Byte id;
 
 	@Column(name = "name", length = 60, nullable = false)
 	private String name;
@@ -32,4 +37,10 @@ public class CashProductEntity {
 
 	@Column(name = "selling", nullable = false)
 	private boolean selling;
+
+	public void validateSelling() {
+		if (!selling) {
+			throw new ProductException(CustomError.PRODUCT_NOT_SELLING);
+		}
+	}
 }

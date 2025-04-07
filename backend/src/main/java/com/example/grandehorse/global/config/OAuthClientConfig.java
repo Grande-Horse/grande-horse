@@ -8,7 +8,7 @@ import java.util.stream.Collectors;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-import com.example.grandehorse.domain.auth.client.OauthApiClient;
+import com.example.grandehorse.global.external.oauth.OauthApiClient;
 
 @Configuration
 public class OAuthClientConfig {

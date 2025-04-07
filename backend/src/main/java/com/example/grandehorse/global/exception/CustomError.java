@@ -13,11 +13,11 @@ import lombok.Getter;
 public enum CustomError {
 	// 공통 에러
 	INPUT_LENGTH_EXCEEDED(HttpStatus.BAD_REQUEST, "C1", "입력할 수 있는 글자 길이를 초과하였습니다."),
-	FORBIDDEN_WORD(HttpStatus.BAD_REQUEST, "C2", "사용할 수 없는 단어가 포함되어 있습니다."),
 
 	// 인증 관련 에러
 	INVALID_TOKEN(HttpStatus.BAD_REQUEST, "A1", "유효하지 않은 토큰이거나 토큰이 존재하지 않습니다."),
 	BLACKLISTED_TOKEN(HttpStatus.BAD_REQUEST, "A2", "블랙리스트에 등록된 토큰입니다."),
+	ID_TOKEN_EXPIRED(HttpStatus.BAD_REQUEST, "A3", "ID 토큰이 유효기간이 만료 되었습니다."),
 
 	// 유저 관련 에러
 	USER_DUPLICATE_NICKNAME(HttpStatus.BAD_REQUEST, "U1", "중복되는 유저 닉네임입니다."),
@@ -26,6 +26,7 @@ public enum CustomError {
 
 	// 말 관련 에러
 	HORSE_NOT_EXISTED(HttpStatus.BAD_REQUEST, "H1", "존재하지 않는 말입니다."),
+	HORSE_NOT_AVAILABLE(HttpStatus.BAD_REQUEST, "H2", "해당 등급의 말이 존재하지 않습니다"),
 
 	// 거래 관련 에러
 	CARD_NOT_FOR_SALE(HttpStatus.BAD_REQUEST, "T1", "판매중인 말 카드가 아닙니다."),
@@ -33,12 +34,29 @@ public enum CustomError {
 	CANNOT_CANCEL_TRADE_PERMISSION(HttpStatus.BAD_REQUEST, "T3", "거래(판매) 취소에 대한 권한이 없습니다."),
 
 	// 상품 관련 에러
+	PRODUCT_NOT_FOUND(HttpStatus.BAD_REQUEST, "P1", "존재하지 않는 상품입니다."),
+	PRODUCT_NOT_SELLING(HttpStatus.BAD_REQUEST, "P2", "현재 판매 중인 상품이 아닙니다."),
+
+	// 구매 관련 에러
+	EXPIRED_PURCHASE_REQUEST(HttpStatus.BAD_REQUEST, "PC1", "구매 요청이 만료되었습니다."),
+	PAYMENT_VERIFIED_BUT_REQUEST_MISSING(HttpStatus.BAD_REQUEST, "PC2", "결제는 완료되었지만 구매 요청 정보가 없습니다."),
+	INVALID_PAYMENT(HttpStatus.BAD_REQUEST, "PC3", "유효하지 않은 결제입니다."),
+	DUPLICATE_PURCHASE(HttpStatus.BAD_REQUEST, "PC4", "이미 처리된 구매 요청입니다."),
+	INVALID_PAYMENT_AMOUNT(HttpStatus.BAD_REQUEST, "PC5", "결제 금액이 일치하지 않습니다."),
 
 	// 카드 관련 에러
 	USER_NOT_OWNER_OF_CARD(HttpStatus.BAD_REQUEST, "CA1", "유저의 말카드가 아닙니다."),
 	CARD_SALE_RESTRICTED(HttpStatus.BAD_REQUEST, "CA2", "판매할 수 없는 말카드 입니다."),
 	CARD_NOT_EXISTED(HttpStatus.BAD_REQUEST, "CA3", "존재하지 않는 말카드입니다."),
-	NO_REPRESENTATIVE_HORSE_CARD(HttpStatus.BAD_REQUEST, "CA4", "대표로 등록된 말카드가 없습니다."),
+	CARD_NOT_ELIGIBLE_FOR_REPRESENTATION(HttpStatus.BAD_REQUEST, "CA4", "출전마가 될 수 없는 카드입니다."),
+	CARD_NOT_ELIGIBLE_FOR_CANDIDATE(HttpStatus.BAD_REQUEST, "CA5", "경주마로 등록 또는 해제할 수 없는 카드입니다."),
+	CARD_CANDIDATE_LIMIT_EXCEEDED(HttpStatus.BAD_REQUEST, "CA6", "출전마 및 대표마는 최대 6마리까지만 등록할 수 있습니다"),
+	INVALID_COMBINATION_COUNT(HttpStatus.BAD_REQUEST, "CA7", "합성을 위해 3장의 카드가 필요합니다."),
+	CARD_NOT_OWNED_OR_INVALID_STATUS(HttpStatus.BAD_REQUEST, "CA8", "합성에 사용하지 못하는 카드가 포함되어있습니다."),
+	CARD_COMBINATION_RANK_NOT_MATCHED(HttpStatus.BAD_REQUEST, "CA9", "카드 등급이 모두 같아야 합니다."),
+	CARD_COMBINATION_RANK_NOT_FOUND(HttpStatus.BAD_REQUEST, "CA10", "강화할 수 없는 카드 등급입니다."),
+	INVALID_RANK_VALUE(HttpStatus.BAD_REQUEST, "CA11", "조회할 수 없는 등급입니다."),
+	NO_REPRESENTATIVE_HORSE_CARD(HttpStatus.BAD_REQUEST, "CA12", "대표로 등록된 맒카드가 없습니다."),
 
 	// 경마 관련 에러
 	RACE_ROOM_NOT_EXISTED(HttpStatus.BAD_REQUEST, "R1", "존재하지 않는 방입니다."),
@@ -53,7 +71,9 @@ public enum CustomError {
 	USER_HAS_NOT_REPRESENTATIVE_HORSE_CARD(HttpStatus.BAD_REQUEST, "R10", "대표말 카드가 설정되어 있지 않습니다"),
 
 	// 외부 API 관련 에러
-	EXTERNAL_SERVICE_PARSE_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "E1", "외부 API 응답 처리 중 오류가 발생했습니다.");
+	EXTERNAL_SERVICE_PARSE_ERROR(HttpStatus.BAD_REQUEST, "E1", "외부 API 응답 처리 중 오류가 발생했습니다."),
+	PORTONE_PAYMENT_LOOKUP_FAILED(HttpStatus.BAD_REQUEST, "E2", "결제 정보 조회 중 오류가 발생했습니다."),
+	PORTONE_PAYMENT_CANCEL_FAILED(HttpStatus.BAD_REQUEST, "E3", "결제 취소에 실패하였습니다.");
 
 	private final HttpStatus httpStatus;
 	private final String errorCode;

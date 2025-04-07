@@ -5,15 +5,13 @@ import java.util.Map;
 import jakarta.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import com.example.grandehorse.domain.auth.client.OauthApiClient;
 import com.example.grandehorse.domain.auth.controller.request.SocialAuthorizationDto;
 import com.example.grandehorse.domain.auth.controller.response.SocialUserResponse;
 import com.example.grandehorse.domain.user.service.UserService;
+import com.example.grandehorse.global.external.oauth.OauthApiClient;
 import com.example.grandehorse.global.jwt.JwtTokenProvider;
-import com.example.grandehorse.global.response.CommonResponse;
 import com.example.grandehorse.global.util.CookieUtil;
 
 @Service
@@ -40,7 +38,7 @@ public class AuthService {
 		return oauthApiClient.getLoginUrl();
 	}
 
-	public ResponseEntity<CommonResponse<Map>> processUserAuthentication(
+	public Map<String, String> processUserAuthentication(
 		SocialAuthorizationDto socialAuthorizationDto,
 		HttpServletResponse response
 	) {
@@ -52,7 +50,7 @@ public class AuthService {
 			.map(user -> redirectForAuthenticatedUser(user.getId(), response))
 			.orElseGet(() -> redirectForNewUserRegistration(socialUserResponse, response));
 
-		return CommonResponse.success(Map.of("redirectUrl", redirectUrl));
+		return Map.of("redirectUrl", redirectUrl);
 	}
 
 	private String redirectForAuthenticatedUser(int userId, HttpServletResponse response) {

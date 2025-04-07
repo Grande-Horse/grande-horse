@@ -8,7 +8,6 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.util.AntPathMatcher;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -29,20 +28,19 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 		"/api/v1/users/**"
 	);
 	private static final List<String> INCLUDED_URL_PATTERNS = List.of(
-		"/api/v1/users/coin"
+		"/api/v1/users/coin",
+		"/api/v1/users/info"
 	);
 	private static final AntPathMatcher pathMatcher = new AntPathMatcher();
 
 	private final JwtTokenProvider jwtProvider;
 	private final TokenBlacklistService tokenBlacklistService;
 
-
 	@Override
 	protected boolean shouldNotFilter(HttpServletRequest request) {
 		String requestUri = request.getRequestURI();
-
-		return EXCLUDED_URLS.stream()
-			.anyMatch(url -> pathMatcher.match(url, requestUri));
+		return INCLUDED_URL_PATTERNS.stream().noneMatch(requestUri::equals)
+			&& EXCLUDED_URLS.stream().anyMatch(requestUri::startsWith);
 	}
 
 	@Override

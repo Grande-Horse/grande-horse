@@ -1,4 +1,4 @@
-package com.example.grandehorse.domain.auth.client;
+package com.example.grandehorse.global.external.oauth;
 
 import com.example.grandehorse.domain.auth.controller.response.SocialUserResponse;
 

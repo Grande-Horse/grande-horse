@@ -1,4 +1,4 @@
-package com.example.grandehorse.domain.auth.client;
+package com.example.grandehorse.global.external.oauth;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpHeaders;
@@ -11,6 +11,7 @@ import com.example.grandehorse.domain.auth.controller.response.SocialUserRespons
 import com.example.grandehorse.domain.user.entity.SocialProvider;
 import com.example.grandehorse.global.exception.CustomError;
 import com.example.grandehorse.global.exception.ExternalApiException;
+import com.example.grandehorse.global.external.ExternalApiClient;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -18,40 +19,39 @@ import lombok.RequiredArgsConstructor;
 
 @Component
 @RequiredArgsConstructor
-public class KakaoApiClient implements OauthApiClient {
+public class SsafyApiClient implements OauthApiClient {
 	private final ExternalApiClient externalApiClient;
 	private final ObjectMapper objectMapper;
 
-	@Value("${KAKAO_CLIENT_ID}")
-	private String kakaoClientId;
-	@Value("${KAKAO_REDIRECT_URI}")
-	private String kakaoRedirectUri;
+	@Value("${SSAFY_CLIENT_ID}")
+	private String ssafyClientId;
+	@Value("${SSAFY_REDIRECT_URI}")
+	private String ssafyRedirectUri;
+	@Value("${SSAFY_SECRET}")
+	private String ssafySecret;
 
 	public String getLoginUrl() {
 		StringBuffer url = new StringBuffer();
-		url.append("https://kauth.kakao.com/oauth/authorize?");
-		url.append("client_id=").append(kakaoClientId);
-		url.append("&redirect_uri=").append(kakaoRedirectUri);
+		url.append("https://project.ssafy.com/oauth/sso-check?");
+		url.append("client_id=").append(ssafyClientId);
+		url.append("&redirect_uri=").append(ssafyRedirectUri);
 		url.append("&response_type=code");
-		System.out.println(url.toString());
 		return url.toString();
 	}
 
 	public String getAccessToken(String code) {
 		try {
 			HttpHeaders headers = new HttpHeaders();
-			headers.add("Content-type", "application/x-www-form-urlencoded;charset=utf-8");
 
 			MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
 			body.add("grant_type", "authorization_code");
-			body.add("client_id", kakaoClientId);
-			body.add("redirect_uri", kakaoRedirectUri);
+			body.add("client_id", ssafyClientId);
+			body.add("client_secret", ssafySecret);
+			body.add("redirect_uri", ssafyRedirectUri);
 			body.add("code", code);
 
-			ResponseEntity<String> response = externalApiClient.post(
-				"https://kauth.kakao.com/oauth/token",
-				headers,
-				body);
+			ResponseEntity<String> response = externalApiClient.postFormUrlEncoded(
+				"https://project.ssafy.com/ssafy/oauth2/token", headers, body);
 
 			JsonNode jsonNode = objectMapper.readTree(response.getBody());
 			return jsonNode.get("access_token").asText();
@@ -65,18 +65,12 @@ public class KakaoApiClient implements OauthApiClient {
 			HttpHeaders headers = new HttpHeaders();
 			headers.add("Authorization", "Bearer " + accessToken);
 
-			ResponseEntity<String> response = externalApiClient.get("https://kapi.kakao.com/v2/user/me", headers);
+			ResponseEntity<String> response = externalApiClient.get(
+				"https://project.ssafy.com/ssafy/resources/userInfo", headers);
 
 			JsonNode jsonNode = objectMapper.readTree(response.getBody());
-
-			String userId = jsonNode.get("id").asText();
-			JsonNode kakaoAccountNode = jsonNode.get("kakao_account");
-			String email = kakaoAccountNode.get("email").asText();
-			return new SocialUserResponse(
-				SocialProvider.KAKAO,
-				userId,
-				email
-			);
+			return new SocialUserResponse(SocialProvider.SSAFY, jsonNode.get("userId").asText(),
+				jsonNode.get("email").asText());
 		} catch (Exception e) {
 			throw new ExternalApiException(CustomError.EXTERNAL_SERVICE_PARSE_ERROR);
 		}
@@ -84,6 +78,6 @@ public class KakaoApiClient implements OauthApiClient {
 
 	@Override
 	public String getProvider() {
-		return SocialProvider.KAKAO.toString();
+		return SocialProvider.SSAFY.toString();
 	}
 }

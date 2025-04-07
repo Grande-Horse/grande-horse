@@ -1,16 +1,10 @@
 package com.example.grandehorse.domain.user.controller;
 
+import com.example.grandehorse.domain.user.controller.response.UserInfoResponse;
 import jakarta.servlet.http.HttpServletResponse;
 
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CookieValue;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.example.grandehorse.domain.user.controller.request.SignUpDto;
 import com.example.grandehorse.domain.user.controller.response.CoinResponse;
@@ -23,7 +17,7 @@ import lombok.RequiredArgsConstructor;
 @RequestMapping("/users")
 @RequiredArgsConstructor
 public class UserController {
-	private final UserService userService;
+    private final UserService userService;
 
 	@GetMapping("/{nickname}/duplicate")
 	public ResponseEntity<CommonResponse<Void>> duplicateNickname(
@@ -41,10 +35,17 @@ public class UserController {
 		return userService.processSocialSignUp(signUpDto, socialToken, response);
 	}
 
-	@GetMapping("/coins")
-	public ResponseEntity<CommonResponse<CoinResponse>> coins(
-		@ModelAttribute("userId") int userId
-	) {
-		return userService.getUserCoin(userId);
-	}
+    @GetMapping("/coins")
+    public ResponseEntity<CommonResponse<CoinResponse>> coins(
+            @ModelAttribute("userId") int userId
+    ) {
+        return userService.getUserCoin(userId);
+    }
+
+    @GetMapping("/info")
+    public ResponseEntity<CommonResponse<UserInfoResponse>> getUserInfo(
+            @RequestAttribute("userId") int userId
+    ) {
+        return userService.getUserInfo(userId);
+    }
 }
