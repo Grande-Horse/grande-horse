@@ -5,11 +5,11 @@ import java.time.LocalDateTime;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.example.grandehorse.domain.product.controller.request.CashProductDto;
-import com.example.grandehorse.domain.product.controller.request.PaymentInfoDto;
-import com.example.grandehorse.domain.product.controller.response.CashOrderResponse;
 import com.example.grandehorse.domain.product.entity.cash.CashProductEntity;
 import com.example.grandehorse.domain.product.service.ProductService;
+import com.example.grandehorse.domain.purchase.controller.request.PaymentInfoDto;
+import com.example.grandehorse.domain.purchase.controller.request.ProductDto;
+import com.example.grandehorse.domain.purchase.controller.response.CashOrderResponse;
 import com.example.grandehorse.domain.purchase.entity.cash.CashOrderEntity;
 import com.example.grandehorse.domain.purchase.entity.cash.CashOrderStatus;
 import com.example.grandehorse.domain.purchase.entity.cash.CashPurchaseEntity;
@@ -28,7 +28,7 @@ import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
-public class PurchaseService {
+public class CashPurchaseService {
 	private final CashOrderRedisService cashOrderRedisService;
 	private final PortOneClient portOneClient;
 	private final ProductService productService;
@@ -37,8 +37,8 @@ public class PurchaseService {
 	private final UserService userService;
 	private final FallbackPaymentService fallbackPaymentService;
 
-	public CashOrderResponse createCashOrder(int userId, CashProductDto cashProductDto) {
-		CashProductEntity cashProduct = productService.gettCashProductById(cashProductDto.getId());
+	public CashOrderResponse createCashOrder(int userId, ProductDto productDto) {
+		CashProductEntity cashProduct = productService.getCashProductById(productDto.getId());
 
 		cashProduct.validateSelling();
 
@@ -48,7 +48,7 @@ public class PurchaseService {
 
 		CashOrderRedisDto cashOrderRedisDto = CashOrderRedisDto.builder()
 			.userId(userId)
-			.productId(cashProductDto.getId())
+			.productId(productDto.getId())
 			.name(cashProduct.getName())
 			.price(cashProduct.getPrice())
 			.acquiredCoin(cashProduct.getAcquiredCoin())

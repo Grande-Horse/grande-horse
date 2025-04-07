@@ -1,4 +1,4 @@
-package com.example.grandehorse.domain.product.controller.request;
+package com.example.grandehorse.domain.purchase.controller.request;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
