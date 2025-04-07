@@ -6,7 +6,6 @@ import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
-import org.springframework.messaging.simp.annotation.SubscribeMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.grandehorse.domain.race.controller.request.CreateRaceRoomRequest;
@@ -50,7 +49,7 @@ public class RaceController {
 		@Header("simpSessionAttributes") Map<String, Object> sessionAttributes,
 		@Header("simpSessionId") String sessionId
 	) {
-		int userId = (int) sessionAttributes.get("userId");
+		int userId = (int)sessionAttributes.get("userId");
 		sessionAttributes.put("roomId", roomId);
 		raceService.joinRaceRoom(roomId, userId, sessionId);
 	}
@@ -63,7 +62,7 @@ public class RaceController {
 		@DestinationVariable Long roomId,
 		@Header("simpSessionAttributes") Map<String, Object> sessionAttributes
 	) {
-		int userId = (int) sessionAttributes.get("userId");
+		int userId = (int)sessionAttributes.get("userId");
 		raceService.toggleReadyStatus(roomId, userId);
 	}
 
@@ -77,7 +76,7 @@ public class RaceController {
 		@Header("simpSessionAttributes") Map<String, Object> sessionAttributes,
 		@Header("simpSessionId") String sessionId
 	) {
-		int userId = (int) sessionAttributes.get("userId");
+		int userId = (int)sessionAttributes.get("userId");
 		raceService.startRace(roomId, sessionId, userId);
 	}
 
@@ -89,15 +88,15 @@ public class RaceController {
 		@DestinationVariable Long roomId,
 		@Header("simpSessionAttributes") Map<String, Object> sessionAttributes
 	) {
-		int userId = (int) sessionAttributes.get("userId");
+		int userId = (int)sessionAttributes.get("userId");
 		raceService.leaveRaceRoom(roomId, userId);
 	}
 
 	@MessageMapping("/force_leave")
 	public void forceLeaveRoom(
-			@Header("simpSessionAttributes") Map<String, Object> sessionAttributes
+		@Header("simpSessionAttributes") Map<String, Object> sessionAttributes
 	) {
-		int userId = (int) sessionAttributes.get("userId");
+		int userId = (int)sessionAttributes.get("userId");
 		raceService.forceLeaveRoom(userId);
 	}
 
@@ -107,16 +106,24 @@ public class RaceController {
 		@Header("simpSessionAttributes") Map<String, Object> sessionAttributes,
 		@Payload String message
 	) {
-		int userId = (int) sessionAttributes.get("userId");
+		int userId = (int)sessionAttributes.get("userId");
 		raceService.sendChatMessage(roomId, userId, message);
 	}
 
 	@MessageMapping("/race_room/{roomId}/game")
 	public void playGame(
-			@DestinationVariable Long roomId,
-			@Header("simpSessionAttributes") Map<String, Object> sessionAttributes
+		@DestinationVariable Long roomId,
+		@Header("simpSessionAttributes") Map<String, Object> sessionAttributes
 	) {
-		int userId = (int) sessionAttributes.get("userId");
+		int userId = (int)sessionAttributes.get("userId");
 		raceService.playGame(roomId, userId);
+	}
+
+	// 경기 끝나고 코인 체크
+	@MessageMapping("/race_room/{roomId}/coin")
+	public void checkCoin(
+		@DestinationVariable Long roomId
+	) {
+		raceService.checkCoin(roomId);
 	}
 }

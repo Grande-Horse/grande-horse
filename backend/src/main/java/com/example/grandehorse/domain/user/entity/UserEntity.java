@@ -78,4 +78,8 @@ public class UserEntity {
 	public void decreaseCoin(int price) {
 		coin.decreaseCoin(price);
 	}
+
+	public int getCoin() {
+		return coin.getValue();
+	}
 }
