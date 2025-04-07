@@ -14,16 +14,16 @@ export const getMyHorseCards = async (
     rank,
   };
 
-  return apiGet<CursorResponse<HorseCardType>>('/cards', params);
+  return await apiGet<CursorResponse<HorseCardType>>('/cards', params);
 };
 
 export const getRaceRecord = async (cardId: number): Promise<RaceRecordType> => {
-  return apiGet<RaceRecordType>(`/cards/${cardId}/race-record`);
+  return await apiGet<RaceRecordType>(`/cards/${cardId}/race-record`);
 };
 
 export const combineCards = async (cardIds: number[]): Promise<HorseCardType> => {
   const body = {
     cardIds,
   };
-  return apiPost<{ cardIds: number[] }, HorseCardType>('/cards/combine', body);
+  return await apiPost<{ cardIds: number[] }, HorseCardType>('/cards/combine', body);
 };
