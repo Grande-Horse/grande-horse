@@ -251,9 +251,9 @@ public class CardService {
 
 		CardCombinationEntity combinationRecord = saveCombinationRecord(combinationRank.getId(), isSuccess);
 
-		if (isSuccess) {
-			deleteOriginalCards(cards, combinationRecord.getId());
+		deleteOriginalCards(cards, combinationRecord.getId());
 
+		if (isSuccess) {
 			CardEntity newCard = createAndSaveCombinedCard(userId, upperRank, combinationRecord.getId());
 			recordCardCombination(newCard, userId, combinationRecord.getId());
 
