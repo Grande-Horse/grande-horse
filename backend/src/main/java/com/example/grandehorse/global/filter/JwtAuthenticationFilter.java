@@ -39,8 +39,14 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 	@Override
 	protected boolean shouldNotFilter(HttpServletRequest request) {
 		String requestUri = request.getRequestURI();
-		return INCLUDED_URL_PATTERNS.stream().noneMatch(requestUri::equals)
-			&& EXCLUDED_URLS.stream().anyMatch(requestUri::startsWith);
+
+		boolean isIncluded = INCLUDED_URL_PATTERNS.stream()
+			.anyMatch(pattern -> pathMatcher.match(pattern, requestUri));
+
+		boolean isExcluded = EXCLUDED_URLS.stream()
+			.anyMatch(pattern -> pathMatcher.match(pattern, requestUri));
+
+		return !isIncluded && isExcluded;
 	}
 
 	@Override
