@@ -116,7 +116,7 @@ public class RaceController {
 		@Header("simpSessionAttributes") Map<String, Object> sessionAttributes
 	) {
 		int userId = (int)sessionAttributes.get("userId");
-		raceService.playGame(roomId, userId);
+		raceService.requestPlayGame(roomId, userId);
 	}
 
 	// 경기 끝나고 코인 체크
