@@ -77,15 +77,15 @@ function App() {
                   <Route
                     path='/market/sell/:horseId'
                     element={
-                      // <ProtectedPage>
-                      <SellPage />
-                      // </ProtectedPage>
+                      <ProtectedPage>
+                        <SellPage />
+                      </ProtectedPage>
                     }
                   />
 
-                  <Route index element={<RacetrackPage />} />
-                  <Route path='room/:roomid' element={<RacetrackRoomPage />} />
-                  <Route path='room/:roomid/race' element={<RaceTrackRacePage />} />
+                  <Route path='/racetrack' element={<RacetrackPage />} />
+                  <Route path='/racetrack/room/:roomId' element={<RacetrackRoomPage />} />
+                  <Route path='/racetrack/room/:roomId/race' element={<RaceTrackRacePage />} />
 
                   {/* 인증 필요 */}
                   <Route
