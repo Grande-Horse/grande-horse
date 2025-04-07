@@ -22,61 +22,62 @@ import lombok.RequiredArgsConstructor;
 @Component
 @RequiredArgsConstructor
 public class JwtAuthenticationFilter extends OncePerRequestFilter {
-	private static final List<String> EXCLUDED_URLS = List.of(
-		"/api/v1/auth",
-		"/api/v1/users"
-	);
+    private static final List<String> EXCLUDED_URLS = List.of(
+            "/api/v1/auth",
+            "/api/v1/users"
+    );
 
-	private static final List<String> INCLUDED_URL_PATTERNS = List.of(
-		"/api/v1/users/coin"
-	);
+    private static final List<String> INCLUDED_URL_PATTERNS = List.of(
+            "/api/v1/users/coin",
+            "/api/v1/users/info"
+    );
 
-	private final JwtTokenProvider jwtProvider;
-	private final TokenBlacklistService tokenBlacklistService;
+    private final JwtTokenProvider jwtProvider;
+    private final TokenBlacklistService tokenBlacklistService;
 
-	@Override
-	protected boolean shouldNotFilter(HttpServletRequest request) {
-		String requestUri = request.getRequestURI();
-		return INCLUDED_URL_PATTERNS.stream().noneMatch(requestUri::equals)
-			&& EXCLUDED_URLS.stream().anyMatch(requestUri::startsWith);
-	}
+    @Override
+    protected boolean shouldNotFilter(HttpServletRequest request) {
+        String requestUri = request.getRequestURI();
+        return INCLUDED_URL_PATTERNS.stream().noneMatch(requestUri::equals)
+                && EXCLUDED_URLS.stream().anyMatch(requestUri::startsWith);
+    }
 
-	@Override
-	protected void doFilterInternal(
-		HttpServletRequest request,
-		HttpServletResponse response,
-		FilterChain filterChain
-	) throws ServletException, IOException {
-		String accessToken = getAccessToken(request, response);
-		validateToken(accessToken);
+    @Override
+    protected void doFilterInternal(
+            HttpServletRequest request,
+            HttpServletResponse response,
+            FilterChain filterChain
+    ) throws ServletException, IOException {
+        String accessToken = getAccessToken(request, response);
+        validateToken(accessToken);
 
-		int id = jwtProvider.getIdFromToken(accessToken);
-		request.setAttribute("userId", id);
+        int id = jwtProvider.getIdFromToken(accessToken);
+        request.setAttribute("userId", id);
 
-		filterChain.doFilter(request, response);
-	}
+        filterChain.doFilter(request, response);
+    }
 
-	private String getAccessToken(HttpServletRequest request, HttpServletResponse response) {
-		return CookieUtil.getValue(request, "accessToken")
-			.orElseGet(() -> regenerateAccessToken(request, response));
-	}
+    private String getAccessToken(HttpServletRequest request, HttpServletResponse response) {
+        return CookieUtil.getValue(request, "accessToken")
+                .orElseGet(() -> regenerateAccessToken(request, response));
+    }
 
-	private String regenerateAccessToken(HttpServletRequest request, HttpServletResponse response) {
-		String refreshToken = CookieUtil.getValue(request, "refreshToken")
-			.orElseThrow(() -> new AuthException(CustomError.INVALID_TOKEN));
+    private String regenerateAccessToken(HttpServletRequest request, HttpServletResponse response) {
+        String refreshToken = CookieUtil.getValue(request, "refreshToken")
+                .orElseThrow(() -> new AuthException(CustomError.INVALID_TOKEN));
 
-		validateToken(refreshToken);
+        validateToken(refreshToken);
 
-		int id = jwtProvider.getIdFromToken(refreshToken);
-		String newAccessToken = jwtProvider.generateAccessToken(id);
-		CookieUtil.createAccessTokenCookie(response, newAccessToken);
+        int id = jwtProvider.getIdFromToken(refreshToken);
+        String newAccessToken = jwtProvider.generateAccessToken(id);
+        CookieUtil.createAccessTokenCookie(response, newAccessToken);
 
-		return newAccessToken;
-	}
+        return newAccessToken;
+    }
 
-	private void validateToken(String token) {
-		jwtProvider.validateToken(token);
-		tokenBlacklistService.validateTokenBlacklisted(token);
-	}
+    private void validateToken(String token) {
+        jwtProvider.validateToken(token);
+        tokenBlacklistService.validateTokenBlacklisted(token);
+    }
 }
 
