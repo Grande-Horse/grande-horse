@@ -8,6 +8,7 @@ import jakarta.persistence.Table;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
@@ -17,6 +18,7 @@ import lombok.NoArgsConstructor;
 @Table(name = "cardpack_probability", indexes = {
 	@Index(name = "idx_cardpack_id", columnList = "cardpack_id")
 })
+@Getter
 public class CardPackProbabilityEntity {
 	@EmbeddedId
 	private CardPackProbabilityId id; // 복합키 card_rank & card_pack_id

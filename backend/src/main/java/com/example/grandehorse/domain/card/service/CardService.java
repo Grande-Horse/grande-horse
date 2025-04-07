@@ -1,7 +1,9 @@
 package com.example.grandehorse.domain.card.service;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -27,8 +29,13 @@ import com.example.grandehorse.domain.card.repository.CardRecordJpaRepository;
 import com.example.grandehorse.domain.horse.entity.HorseEntity;
 import com.example.grandehorse.domain.horse.entity.HorseRank;
 import com.example.grandehorse.domain.horse.service.HorseService;
+import com.example.grandehorse.domain.product.entity.coin.cardpack.CardPackEntity;
+import com.example.grandehorse.domain.product.entity.coin.cardpack.CardPackProbabilityEntity;
+import com.example.grandehorse.domain.product.entity.coin.cardpack.CardRank;
+import com.example.grandehorse.domain.product.service.ProductService;
 import com.example.grandehorse.domain.race.service.RaceRecordService;
 import com.example.grandehorse.global.exception.CardException;
+import com.example.grandehorse.global.exception.CommonException;
 import com.example.grandehorse.global.exception.CustomError;
 import com.example.grandehorse.global.response.CommonResponse;
 
@@ -44,6 +51,7 @@ public class CardService {
 	private final CardCombinationRepository cardCombinationRepository;
 	private final CardCombinationRankRepository cardCombinationRankRepository;
 	private final CardRecordJpaRepository cardRecordJpaRepository;
+	private final ProductService productService;
 
 	public CardEntity findRepresentativeCard(int userId) {
 		return cardJpaRepository.findCardByUserIdAndStatus(userId, 3)
@@ -372,6 +380,60 @@ public class CardService {
 		return CardResponseDto.builder()
 			.cardId(-1)
 			.build();
+	}
+
+	public List<CardResponseDto> drawCardListFromCardPack(
+		int userId, CardPackEntity cardPack, LocalDateTime drawTime
+	) {
+		List<CardPackProbabilityEntity> rankProbabilities = productService.getRankProbabilitiesByCardPack(cardPack);
+
+		List<CardResponseDto> generateCardList = new ArrayList<>();
+
+		for (int i = 0; i < cardPack.getCardCount(); i++) {
+			CardRank randomCardRank = pickRandomRank(rankProbabilities);
+
+			HorseRank horseRank = HorseRank.valueOf(randomCardRank.name());
+
+			HorseEntity selectedHorse = pickRandomHorse(horseRank);
+
+			generateCardList.add(toCardResponseDto(
+				generateCard(
+					userId, selectedHorse, drawTime, AcquiredWay.CARDPACK
+				),
+				selectedHorse
+			));
+		}
+
+		return generateCardList;
+	}
+
+	private CardRank pickRandomRank(List<CardPackProbabilityEntity> probabilities) {
+		double random = Math.random() * 100.0;
+		double cumulative = 0.0;
+
+		for (CardPackProbabilityEntity entry : probabilities) {
+			cumulative += entry.getProbability();
+			if (random <= cumulative) {
+				return entry.getId().getCardRank();
+			}
+		}
+
+		throw new CommonException(CustomError.INVALID_CARD_PACK_PROBABILITY);
+	}
+
+	private CardEntity generateCard(int userId, HorseEntity horse, LocalDateTime acquiredAt, AcquiredWay acquiredWay) {
+		CardEntity newCard = CardEntity.builder()
+			.userId(userId)
+			.horseId(horse.getId())
+			.status((byte)0)
+			.acquiredWay(acquiredWay)
+			.acquiredAt(acquiredAt)
+			.raceCount((short)0)
+			.victoryCount((short)0)
+			.totalPrize(0)
+			.build();
+
+		return cardJpaRepository.save(newCard);
 	}
 
 	public CardResponseDto getRepresentativeCard(int userId) {

@@ -6,6 +6,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.example.grandehorse.domain.product.entity.cash.CashProductEntity;
 
-public interface CashProductRepository extends JpaRepository<CashProductEntity, Byte> {
+public interface CashProductJpaRepository extends JpaRepository<CashProductEntity, Byte> {
 	Optional<CashProductEntity> findCashProductById(Byte id);
 }

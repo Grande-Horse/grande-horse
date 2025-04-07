@@ -27,7 +27,7 @@ public class FallbackPaymentService {
 	public void saveFallbackPurchase(PortOnePaymentResponse portOnePayment) {
 		MerchantUidInfo orderInfo = MerchantUidInfo.fromRawUid(portOnePayment.getImpUid());
 
-		CashProductEntity cashProduct = productService.gettCashProductById(orderInfo.getProductId());
+		CashProductEntity cashProduct = productService.getCashProductById(orderInfo.getProductId());
 
 		CashOrderStatus status =
 			portOneClient.cancelPayment(portOnePayment.getImpUid()) ? CashOrderStatus.CANCEL : CashOrderStatus.FAIL;

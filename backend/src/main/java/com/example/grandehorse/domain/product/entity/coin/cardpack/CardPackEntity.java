@@ -9,6 +9,7 @@ import jakarta.persistence.Table;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
@@ -16,6 +17,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "cardpack")
+@Getter
 public class CardPackEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
