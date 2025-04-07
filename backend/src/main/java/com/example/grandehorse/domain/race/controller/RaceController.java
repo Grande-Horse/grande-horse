@@ -110,6 +110,13 @@ public class RaceController {
 		raceService.sendChatMessage(roomId, userId, message);
 	}
 
+	@MessageMapping("/race_room/{roomId}/start")
+	public void initialRaceData(
+		@DestinationVariable Long roomId
+	) {
+		raceService.broadcastInitialRaceData(roomId);
+	}
+
 	@MessageMapping("/race_room/{roomId}/game")
 	public void playGame(
 		@DestinationVariable Long roomId,

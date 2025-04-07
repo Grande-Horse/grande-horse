@@ -194,10 +194,12 @@ public class RaceService {
 
 		if (!isRoomOwner(roomKey, userId)) {
 			sendErrorMessage(sessionId, CustomError.ONLY_OWNER_CAN_START_RACE.getErrorCode());
+			return;
 		}
 
 		if (!isAllPlayersReady(roomKey)) {
 			sendErrorMessage(sessionId, CustomError.NOT_ALL_PLAYERS_READY.getErrorCode());
+			return;
 		}
 
 		websocketRedisTemplate.opsForHash().put(roomKey, "start", "true");
@@ -205,6 +207,16 @@ public class RaceService {
 
 		broadcastPlayersInfo(roomId, roomKey);
 		broadcastRaceRooms();
+	}
+
+	public void broadcastInitialRaceData(Long roomId) {
+		String roomKey = RACE_ROOM_PREFIX + roomId;
+		List<Object> playerIds = websocketRedisTemplate.opsForList().range(roomKey + ":players", 0, -1);
+		List<PlayerInfo> playersInfo = playerIds.stream()
+			.map(id -> getPlayerInfo(roomKey, id))
+			.collect(Collectors.toList());
+
+		messagingTemplate.convertAndSend("/topic/race_room/" + roomId + "/start", playersInfo);
 	}
 
 	public void leaveRaceRoom(Long roomId, int userId) {
@@ -241,7 +253,6 @@ public class RaceService {
 		}
 
 		Long roomId = Long.parseLong(roomKey.replace(RACE_ROOM_PREFIX, ""));
-
 		leaveRaceRoom(roomId, userId);
 	}
 
@@ -615,7 +626,12 @@ public class RaceService {
 		List<PlayerInfo> playersInfo = playerIds.stream()
 			.map(id -> getPlayerInfo(roomKey, id))
 			.collect(Collectors.toList());
-		messagingTemplate.convertAndSend("/topic/race_room/" + roomId, playersInfo);
+		Map<String, Object> response = new HashMap<>();
+
+		String started = websocketRedisTemplate.opsForHash().get(roomKey, "start").toString();
+		response.put("isGameStarted", started);
+		response.put("playersInfo", playersInfo);
+		messagingTemplate.convertAndSend("/topic/race_room/" + roomId, response);
 	}
 
 	private PlayerInfo getPlayerInfo(String roomKey, Object id) {
