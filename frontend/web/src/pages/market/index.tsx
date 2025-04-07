@@ -8,7 +8,7 @@ import CardpackPanel from '@/components/market/panels/CardpackPanel';
 const MarketPage: React.FC = () => {
   return (
     <div className='h-body overflow-y-auto'>
-      <Tabs tabList={marketTabList} tabPanels={[<CardpackPanel />, <CoinPanel />, <PurchasePanel />, <SellPanel />]} />
+      <Tabs tabList={marketTabList} tabPanels={[<PurchasePanel />, <SellPanel />, <CardpackPanel />, <CoinPanel />]} />
     </div>
   );
 };
