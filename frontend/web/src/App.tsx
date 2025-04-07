@@ -16,6 +16,7 @@ import { ProtectedRoute } from '@/components/ProtectedRoute';
 import { StompProvider } from '@/contexts/StompContext';
 import { MusicProvider } from '@/contexts/musicContext';
 import RaceTrackRacePage from '@/pages/racetrack/room/race';
+import { HorseProvider } from '@/contexts/pastureHorseContext';
 
 // 보호된 라우트 래퍼
 const ProtectedPage = ({ children }: { children: React.ReactNode }) => (
@@ -50,9 +51,11 @@ function App() {
                   <Route
                     path='/'
                     element={
-                      <ProtectedPage>
+                      // <ProtectedPage>
+                      <HorseProvider>
                         <HomePage />
-                      </ProtectedPage>
+                      </HorseProvider>
+                      // </ProtectedPage>
                     }
                   />
                   <Route
@@ -74,21 +77,15 @@ function App() {
                   <Route
                     path='/market/sell/:horseId'
                     element={
-                      <ProtectedPage>
-                        <SellPage />
-                      </ProtectedPage>
+                      // <ProtectedPage>
+                      <SellPage />
+                      // </ProtectedPage>
                     }
                   />
-                  <Route
-                    path='/racetrack/*'
-                    element={
-                      <Routes>
-                        <Route index element={<RacetrackPage />} />
-                        <Route path='room/:roomid' element={<RacetrackRoomPage />} />
-                        <Route path='room/:roomid/race' element={<RaceTrackRacePage />} />
-                      </Routes>
-                    }
-                  />
+
+                  <Route index element={<RacetrackPage />} />
+                  <Route path='room/:roomid' element={<RacetrackRoomPage />} />
+                  <Route path='room/:roomid/race' element={<RaceTrackRacePage />} />
 
                   {/* 인증 필요 */}
                   <Route

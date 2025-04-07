@@ -32,6 +32,7 @@ const Header: React.FC = () => {
     { path: '/racetrack', component: <RaceTrackContent coin={coin} foot={foot} /> },
     { path: '/stall', component: <StallContent title='마구간' /> },
     { path: '/landing', component: <LandingContent /> },
+    { path: '/', component: <LandingContent /> },
   ];
 
   const dynamicRacePath = /^\/racetrack\/room\/([^/]+)\/race$/;

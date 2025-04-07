@@ -4,8 +4,8 @@ import { bottomNavBarItem } from '@/constants/bottomNavBarIcon';
 const BottomNavBar: React.FC = () => {
   const { pathname } = useLocation();
   const activeStyle = 'bg-primary';
-  const rootActiveStyle = 'bg-primary/10';
-  const rootHoverStyle = 'hover:bg-primary/10';
+  const rootActiveStyle = 'bg-transparent';
+  const rootHoverStyle = 'hover:bg-transparent';
 
   const excludedPaths = [{ path: '/landing' }, { path: '/racetrack/room' }];
   const isNotRender = excludedPaths.some((item) => pathname.startsWith(item.path));
