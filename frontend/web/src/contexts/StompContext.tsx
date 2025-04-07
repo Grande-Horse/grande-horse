@@ -56,15 +56,18 @@ export const StompProvider = ({ children }: { children: React.ReactNode }) => {
 
     const sub = clientRef.current.subscribe(destination, (message) => {
       try {
-        const data = JSON.parse(message.body) as T;
-        onMessage(data);
-      } catch {
-        console.log(message.body);
-        alert('메시지 처리 중 오류 발생');
-        onError?.(message.body);
+        const data = JSON.parse(message.body);
+
+        console.log(data);
+        if ('errorCode' in data) {
+          onError?.(data.errorCode);
+        } else {
+          onMessage(data as T);
+        }
+      } catch (e) {
+        onMessage(message.body as unknown as T);
       }
     });
-
     subscriptions.current.set(destination, sub);
     console.log(`구독됨: ${destination}`);
   };

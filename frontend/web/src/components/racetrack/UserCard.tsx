@@ -22,7 +22,7 @@ const UserCard: React.FC<UserCardProps> = ({ user }) => {
       <p className='text-heading4 flex w-full items-center justify-center rounded-xl shadow-inner shadow-black/20'>
         {user.userNickname}
       </p>
-      <Horse color={user.horseColor} id={user.userNickname} />
+      <Horse color={user.horseColor} direction='down' state='idle' />
       <p className={`text-body1 ${user.ready ? '' : 'invisible'}`}>준비완료</p>
     </div>
   );

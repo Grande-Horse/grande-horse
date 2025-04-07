@@ -7,6 +7,7 @@ export interface RoomData {
   bettingCoin: number;
   currentPlayers?: number;
   maxPlayers: number;
+  start: boolean;
 }
 
 export interface RoomCreateData {

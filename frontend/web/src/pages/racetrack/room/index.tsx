@@ -38,6 +38,9 @@ const RacetrackRoomPage = () => {
     const usersPath = `/topic/race_room/${roomId}`;
 
     subscribe(chatPath, (data: Chat) => {
+      if (data.sender === 'SYSTEM' && data.message === '[알림] 경주가 시작됩니다!') {
+        navigate(`/racetrack/room/${roomId}/race`, { state: { roomId }, replace: true });
+      }
       setChatContent((prev) => {
         return [...prev, data];
       });

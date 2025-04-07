@@ -11,9 +11,10 @@ interface RoomItemProps {
 const RoomItem: React.FC<RoomItemProps> = ({ room }) => {
   const currentPlayers = room.currentPlayers || 1;
   const isRoomFull = currentPlayers >= room.maxPlayers;
+  const isGameStarted = room.start;
 
   const Container = ({ children }: { children: React.ReactNode }) =>
-    isRoomFull ? (
+    isRoomFull || isGameStarted ? (
       <div
         className='flex cursor-not-allowed items-center justify-between gap-5 rounded-xl bg-gray-400/30 p-9 text-gray-400 inset-shadow-xs'
         aria-disabled
@@ -47,6 +48,7 @@ const RoomItem: React.FC<RoomItemProps> = ({ room }) => {
             {room.currentPlayers}/{room.maxPlayers}
           </p>
         </div>
+        {isGameStarted && <div className='ml-1 text-sm text-red-400'>(게임중)</div>}
       </div>
     </Container>
   );

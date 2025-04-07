@@ -1,14 +1,17 @@
 import { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import Horse from '@/components/racetrack/Horse';
 import landingBgLandscape from '@/assets/images/backgrounds/landingBgLandscape.png';
 import landingBgCloudUpper from '@/assets/images/backgrounds/landingBgCloudUpper.png';
 import landingBgCloudLower from '@/assets/images/backgrounds/landingBgCloudLower.png';
+import { CoatColorType } from '@/types/horse';
 
-const RaceWaiting = () => {
+interface RaceWaitingProps {
+  setWaiting: React.Dispatch<React.SetStateAction<boolean>>;
+  color: CoatColorType;
+}
+
+const RaceWaiting: React.FC<RaceWaitingProps> = ({ setWaiting, color }) => {
   const [progress, setProgress] = useState(0);
-
-  const navigation = useNavigate();
 
   useEffect(() => {
     const duration = 3000;
@@ -22,9 +25,6 @@ const RaceWaiting = () => {
         const newProgress = (currentStep / totalSteps) * 100;
         if (currentStep >= totalSteps) {
           clearInterval(interval);
-
-          // 전역상태변경으로 대체예정
-          navigation('/');
         }
         return newProgress;
       });
@@ -32,6 +32,12 @@ const RaceWaiting = () => {
 
     return () => clearInterval(interval);
   }, []);
+
+  useEffect(() => {
+    if (progress >= 100) {
+      setWaiting(false);
+    }
+  }, [progress]);
 
   return (
     <div className='text-stroke text-heading2 relative flex h-full w-full flex-col items-center justify-center'>
@@ -66,7 +72,7 @@ const RaceWaiting = () => {
       />
 
       <div className='absolute z-50 flex h-1/2 flex-col items-end justify-end'>
-        <Horse id='fsjdlfksadf' color='black' direction='change' type='auto' />
+        <Horse color={color} direction='right' state='run' />
       </div>
     </div>
   );
