@@ -3,6 +3,7 @@ import CoinIcon from '@/assets/icons/coinIcon.svg?react';
 import FootIcon from '@/assets/icons/footIcon.svg?react';
 import SoundIcon from '@/assets/icons/soundIcon.svg?react';
 import { useMusic } from '@/contexts/musicContext';
+import { useStompClient } from '@/contexts/StompContext';
 import useInternalRouter from '@/hooks/useInternalRouter';
 
 interface DefaultContentProps {
@@ -12,6 +13,10 @@ interface DefaultContentProps {
 
 interface TitleContentProps {
   title: string;
+}
+
+interface RaceTrackRoomContentProps extends TitleContentProps {
+  state: { roomId?: number; maxPlayers?: number };
 }
 
 const DefaultContent: React.FC<DefaultContentProps> = ({ coin, foot }) => {
@@ -65,13 +70,47 @@ const StallContent: React.FC<TitleContentProps> = ({ title }) => {
   );
 };
 
-const RaceTrackContent: React.FC<TitleContentProps> = ({ title }) => {
-  const { isPlaying, togglePlay } = useMusic();
+const RaceTrackContent: React.FC<DefaultContentProps> = ({ coin, foot }) => {
   const { goBack } = useInternalRouter();
+  const { unsubscribeAll } = useStompClient();
+
+  const handleClick = () => {
+    unsubscribeAll();
+    goBack();
+  };
 
   return (
     <>
-      <button className='cursor-pointer' onClick={goBack}>
+      <button className='cursor-pointer' onClick={handleClick}>
+        <BackIcon />
+      </button>
+
+      <div className='flex gap-6'>
+        <div className='flex items-center justify-center gap-3'>
+          <CoinIcon />
+          <p className='text-stroke'>{coin.toLocaleString()}</p>
+        </div>
+        <div className='flex items-center justify-center gap-3'>
+          <FootIcon />
+          <p className='text-stroke'>{foot.toLocaleString()}</p>
+        </div>
+      </div>
+    </>
+  );
+};
+
+const RaceTrackRoomContent: React.FC<RaceTrackRoomContentProps> = ({ title, state }) => {
+  const { isPlaying, togglePlay } = useMusic();
+  const { replace } = useInternalRouter();
+  const { unsubscribeAll, publish } = useStompClient();
+  const handleClick = () => {
+    publish(`/app/race_room/${state.roomId}/leave`);
+    unsubscribeAll();
+    replace('/racetrack');
+  };
+  return (
+    <>
+      <button className='cursor-pointer' onClick={handleClick}>
         <BackIcon />
       </button>
 
@@ -98,4 +137,4 @@ const LandingContent: React.FC = () => {
   );
 };
 
-export { DefaultContent, StallContent, RaceTrackContent, LandingContent };
+export { DefaultContent, StallContent, RaceTrackContent, LandingContent, RaceTrackRoomContent };

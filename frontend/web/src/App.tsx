@@ -1,7 +1,6 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import '@/App.css';
 import GlobalLayout from '@/layouts/GlobalLayout';
-import ModalProvider from '@/components/ui/modal/ModalProvider.tsx';
 import { AuthContextProvider } from '@/pages/auth/AuthContextProvider';
 import LandingPage from '@/pages/landing';
 import HomePage from '@/pages';
@@ -14,7 +13,9 @@ import RegisterPage from '@/pages/register';
 import AuthPage from '@/pages/auth';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ProtectedRoute } from '@/components/ProtectedRoute';
+import { StompProvider } from '@/contexts/StompContext';
 import { MusicProvider } from '@/contexts/musicContext';
+import RaceTrackRacePage from '@/pages/racetrack/room/race';
 import { HorseProvider } from '@/contexts/pastureHorseContext';
 
 // 보호된 라우트 래퍼
@@ -41,11 +42,11 @@ const queryClient = new QueryClient();
 function App() {
   return (
     <BrowserRouter>
-      <MusicProvider>
-        <QueryClientProvider client={queryClient}>
-          <GlobalLayout>
-            <AuthContextProvider>
-              <ModalProvider>
+      <QueryClientProvider client={queryClient}>
+        <MusicProvider>
+          <StompProvider>
+            <GlobalLayout>
+              <AuthContextProvider>
                 <Routes>
                   {/* 인증 + 회원가입 필요 */}
                   <Route
@@ -77,27 +78,15 @@ function App() {
                   <Route
                     path='/market/sell/:horseId'
                     element={
-                      // <ProtectedPage>
-                      <SellPage />
-                      // </ProtectedPage>
+                      <ProtectedPage>
+                        <SellPage />
+                      </ProtectedPage>
                     }
                   />
-                  <Route
-                    path='/racetrack'
-                    element={
-                      // <ProtectedPage>
-                      <RacetrackPage />
-                      // {/* </ProtectedPage> */}
-                    }
-                  />
-                  <Route
-                    path='/racetrack/room/:roomid'
-                    element={
-                      // <ProtectedPage>
-                      <RacetrackRoomPage />
-                      // {/* </ProtectedPage> */}
-                    }
-                  />
+
+                  <Route path='/racetrack' element={<RacetrackPage />} />
+                  <Route path='/racetrack/room/:roomId' element={<RacetrackRoomPage />} />
+                  <Route path='/racetrack/room/:roomId/race' element={<RaceTrackRacePage />} />
 
                   {/* 인증 필요 */}
                   <Route
@@ -128,11 +117,11 @@ function App() {
                     }
                   />
                 </Routes>
-              </ModalProvider>
-            </AuthContextProvider>
-          </GlobalLayout>
-        </QueryClientProvider>
-      </MusicProvider>
+              </AuthContextProvider>
+            </GlobalLayout>
+          </StompProvider>
+        </MusicProvider>
+      </QueryClientProvider>
     </BrowserRouter>
   );
 }

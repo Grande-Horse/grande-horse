@@ -3,10 +3,13 @@ import { useRef, useState } from 'react';
 import Horse from '@/components/pasture/Horse';
 import HorseInfoPanel from '@/components/pasture/HorseInfoPanel';
 import { useHorseContext } from '@/contexts/pastureHorseContext';
+import useUserInfo from '@/hooks/useQueries/useUserInfo';
 
 const HomePage: React.FC = () => {
   const { horseList } = useHorseContext();
   const [selectedHorse, setSelectedHorse] = useState<HorseCardType | null>(null);
+
+  useUserInfo();
 
   const horseSoundRef = useRef<HTMLAudioElement>(null);
   const horseSoundRef2 = useRef<HTMLAudioElement>(null);
