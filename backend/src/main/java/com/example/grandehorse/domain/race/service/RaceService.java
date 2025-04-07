@@ -10,19 +10,19 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.redis.core.Cursor;
 import org.springframework.data.redis.core.HashOperations;
+import org.springframework.data.redis.core.RedisCallback;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.data.redis.core.ScanOptions;
 import org.springframework.data.redis.core.script.RedisScript;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.SimpMessageType;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -50,6 +50,7 @@ import com.example.grandehorse.global.exception.RaceException;
 public class RaceService {
 	private static final String RACE_ROOM_PREFIX = "race_room:";
 
+	private final Map<Long, Thread> roomQueueWorkers = new ConcurrentHashMap<>();
 	private final RedisTemplate<String, Object> websocketRedisTemplate;
 	private final SimpMessagingTemplate messagingTemplate;
 
@@ -261,20 +262,37 @@ public class RaceService {
 	public void requestPlayGame(Long roomId, int userId) {
 		String queueKey = "queue:playGame:" + roomId;
 		websocketRedisTemplate.opsForList().rightPush(queueKey, String.valueOf(userId));
+
+		startGameQueueWorker(roomId);
 	}
 
-	@Scheduled(fixedDelay = 100)
-	private void processGameQueue() {
-		Set<String> keys = websocketRedisTemplate.keys("queue:playGame:*");
-		if (keys == null) return;
-
-		for (String queueKey : keys) {
-			String roomId = queueKey.split(":")[2];
-			String userIdStr = (String) websocketRedisTemplate.opsForList().leftPop(queueKey);
-			if (userIdStr == null) continue;
-
-			playGame(Long.parseLong(roomId), Integer.parseInt(userIdStr));
+	private void startGameQueueWorker(Long roomId) {
+		if (roomQueueWorkers.containsKey(roomId)) {
+			return;
 		}
+
+		Thread worker = new Thread(() -> {
+			String queueKey = "queue:playGame:" + roomId;
+
+			while (!Thread.currentThread().isInterrupted()) {
+				try {
+					List<byte[]> result = websocketRedisTemplate.execute((RedisCallback<List<byte[]>>)connection -> {
+						byte[] key = websocketRedisTemplate.getStringSerializer().serialize(queueKey);
+						return connection.bLPop(0, key);
+					});
+
+					if (result != null && result.size() == 2) {
+						String userIdStr = websocketRedisTemplate.getStringSerializer().deserialize(result.get(1));
+						playGame(roomId, Integer.parseInt(userIdStr));
+					}
+				} catch (Exception e) {
+					break;
+				}
+			}
+		}, "GameQueueWorker-" + roomId);
+
+		worker.start();
+		roomQueueWorkers.put(roomId, worker);
 	}
 
 	private void playGame(Long roomId, int userId) {
@@ -308,6 +326,11 @@ public class RaceService {
 			);
 			rewardUsers(bettingCoin, playerCount, roomKey, raceProgresses);
 			sendRaceFinishMessage(roomId, userId);
+
+			Thread worker = roomQueueWorkers.remove(roomId);
+			if (worker != null) {
+				worker.interrupt();
+			}
 			return;
 		}
 
