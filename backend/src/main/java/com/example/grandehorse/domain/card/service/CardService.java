@@ -148,24 +148,6 @@ public class CardService {
 		return CommonResponse.pagedSuccess(items, hasNextItems, nextCursorId);
 	}
 
-	private Slice<CardResponseDto> findUserCardsByCursor(
-		int userId,
-		HorseRank horseRank,
-		int cursorId,
-		int limit
-	) {
-		Pageable pageable = PageRequest.of(0, limit);
-
-		return cardJpaRepository.findUserCardsByCursor(userId, horseRank, cursorId, pageable);
-	}
-
-	private int getNextCursorId(List<CardResponseDto> items, boolean hasNextPage) {
-		if (!hasNextPage || items.isEmpty()) {
-			return -1;
-		}
-		return items.get(items.size() - 1).getCardId();
-	}
-
 	public ResponseEntity<CommonResponse<CardRaceRecordResponseDto>> getCardRaceRecord(int userId, int cardId) {
 		CardEntity cardEntity = cardJpaRepository.findByIdAndUserId(cardId, userId)
 			.orElseThrow(() -> new CardException(CustomError.CARD_NOT_EXISTED));
@@ -184,6 +166,24 @@ public class CardService {
 		setCardAsRepresentative(cardId);
 
 		return CommonResponse.success(null);
+	}
+
+	private Slice<CardResponseDto> findUserCardsByCursor(
+		int userId,
+		HorseRank horseRank,
+		int cursorId,
+		int limit
+	) {
+		Pageable pageable = PageRequest.of(0, limit);
+
+		return cardJpaRepository.findUserCardsByCursor(userId, horseRank, cursorId, pageable);
+	}
+
+	private int getNextCursorId(List<CardResponseDto> items, boolean hasNextPage) {
+		if (!hasNextPage || items.isEmpty()) {
+			return -1;
+		}
+		return items.get(items.size() - 1).getCardId();
 	}
 
 	private void validateCardForRepresentation(int userId, int cardId) {
@@ -384,5 +384,20 @@ public class CardService {
 		HorseEntity horse = horseService.getHorseById(card.getHorseId());
 
 		return toCardResponseDto(card, horse);
+	}
+
+	@Transactional
+	public void updateCardWinRecord(int cardId, int totalPrize) {
+		CardEntity cardEntity = cardJpaRepository.findCardByIdWithPessimisticLock(cardId)
+			.orElseThrow(() -> new CardException(CustomError.CARD_NOT_EXISTED));
+
+		cardEntity.updateWinRecord(totalPrize);
+	}
+
+	public void updateCardRaceRecord(int cardId) {
+		CardEntity cardEntity = cardJpaRepository.findCardByIdWithPessimisticLock(cardId)
+			.orElseThrow(() -> new CardException(CustomError.CARD_NOT_EXISTED));
+
+		cardEntity.updateRaceRecord();
 	}
 }

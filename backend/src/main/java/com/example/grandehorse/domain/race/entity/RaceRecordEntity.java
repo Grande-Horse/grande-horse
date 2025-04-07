@@ -47,15 +47,6 @@ public class RaceRecordEntity {
 	@Column(name = "fee", nullable = false)
 	private int fee;
 
-	@Column(name = "s1f_time", nullable = false)
-	private double s1fTime;
-
-	@Column(name = "g3f_time", nullable = false)
-	private double g3fTime;
-
-	@Column(name = "g1f_time", nullable = false)
-	private double g1fTime;
-
 	@Column(name = "raced_at", updatable = false, nullable = false)
 	private LocalDateTime racedAt;
 }

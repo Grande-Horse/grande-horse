@@ -92,6 +92,10 @@ public class TradingService {
 		String search,
 		int limit
 	) {
+		if(rank.equals("all")) {
+			rank = null;
+		}
+
 		Slice<TradeCardResponse> tradeCardSlice = findTradeCardsByCursor(cursorId, rank, search, limit);
 		return processPagedResponse(tradeCardSlice, Comparator.comparing(TradeCardResponse::getTradeId).reversed());
 	}
