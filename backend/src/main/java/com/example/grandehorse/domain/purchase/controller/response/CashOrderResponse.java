@@ -1,4 +1,4 @@
-package com.example.grandehorse.domain.product.controller.response;
+package com.example.grandehorse.domain.purchase.controller.response;
 
 import java.time.LocalDateTime;
 

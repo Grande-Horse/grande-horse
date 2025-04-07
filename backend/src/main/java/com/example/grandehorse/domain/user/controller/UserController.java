@@ -1,6 +1,7 @@
 package com.example.grandehorse.domain.user.controller;
 
 import com.example.grandehorse.domain.user.controller.response.UserInfoResponse;
+
 import jakarta.servlet.http.HttpServletResponse;
 
 import org.springframework.http.ResponseEntity;
@@ -17,7 +18,7 @@ import lombok.RequiredArgsConstructor;
 @RequestMapping("/users")
 @RequiredArgsConstructor
 public class UserController {
-    private final UserService userService;
+	private final UserService userService;
 
 	@GetMapping("/{nickname}/duplicate")
 	public ResponseEntity<CommonResponse<Void>> duplicateNickname(
@@ -35,17 +36,17 @@ public class UserController {
 		return userService.processSocialSignUp(signUpDto, socialToken, response);
 	}
 
-    @GetMapping("/coins")
-    public ResponseEntity<CommonResponse<CoinResponse>> coins(
-            @ModelAttribute("userId") int userId
-    ) {
-        return userService.getUserCoin(userId);
-    }
+	@GetMapping("/coin")
+	public ResponseEntity<CommonResponse<CoinResponse>> coins(
+		@RequestAttribute("userId") int userId
+	) {
+		return userService.getUserCoin(userId);
+	}
 
-    @GetMapping("/info")
-    public ResponseEntity<CommonResponse<UserInfoResponse>> getUserInfo(
-            @RequestAttribute("userId") int userId
-    ) {
-        return userService.getUserInfo(userId);
-    }
+	@GetMapping("/info")
+	public ResponseEntity<CommonResponse<UserInfoResponse>> getUserInfo(
+		@RequestAttribute("userId") int userId
+	) {
+		return userService.getUserInfo(userId);
+	}
 }

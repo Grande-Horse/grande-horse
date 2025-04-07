@@ -12,6 +12,7 @@ import jakarta.persistence.Table;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
@@ -21,6 +22,7 @@ import lombok.NoArgsConstructor;
 @Table(name = "product", indexes = {
 	@Index(name = "idx_product_type_typeId", columnList = "type, type_id")
 })
+@Getter
 public class ProductEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -32,6 +34,9 @@ public class ProductEntity {
 
 	@Column(name = "type_id", nullable = false)
 	private byte typeId;
+
+	@Column(name = "price", nullable = false)
+	private int price;
 
 	@Column(name = "selling", nullable = false)
 	private boolean selling;

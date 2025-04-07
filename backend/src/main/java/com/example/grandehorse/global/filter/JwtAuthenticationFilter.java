@@ -49,17 +49,6 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 		HttpServletResponse response,
 		FilterChain filterChain
 	) throws ServletException, IOException {
-		if (request.getMethod().equals("OPTIONS")) {
-			response.setHeader("Access-Control-Allow-Origin", "http://localhost:3000");
-			response.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS");
-			response.setHeader(
-				"Access-Control-Allow-Headers", "Authorization, Content-Type, Access-Control-Allow-Headers"
-			);
-			response.setHeader("Access-Control-Allow-Credentials", "true");
-			response.setStatus(HttpServletResponse.SC_OK);
-			return;
-		}
-
 		String accessToken = getAccessToken(request, response);
 		validateToken(accessToken);
 

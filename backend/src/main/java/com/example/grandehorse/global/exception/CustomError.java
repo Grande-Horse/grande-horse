@@ -36,6 +36,8 @@ public enum CustomError {
 	// 상품 관련 에러
 	PRODUCT_NOT_FOUND(HttpStatus.BAD_REQUEST, "P1", "존재하지 않는 상품입니다."),
 	PRODUCT_NOT_SELLING(HttpStatus.BAD_REQUEST, "P2", "현재 판매 중인 상품이 아닙니다."),
+	CARD_PACK_PROBABILITY_NOT_FOUND(HttpStatus.INTERNAL_SERVER_ERROR, "P3", "카드팩에 대한 등급 확률이 정의되지 않았습니다."),
+	INVALID_CARD_PACK_PROBABILITY(HttpStatus.INTERNAL_SERVER_ERROR, "P4", "카드팩에 대한 확률이 잘못정의되어 있습니다."),
 
 	// 구매 관련 에러
 	EXPIRED_PURCHASE_REQUEST(HttpStatus.BAD_REQUEST, "PC1", "구매 요청이 만료되었습니다."),
@@ -43,6 +45,8 @@ public enum CustomError {
 	INVALID_PAYMENT(HttpStatus.BAD_REQUEST, "PC3", "유효하지 않은 결제입니다."),
 	DUPLICATE_PURCHASE(HttpStatus.BAD_REQUEST, "PC4", "이미 처리된 구매 요청입니다."),
 	INVALID_PAYMENT_AMOUNT(HttpStatus.BAD_REQUEST, "PC5", "결제 금액이 일치하지 않습니다."),
+	ALREADY_PURCHASED_TODAY(HttpStatus.BAD_REQUEST, "PC6", "오늘은 이미 카드팩을 구매하셨습니다."),
+	INSUFFICIENT_BALANCE(HttpStatus.BAD_REQUEST, "PC7", "보유 코인이 부족하여 구매할 수 없습니다."),
 
 	// 카드 관련 에러
 	USER_NOT_OWNER_OF_CARD(HttpStatus.BAD_REQUEST, "CA1", "유저의 말카드가 아닙니다."),

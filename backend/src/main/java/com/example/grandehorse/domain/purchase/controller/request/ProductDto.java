@@ -1,4 +1,4 @@
-package com.example.grandehorse.domain.product.controller.request;
+package com.example.grandehorse.domain.purchase.controller.request;
 
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
@@ -10,7 +10,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Getter;
 
 @Getter
-public class CashProductDto {
+public class ProductDto {
 
 	@NotNull(message = "id는 반드시 존재해야 합니다.")
 	@Min(value = -128)
@@ -18,7 +18,7 @@ public class CashProductDto {
 	private final Byte id;
 
 	@JsonCreator
-	public CashProductDto(
+	public ProductDto(
 		@JsonProperty("id") Byte id
 	) {
 		this.id = id;
