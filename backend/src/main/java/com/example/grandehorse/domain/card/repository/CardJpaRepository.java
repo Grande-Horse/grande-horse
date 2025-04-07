@@ -23,4 +23,6 @@ public interface CardJpaRepository extends JpaRepository<CardEntity, Integer> {
 
 	@Query("SELECT c.horseId FROM CardEntity c WHERE c.id = :id")
 	Optional<String> findHorseIdById(int id);
+
+	boolean existsByUserIdAndStatus(int userId, byte status);
 }

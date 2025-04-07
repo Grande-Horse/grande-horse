@@ -50,6 +50,7 @@ public enum CustomError {
 	USER_NOT_OWNER_OF_RACE_ROOM(HttpStatus.BAD_REQUEST, "R7", "방장이 아닙니다."),
 	ALREADY_EXIST_USER(HttpStatus.BAD_REQUEST, "R8", "이미 경주 방에 존재하는 유저 입니다."),
 	USER_HAS_NOT_ENOUGH_COIN(HttpStatus.BAD_REQUEST, "R9", "코인이 부족해 방에 참여할 수 없습니다"),
+	USER_HAS_NOT_REPRESENTATIVE_HORSE_CARD(HttpStatus.BAD_REQUEST, "R10", "대표말 카드가 설정되어 있지 않습니다"),
 
 	// 외부 API 관련 에러
 	EXTERNAL_SERVICE_PARSE_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "E1", "외부 API 응답 처리 중 오류가 발생했습니다.");

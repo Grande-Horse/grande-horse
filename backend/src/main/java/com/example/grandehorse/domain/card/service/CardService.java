@@ -11,6 +11,7 @@ import com.example.grandehorse.domain.card.entity.CardRecordEntity;
 import com.example.grandehorse.domain.card.repository.CardJpaRepository;
 import com.example.grandehorse.domain.card.repository.CardRecordJpaRepository;
 import com.example.grandehorse.domain.horse.service.HorseService;
+import com.example.grandehorse.domain.trading.entity.CardTradeStatus;
 import com.example.grandehorse.global.exception.CardException;
 import com.example.grandehorse.global.exception.CustomError;
 
@@ -78,6 +79,10 @@ public class CardService {
 		cardJpaRepository.save(cardEntity);
 
 		saveCardAcquisitionRecord(cardId, userId, cardTradeId);
+	}
+
+	public boolean hasRepresentativeHorseCard(int userId) {
+		return cardJpaRepository.existsByUserIdAndStatus(userId, (byte)3);
 	}
 
 	private void saveCardAcquisitionRecord(int cardId, int userId, int cardTradeId) {

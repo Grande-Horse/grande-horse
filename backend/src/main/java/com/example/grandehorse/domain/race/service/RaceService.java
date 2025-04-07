@@ -111,14 +111,17 @@ public class RaceService {
 			return;
 		}
 
-		// 대표말 에러 체크 추가
-
-		// 방 설정 코인보다 가진 코인이 적으면 못 들어오게
-		if (hasUserEnoughCoin(userId, roomKey)) {
-			sendErrorMessage(sessionId, CustomError.USER_HAS_NOT_ENOUGH_COIN.getErrorCode());
+		if(!hasUserRepresentativeHorseCard(userId)) {
+			sendErrorMessage(sessionId, CustomError.USER_HAS_NOT_REPRESENTATIVE_HORSE_CARD.getErrorCode());
+			return;
 		}
 
-		if (isUserExistInRoom(roomKey, userId)) {
+		if (!hasUserEnoughCoin(userId, roomKey)) {
+			sendErrorMessage(sessionId, CustomError.USER_HAS_NOT_ENOUGH_COIN.getErrorCode());
+			return;
+		}
+
+		if (isUserExistedInRoom(roomKey, userId)) {
 			sendErrorMessage(sessionId, CustomError.ALREADY_EXIST_USER.getErrorCode());
 			broadcastPlayersInfo(roomId, roomKey);
 			return;
@@ -128,7 +131,7 @@ public class RaceService {
 			sendErrorMessage(sessionId, CustomError.RACE_ALREADY_START.getErrorCode());
 			return;
 		}
-		if (isRoomHasSpace(roomKey)) {
+		if (!hasRoomSpace(roomKey)) {
 			sendErrorMessage(sessionId, CustomError.RACE_ROOM_MAX_PLAYER.getErrorCode());
 			return;
 		}
@@ -180,7 +183,6 @@ public class RaceService {
 			sendErrorMessage(sessionId, CustomError.NOT_ALL_PLAYERS_READY.getErrorCode());
 		}
 
-		// 경주 기록
 		websocketRedisTemplate.opsForHash().put(roomKey, "start", "true");
 		sendSystemMessage(roomId, "[알림] 경주가 시작됩니다!");
 	}
@@ -341,7 +343,11 @@ public class RaceService {
 		return websocketRedisTemplate.hasKey(roomKey);
 	}
 
-	private boolean isUserExistInRoom(String roomKey, int userId) {
+	private boolean hasUserRepresentativeHorseCard(int userId) {
+		return cardService.hasRepresentativeHorseCard(userId);
+	}
+
+	private boolean isUserExistedInRoom(String roomKey, int userId) {
 		List<Object> playerIds = websocketRedisTemplate.opsForList()
 			.range(roomKey + ":players", 0, -1);
 
@@ -360,7 +366,7 @@ public class RaceService {
 		return "true".equals(started);
 	}
 
-	private boolean isRoomHasSpace(String roomKey) {
+	private boolean hasRoomSpace(String roomKey) {
 		int currentPlayers
 			= Integer.parseInt(websocketRedisTemplate.opsForHash().get(roomKey, "currentPlayers").toString());
 		int maxPlayers
