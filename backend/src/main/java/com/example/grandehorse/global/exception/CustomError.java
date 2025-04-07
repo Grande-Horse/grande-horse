@@ -25,9 +25,8 @@ public enum CustomError {
 	USER_NOT_EXISTED(HttpStatus.BAD_REQUEST, "U3", "존재하지 않는 유저입니다."),
 
 	// 말 관련 에러
-	HORSE_NOT_FOUND(HttpStatus.BAD_REQUEST, "H1", "존재하지 않는 말입니다."),
+	HORSE_NOT_EXISTED(HttpStatus.BAD_REQUEST, "H1", "존재하지 않는 말입니다."),
 	HORSE_NOT_AVAILABLE(HttpStatus.BAD_REQUEST, "H2", "해당 등급의 말이 존재하지 않습니다"),
-	HORSE_NOT_EXISTED(HttpStatus.BAD_REQUEST, "H3", "존재하지 않는 말입니다."),
 
 	// 거래 관련 에러
 	CARD_NOT_FOR_SALE(HttpStatus.BAD_REQUEST, "T1", "판매중인 말이 아닙니다."),

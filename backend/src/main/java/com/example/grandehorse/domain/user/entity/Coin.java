@@ -6,9 +6,11 @@ import jakarta.persistence.Embeddable;
 import com.example.grandehorse.global.exception.CustomError;
 import com.example.grandehorse.global.exception.UserException;
 
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Embeddable
+@Getter
 @NoArgsConstructor
 public class Coin {
 	@Column(name = "coin", nullable = false)

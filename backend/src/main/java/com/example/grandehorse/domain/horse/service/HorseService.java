@@ -32,9 +32,14 @@ public class HorseService {
 		return horseDataJpaRepository.findTopByHorseIdOrderByCreatedAtDesc(horseId);
 	}
 
+	public HorseEntity findHorseById(String id) {
+		return horseJpaRepository.findHorseById(id)
+				.orElseThrow(() -> new HorseException(CustomError.HORSE_NOT_EXISTED));
+	}
+
 	public HorseEntity getHorseById(String horseId) {
 		return horseJpaRepository.findById(horseId)
-			.orElseThrow(() -> new HorseException(CustomError.HORSE_NOT_FOUND));
+			.orElseThrow(() -> new HorseException(CustomError.HORSE_NOT_EXISTED));
 	}
 
 	public HorseRank getSingleHorseRankByIds(Set<String> horseIds) {

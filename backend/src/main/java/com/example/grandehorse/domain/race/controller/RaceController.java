@@ -15,8 +15,8 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.example.grandehorse.domain.race.controller.request.CreateRaceRoomDto;
 import com.example.grandehorse.domain.race.controller.response.RacePlayerDetailsResponse;
-import com.example.grandehorse.global.response.CommonResponse;
 import com.example.grandehorse.domain.race.service.RaceService;
+import com.example.grandehorse.global.response.CommonResponse;
 
 import lombok.RequiredArgsConstructor;
 
