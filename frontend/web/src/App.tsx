@@ -37,8 +37,9 @@ const PublicPage = ({ children }: { children: React.ReactNode }) => (
   <ProtectedRoute requireAuth={false}>{children}</ProtectedRoute>
 );
 
+const queryClient = new QueryClient();
+
 function App() {
-  const queryClient = new QueryClient();
   return (
     <BrowserRouter>
       <QueryClientProvider client={queryClient}>

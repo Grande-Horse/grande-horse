@@ -16,7 +16,7 @@ export const getAllHorseTrading = async (
     limit,
   };
 
-  return apiGet<CursorResponse<RegisteredItemType>>('/tradings/trade-cards', params);
+  return await apiGet<CursorResponse<RegisteredItemType>>('/tradings/trade-cards', params);
 };
 
 export const getHorseTrading = async (
@@ -29,7 +29,7 @@ export const getHorseTrading = async (
     limit,
   };
 
-  return apiGet<CursorResponse<SoldItemType>>(`/tradings/${horseId}/sold-cards`, params);
+  return await apiGet<CursorResponse<SoldItemType>>(`/tradings/${horseId}/sold-cards`, params);
 };
 
 export const getMyHorseTrading = async (
@@ -41,21 +41,21 @@ export const getMyHorseTrading = async (
     limit,
   };
 
-  return apiGet<CursorResponse<RegisteredItemType>>('/tradings/registered-cards', params);
+  return await apiGet<CursorResponse<RegisteredItemType>>('/tradings/registered-cards', params);
 };
 
 export const getPriceHistory = async (horseId: string): Promise<PriceHistoryType[]> => {
-  return apiGet<PriceHistoryType[]>(`/tradings/${horseId}/price-history`);
+  return await apiGet<PriceHistoryType[]>(`/tradings/${horseId}/price-history`);
 };
 
 export const sellHorse = async (horse: SellHorseRequest) => {
-  apiPost<SellHorseRequest, null>('/tradings', horse);
+  await apiPost<SellHorseRequest, null>('/tradings', horse);
 };
 
 export const purchaseHorse = async (tradeId: number) => {
-  apiPut(`/tradings/${tradeId}`, null);
+  await apiPut(`/tradings/${tradeId}`, null);
 };
 
 export const cancelHorseSelling = async (tradeId: number) => {
-  apiDelete(`/tradings/${tradeId}`);
+  await apiDelete(`/tradings/${tradeId}`);
 };

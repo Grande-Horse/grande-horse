@@ -27,7 +27,7 @@ const DotHorseCard: React.FC<DotHorseCardProps> = ({ id, name, coatColor, horseR
 
   return (
     <div
-      className={`${bgImageClass[horseRank]} ${rankTextColor[horseRank]} text-stroke flex aspect-square w-full flex-col items-center justify-between rounded-2xl bg-cover bg-center px-4 py-6 pb-12`}
+      className={`${bgImageClass[horseRank]} ${rankTextColor[horseRank]} text-stroke flex aspect-square h-full w-full flex-col items-center justify-between rounded-2xl bg-cover bg-center px-4 py-6 pb-12`}
     >
       <p className='text-heading4 flex w-full items-center justify-center rounded-xl shadow-inner shadow-black/20'>
         {name}

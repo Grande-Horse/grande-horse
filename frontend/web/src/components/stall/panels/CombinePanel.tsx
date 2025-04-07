@@ -7,10 +7,12 @@ import ErrorBoundary from '@/components/ui/errorBoundary/ErrorBoundary';
 import Loading from '@/components/ui/Loading';
 import { rankMap, rankNameMap } from '@/constants/rank';
 import { HorseCardType } from '@/types/card';
-import { Suspense, useState } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 import Error from '@/components/ui/Error';
 import { combineCards } from '@/services/stall';
 import CombineResult from '@/components/stall/CombineResult';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { queryKey } from '@/constants/queryKey';
 
 const MAX_COMBINE_NUM = 3;
 
@@ -18,6 +20,17 @@ const CombinePanel: React.FC = () => {
   const [rank, setRank] = useState<string>('');
   const [selectedHorses, setSelectedHorses] = useState<HorseCardType[]>([]);
   const [newCard, setNewCard] = useState<HorseCardType | null>(null);
+
+  const queryClient = useQueryClient();
+
+  const mutation = useMutation({
+    mutationFn: (cardIds: number[]) => combineCards(cardIds),
+    onSuccess: (data) => {
+      queryClient.refetchQueries({ queryKey: [queryKey.MY_HORSE_CARDS] });
+      setSelectedHorses([]);
+      setNewCard(data);
+    },
+  });
 
   const handleAddCard = (horse: HorseCardType) => {
     if (selectedHorses.length === 3) {
@@ -44,13 +57,19 @@ const CombinePanel: React.FC = () => {
 
   const handleCombine = async () => {
     const cardIds = selectedHorses.map((horse) => horse.cardId);
-    const newCard = await combineCards(cardIds);
-    setNewCard(newCard);
+    mutation.mutate(cardIds);
   };
+
+  useEffect(() => {
+    if (newCard?.cardId === -1) {
+      setSelectedHorses([]);
+      alert('합성에 실패하였습니다 T-T');
+    }
+  }, [newCard]);
 
   return (
     <div className='flex h-full flex-col divide-y divide-black'>
-      {newCard && <CombineResult horseCard={newCard} onClick={() => setNewCard(null)} />}
+      {newCard && newCard.cardId !== -1 && <CombineResult horseCard={newCard} onClick={() => setNewCard(null)} />}
 
       <section className='flex w-full flex-col py-4'>
         <div className='grid grid-cols-3 place-items-center px-1 py-2'>
