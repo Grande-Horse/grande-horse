@@ -26,6 +26,7 @@ const Header: React.FC = () => {
     { path: '/racetrack', component: <DefaultContent coin={coin} foot={foot} /> },
     { path: '/stall', component: <StallContent title='마구간' /> },
     { path: '/landing', component: <LandingContent /> },
+    { path: '/', component: <LandingContent /> },
   ];
 
   const content = contentMap.find((item) => pathname === item.path || pathname.startsWith(item.path))?.component;

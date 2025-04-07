@@ -15,6 +15,7 @@ import AuthPage from '@/pages/auth';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ProtectedRoute } from '@/components/ProtectedRoute';
 import { MusicProvider } from '@/contexts/musicContext';
+import { HorseProvider } from '@/contexts/pastureHorseContext';
 
 // 보호된 라우트 래퍼
 const ProtectedPage = ({ children }: { children: React.ReactNode }) => (
@@ -50,7 +51,9 @@ function App() {
                     path='/'
                     element={
                       // <ProtectedPage>
-                      <HomePage />
+                      <HorseProvider>
+                        <HomePage />
+                      </HorseProvider>
                       // </ProtectedPage>
                     }
                   />
@@ -73,9 +76,9 @@ function App() {
                   <Route
                     path='/market/sell/:horseId'
                     element={
-                      <ProtectedPage>
-                        <SellPage />
-                      </ProtectedPage>
+                      // <ProtectedPage>
+                      <SellPage />
+                      // </ProtectedPage>
                     }
                   />
                   <Route
