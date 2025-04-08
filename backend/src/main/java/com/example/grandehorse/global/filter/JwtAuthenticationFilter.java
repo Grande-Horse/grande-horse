@@ -28,7 +28,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 		"/api/v1/users/**"
 	);
 	private static final List<String> INCLUDED_URL_PATTERNS = List.of(
-		"/api/v1/users/coins",
+		"/api/v1/users/coin",
 		"/api/v1/users/info"
 	);
 	private static final AntPathMatcher pathMatcher = new AntPathMatcher();
