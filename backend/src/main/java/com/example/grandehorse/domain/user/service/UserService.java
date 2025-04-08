@@ -125,6 +125,7 @@ public class UserService {
         return CommonResponse.success(new CoinResponse(findUserById(userId).getCoin()));
     }
 
+	@Transactional
     public void increaseUserCoin(int userId, int price) {
         UserEntity user = userJpaRepository.findByIdWithPessimisticLock(userId)
                 .orElseThrow(() -> new UserException(CustomError.USER_NOT_EXISTED));
