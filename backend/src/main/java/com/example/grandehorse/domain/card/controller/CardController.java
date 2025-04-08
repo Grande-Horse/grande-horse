@@ -60,6 +60,14 @@ public class CardController {
 		return cardService.changeRepresentativeCard(userId, cardId);
 	}
 
+	@PutMapping("/representative/unset")
+	public ResponseEntity<CommonResponse<Void>> unsetRepresentativeCard(
+		@RequestAttribute("userId") int userId
+	) {
+		cardService.resetCurrentRepresentative(userId);
+		return CommonResponse.success(null);
+	}
+
 	@PutMapping("/{cardId}/candidate")
 	public ResponseEntity<CommonResponse<Void>> toggleCandidateStatus(
 		@PathVariable(name = "cardId") int cardId,
