@@ -52,27 +52,27 @@ function App() {
                   <Route
                     path='/'
                     element={
-                      // <ProtectedPage>
-                      <HorseProvider>
-                        <HomePage />
-                      </HorseProvider>
-                      // </ProtectedPage>
+                      <ProtectedPage>
+                        <HorseProvider>
+                          <HomePage />
+                        </HorseProvider>
+                      </ProtectedPage>
                     }
                   />
                   <Route
                     path='/stall'
                     element={
-                      // <ProtectedPage>
-                      <StallPage />
-                      // </ProtectedPage>
+                      <ProtectedPage>
+                        <StallPage />
+                      </ProtectedPage>
                     }
                   />
                   <Route
                     path='/market'
                     element={
-                      // <ProtectedPage>
-                      <MarketPage />
-                      // {/* </ProtectedPage> */}
+                      <ProtectedPage>
+                        <MarketPage />
+                      </ProtectedPage>
                     }
                   />
                   <Route
