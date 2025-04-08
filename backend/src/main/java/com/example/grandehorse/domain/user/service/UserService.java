@@ -143,15 +143,6 @@ public class UserService {
 		userJpaRepository.save(user);
 	}
 
-	@Transactional
-	public void decreaseUserCoin(int userId, int price) {
-		UserEntity user = userJpaRepository.findByIdWithPessimisticLock(userId)
-			.orElseThrow(() -> new UserException(CustomError.USER_NOT_EXISTED));
-
-		user.decreaseCoin(price);
-		userJpaRepository.save(user);
-	}
-
     public String findNicknameById(int userId) {
         return userJpaRepository.findNicknameById(userId);
     }
