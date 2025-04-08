@@ -54,6 +54,13 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 public class RaceService {
 	private static final String RACE_ROOM_PREFIX = "race_room:";
+	private static final Map<String, Integer> RANK_PRIORITY = Map.of(
+		"legend", 5,
+		"unique", 4,
+		"epic", 3,
+		"rare", 2,
+		"normal", 1
+	);
 
 	private final Map<Long, Thread> roomQueueWorkers = new ConcurrentHashMap<>();
 	private final RedisTemplate<String, Object> websocketRedisTemplate;
@@ -126,6 +133,11 @@ public class RaceService {
 	public void joinRaceRoom(Long roomId, int userId, String sessionId) {
 		String roomKey = RACE_ROOM_PREFIX + roomId;
 
+		CardEntity cardEntity = cardService.findRepresentativeCard(userId);
+		HorseEntity horseEntity = horseService.findHorseById(cardEntity.getHorseId());
+		String userNickname = userService.findNicknameById(userId);
+		Boolean isRoomOwner = isRoomOwner(roomKey, userId);
+
 		if (!isRoomExisted(roomKey)) {
 			sendErrorMessage(sessionId, CustomError.RACE_ROOM_NOT_EXISTED.getErrorCode());
 			return;
@@ -141,7 +153,10 @@ public class RaceService {
 			return;
 		}
 
-		// 말 등급 에러
+		if(!isHorseGradeValidForRace(roomKey, userId)) {
+			sendErrorMessage(sessionId, CustomError.HORSE_RANK_EXCEEDS_ROOM_RESTRICTION.getErrorCode());
+			return;
+		}
 
 		if (isUserExistedInRoom(roomKey, userId)) {
 			sendErrorMessage(sessionId, CustomError.ALREADY_EXIST_USER.getErrorCode());
@@ -158,11 +173,6 @@ public class RaceService {
 			return;
 		}
 
-		CardEntity cardEntity = cardService.findRepresentativeCard(userId);
-		HorseEntity horseEntity = horseService.findHorseById(cardEntity.getHorseId());
-		String userNickname = userService.findNicknameById(userId);
-		Boolean isRoomOwner = isRoomOwner(roomKey, userId);
-
 		executeJoinScript(roomKey, userId, cardEntity, horseEntity, userNickname, isRoomOwner);
 
 		String message = "[알림] " + userNickname + "님이 입장하셨습니다.";
@@ -170,6 +180,14 @@ public class RaceService {
 
 		broadcastPlayersInfo(roomId, roomKey);
 		broadcastRaceRooms();
+	}
+
+	private boolean isHorseGradeValidForRace(String roomKey, int userId) {
+		String userKey = roomKey + ":user:" + userId;
+		String horseRank = websocketRedisTemplate.opsForHash().get(userKey, "horseRank").toString();
+		String rankRestriction = websocketRedisTemplate.opsForHash().get(roomKey, "rankRestriction").toString();
+
+		return RANK_PRIORITY.get(horseRank) > RANK_PRIORITY.get(rankRestriction);
 	}
 
 	private boolean hasUserEnoughCoin(int userId, String roomKey) {

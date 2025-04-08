@@ -61,6 +61,7 @@ public enum CustomError {
 	CARD_COMBINATION_RANK_NOT_FOUND(HttpStatus.BAD_REQUEST, "CA10", "강화할 수 없는 카드 등급입니다."),
 	INVALID_RANK_VALUE(HttpStatus.BAD_REQUEST, "CA11", "조회할 수 없는 등급입니다."),
 	NO_REPRESENTATIVE_HORSE_CARD(HttpStatus.BAD_REQUEST, "CA12", "대표로 등록된 말카드가 없습니다."),
+	HORSE_RANK_EXCEEDS_ROOM_RESTRICTION(HttpStatus.BAD_REQUEST, "CA13", "말 카드 등급이 방 제한 등급을 넘어섰습니다"),
 
 	// 경마 관련 에러
 	RACE_ROOM_NOT_EXISTED(HttpStatus.BAD_REQUEST, "R1", "존재하지 않는 방입니다."),
