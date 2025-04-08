@@ -15,6 +15,7 @@ import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ProtectedRoute } from '@/components/ProtectedRoute';
 import { StompProvider } from '@/contexts/StompContext';
 import { MusicProvider } from '@/contexts/musicContext';
+import CardResultPage from './pages/market/cardResult';
 import RaceTrackRacePage from '@/pages/racetrack/room/race';
 import { HorseProvider } from '@/contexts/pastureHorseContext';
 
@@ -73,6 +74,15 @@ function App() {
                       <ProtectedPage>
                         <MarketPage />
                       </ProtectedPage>
+                    }
+                  />
+
+                  <Route
+                    path='/market/card/result'
+                    element={
+                      // <ProtectedPage>
+                      <CardResultPage />
+                      // {/* </ProtectedPage> */}
                     }
                   />
                   <Route

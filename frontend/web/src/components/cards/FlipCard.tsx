@@ -1,27 +1,35 @@
 import { HorseType } from '@/types/horse';
 import HorseCard from './HorseCard';
-import { useState } from 'react';
 
-const FlipCard = ({ horse }: { horse: HorseType }) => {
-  const [isFlipped, setIsFlipped] = useState(false);
-
-  const cardBackImageUrl = `bg-[url(@/assets/images/cardface-back.png)]`;
-
-  const handleClick = () => {
-    setIsFlipped(!isFlipped);
-  };
-
+const FlipCard = ({
+  horse,
+  index,
+  isFlipped,
+  onClick,
+}: {
+  horse: HorseType;
+  index: number;
+  isFlipped: boolean;
+  onClick: () => void;
+}) => {
   return (
     <div
-      className={`relative aspect-[320/492] w-[34.2rem] cursor-pointer perspective-distant ${isFlipped ? '[&_.card-face.back]:-rotate-y-180 [&_.card-face.front]:rotate-y-0' : ''}`}
-      onClick={handleClick}
+      onClick={onClick}
+      className={`aspect-[320/492] w-[34.2rem] cursor-pointer transition-all duration-500 transform-3d ${isFlipped ? 'z-50' : 'z-10'}`}
+      style={{
+        position: isFlipped ? 'fixed' : 'absolute',
+        top: isFlipped ? '50%' : '85%',
+        left: isFlipped ? '50%' : `${index * 10}rem`,
+        transform: isFlipped ? 'translate(-50%, -70%) scale(0.9) rotateY(180deg)' : 'translate(-50%, -50%) scale(0.3)',
+        zIndex: isFlipped ? 50 : 10,
+      }}
     >
-      <div className='card-face front absolute top-0 left-0 z-2 rotate-y-180 transition-transform duration-400 ease-out backface-hidden transform-3d'>
-        <HorseCard key={horse.id} horse={horse} />
+      {/* 뒷면 */}
+      <div className='absolute inset-0 w-full bg-[url(@/assets/images/cardface-back.png)] bg-contain bg-center bg-no-repeat backface-hidden' />
+      {/* 앞면 */}
+      <div className='absolute inset-0 rotate-y-180 backface-hidden'>
+        <HorseCard horse={horse} />
       </div>
-      <div
-        className={`card-face back ${cardBackImageUrl} absolute top-0 left-0 h-full w-full rotate-y-0 bg-contain bg-center bg-no-repeat transition-transform duration-400 ease-out backface-hidden transform-3d`}
-      />
     </div>
   );
 };
