@@ -11,7 +11,7 @@ const HorseProfileCard: React.FC<HorseProfileCardProps> = ({ name, rank, coatCol
   const horseImageSrc = getDynamicImgSrc('horses', coatColor + 'Horse');
 
   return (
-    <div className='relative mx-3 flex aspect-square h-full w-full flex-col items-center'>
+    <div className='relative mx-3 flex aspect-square h-full w-60 flex-col items-center'>
       <div
         className={`${bgRibbonClass} absolute z-1 flex h-1/3 w-full scale-120 items-center justify-center bg-contain bg-center bg-no-repeat`}
       ></div>
