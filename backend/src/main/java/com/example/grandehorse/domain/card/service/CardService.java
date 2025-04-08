@@ -3,7 +3,6 @@ package com.example.grandehorse.domain.card.service;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -191,24 +190,6 @@ public class CardService {
 		return CommonResponse.success(null);
 	}
 
-	private Slice<CardResponseDto> findUserCardsByCursor(
-		int userId,
-		HorseRank horseRank,
-		int cursorId,
-		int limit
-	) {
-		Pageable pageable = PageRequest.of(0, limit);
-
-		return cardJpaRepository.findUserCardsByCursor(userId, horseRank, cursorId, pageable);
-	}
-
-	private int getNextCursorId(List<CardResponseDto> items, boolean hasNextPage) {
-		if (!hasNextPage || items.isEmpty()) {
-			return -1;
-		}
-		return items.get(items.size() - 1).getCardId();
-	}
-
 	private void validateCardForRepresentation(int userId, int cardId) {
 		CardEntity cardEntity = cardJpaRepository.findByIdAndUserId(cardId, userId)
 			.orElseThrow(() -> new CardException(CustomError.CARD_NOT_EXISTED));
@@ -218,7 +199,7 @@ public class CardService {
 		}
 	}
 
-	public  void resetCurrentRepresentative(int userId) {
+	public void resetCurrentRepresentative(int userId) {
 		CardEntity cardEntity = cardJpaRepository.findByUserIdAndStatus(userId, (byte)3).orElse(null);
 
 		if (cardEntity != null) {
