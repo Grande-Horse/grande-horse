@@ -7,10 +7,14 @@ import { sellTabList } from '@/constants/tabList';
 import { useLocation } from 'react-router-dom';
 import TradeListPanel from '@/components/market/panels/TradeListPanel';
 import PriceHistoryPanel from '@/components/market/panels/PriceHistoryPanel';
+import { useState } from 'react';
+import { HorseCardType } from '@/types/card';
 
 const SellPage: React.FC = () => {
   const location = useLocation();
-  const horse = location.state;
+  const state = location.state;
+
+  const [horse] = useState<HorseCardType>(state);
 
   const handleSellHorse = async () => {
     try {
@@ -45,7 +49,7 @@ const SellPage: React.FC = () => {
 
       <Tabs
         tabList={sellTabList}
-        tabPanels={[<PriceHistoryPanel horseId={horse.horseId} />, <TradeListPanel horseId={horse.id} />]}
+        tabPanels={[<PriceHistoryPanel horseId={horse.horseId} />, <TradeListPanel horseId={horse.horseId} />]}
       />
     </div>
   );
