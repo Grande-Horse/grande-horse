@@ -5,8 +5,8 @@ import java.util.Optional;
 
 import jakarta.persistence.LockModeType;
 
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Slice;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
@@ -68,7 +68,6 @@ public interface CardJpaRepository extends JpaRepository<CardEntity, Integer> {
 			FROM CardEntity c
 			JOIN HorseEntity h ON c.horseId = h.id
 			WHERE c.userId = :userId
-				AND c.id > :cursorId
 				AND (:horseRank IS NULL OR h.horseRank = :horseRank)
 				AND c.deletedAt IS NULL
 			ORDER BY
@@ -80,12 +79,7 @@ public interface CardJpaRepository extends JpaRepository<CardEntity, Integer> {
 					WHEN com.example.grandehorse.domain.horse.entity.HorseRank.NORMAL THEN 5
 				END, c.id
 		""")
-	Slice<CardResponseDto> findUserCardsByCursor(
-		@Param("userId") int userId,
-		@Param("horseRank") HorseRank horseRank,
-		@Param("cursorId") int cursorId,
-		Pageable pageable
-	);
+	Page<CardResponseDto> findUserCardByPage(int userId, HorseRank horseRank, Pageable pageable);
 
 	Optional<CardEntity> findByUserIdAndStatus(int userId, byte status);
 
@@ -97,4 +91,5 @@ public interface CardJpaRepository extends JpaRepository<CardEntity, Integer> {
 	Optional<String> findHorseIdById(int id);
 
 	boolean existsByUserIdAndStatus(int userId, byte status);
+
 }
