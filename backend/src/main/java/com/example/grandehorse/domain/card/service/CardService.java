@@ -203,11 +203,12 @@ public class CardService {
 		}
 	}
 
-	private void resetCurrentRepresentative(int userId) {
+	public  void resetCurrentRepresentative(int userId) {
 		CardEntity cardEntity = cardJpaRepository.findByUserIdAndStatus(userId, (byte)3).orElse(null);
 
 		if (cardEntity != null) {
 			cardEntity.updateStatusToRace();
+			cardJpaRepository.save(cardEntity);
 		}
 	}
 
