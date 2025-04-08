@@ -13,10 +13,12 @@ import RegisterPage from '@/pages/register';
 import AuthPage from '@/pages/auth';
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { ProtectedRoute } from '@/components/ProtectedRoute';
+import { PastureHorseContextProvider } from './contexts/PastureHorseContextProvider';
 import { StompProvider } from '@/contexts/StompContext';
 import { MusicProvider } from '@/contexts/musicContext';
 import RaceTrackRacePage from '@/pages/racetrack/room/race';
 import { HorseProvider } from '@/contexts/pastureHorseContext';
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 
 // 보호된 라우트 래퍼
 const ProtectedPage = ({ children }: { children: React.ReactNode }) => (
@@ -34,19 +36,23 @@ const AuthOnlyPage = ({ children }: { children: React.ReactNode }) => (
 
 // 공개 라우트 래퍼
 const PublicPage = ({ children }: { children: React.ReactNode }) => (
-  <ProtectedRoute requireAuth={false}>{children}</ProtectedRoute>
+    <ProtectedRoute requireAuth={false}>{children}</ProtectedRoute>
 );
 
-const queryClient = new QueryClient();
 
 function App() {
+  const queryClient = new QueryClient();
   return (
     <BrowserRouter>
       <QueryClientProvider client={queryClient}>
+
+      <ReactQueryDevtools initialIsOpen={false} />
         <MusicProvider>
           <StompProvider>
             <GlobalLayout>
               <AuthContextProvider>
+                <HorseProvider>
+                  <PastureHorseContextProvider>
                 <Routes>
                   {/* 인증 + 회원가입 필요 */}
                   <Route
@@ -117,6 +123,9 @@ function App() {
                     }
                   />
                 </Routes>
+
+                  </PastureHorseContextProvider>
+                </HorseProvider>
               </AuthContextProvider>
             </GlobalLayout>
           </StompProvider>
