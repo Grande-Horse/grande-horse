@@ -8,23 +8,29 @@ import UniqueCardpackIcon from '@/assets/icons/uniqueCardpackIcon.svg?react';
 import { buyCardpack, buyDailyCardpack } from '@/services/cardpack';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { queryKey } from '@/constants/queryKey';
+import { useNavigate } from 'react-router-dom';
+import useInternalRouter from '@/hooks/useInternalRouter';
 
 const CardpackPanel: React.FC = () => {
+  const { push } = useInternalRouter();
+
   const queryClient = useQueryClient();
 
   const mutation = useMutation({
     mutationFn: (cardpackId: number) => buyCardpack(cardpackId),
-    onSuccess: () => {
+    onSuccess: (data) => {
       queryClient.refetchQueries({ queryKey: [queryKey.COIN] });
+      push('/market/card/result', { state: { data } });
     },
   });
 
-  const handleBuyButtonClick = (cardpackId: number) => {
-    mutation.mutate(cardpackId);
+  const handleBuyButtonClick = async (cardpackId: number) => {
+    await mutation.mutateAsync(cardpackId);
   };
 
   const handleDailyCardpackButtonClick = async () => {
-    await buyDailyCardpack();
+    const result = await buyDailyCardpack();
+    push('/market/card/result', result);
   };
 
   return (
