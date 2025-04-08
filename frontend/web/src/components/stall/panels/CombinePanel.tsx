@@ -92,7 +92,7 @@ const CombinePanel: React.FC = () => {
       </section>
 
       <section className='bg-primary p-4'>
-        <Dropdown options={Object.values(rankMap)} value={rank} onChange={setRank} placeholder='등급 선택' />
+        <Dropdown options={Object.values(rankMap)} value={rank} onChange={setRank} placeholder='전체' />
       </section>
 
       <ErrorBoundary renderFallback={(error) => <Error errorMessage={error?.message} />}>

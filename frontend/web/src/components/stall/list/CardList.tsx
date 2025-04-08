@@ -1,9 +1,8 @@
 import SmallHorseCard from '@/components/cards/SmallHorseCard';
-import { queryKey } from '@/constants/queryKey';
-import { rankNameMap } from '@/constants/rank';
-import useInfiniteScroll from '@/hooks/useQueries/useInfiniteScroll';
-import { getMyHorseCards } from '@/services/stall';
+import useGetMyHorseCards from '@/hooks/useQueries/useGetMyHorseCards';
 import { HorseCardType } from '@/types/card';
+import { useEffect } from 'react';
+import { useInView } from 'react-intersection-observer';
 import { ClipLoader } from 'react-spinners';
 
 interface CardListProps {
@@ -12,17 +11,21 @@ interface CardListProps {
 }
 
 const CardList: React.FC<CardListProps> = ({ rank, onClick }) => {
-  const { data, hasNextPage, ref } = useInfiniteScroll(
-    queryKey.MY_HORSE_CARDS,
-    getMyHorseCards,
-    rankNameMap[rank as keyof typeof rankNameMap]
-  );
+  const { data, fetchNextPage, hasNextPage } = useGetMyHorseCards(rank);
+
+  const { ref, inView } = useInView();
+
+  useEffect(() => {
+    if (inView) {
+      fetchNextPage();
+    }
+  }, [inView]);
 
   return (
     <>
       <section className='grid grid-cols-3 place-items-center px-1 py-2'>
         {data.pages.flatMap((page) =>
-          page.items.map((item) => <SmallHorseCard key={item.tradeId} horse={item} onClick={onClick} />)
+          page.items.map((item) => <SmallHorseCard key={item.cardId} horse={item} onClick={onClick} />)
         )}
       </section>
       {hasNextPage && (
