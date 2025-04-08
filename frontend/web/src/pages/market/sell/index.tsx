@@ -1,26 +1,21 @@
 import HorseProfileCard from '@/components/cards/HorseProfileCard';
 import CoinIcon from '@/assets/icons/coinIcon.svg?react';
 import { Button } from '@/components/ui/Button';
-import { useState } from 'react';
-import { HorseType } from '@/types/horse';
-import { horseMockData } from '@/mocks/datas/horse';
 import { sellHorse } from '@/services/trading';
 import Tabs from '@/components/ui/Tabs';
 import { sellTabList } from '@/constants/tabList';
-import { useParams } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import TradeListPanel from '@/components/market/panels/TradeListPanel';
 import PriceHistoryPanel from '@/components/market/panels/PriceHistoryPanel';
 
 const SellPage: React.FC = () => {
-  const { horseId } = useParams<{ horseId: string }>();
-
-  // TODO: 해당 말 카드의 정보 불러오기
-  const [horse] = useState<HorseType>(horseMockData);
+  const location = useLocation();
+  const horse = location.state;
 
   const handleSellHorse = async () => {
     try {
       await sellHorse({
-        cardId: 2,
+        cardId: Number(horse.cardId),
         price: 500,
       });
     } catch (error) {

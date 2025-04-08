@@ -11,6 +11,7 @@ import { getPriceHistory } from '@/services/trading';
 import useGetAllHorseTrading from '@/hooks/useQueries/useGetAllHorseTrading';
 import ClipLoader from 'react-spinners/ClipLoader';
 import { useInView } from 'react-intersection-observer';
+import { isExistPriceHistory } from '@/utils/trading';
 
 const PurchasePanel: React.FC = () => {
   const [rank, setRank] = useState<string>('all');
@@ -70,7 +71,14 @@ const PurchasePanel: React.FC = () => {
     <div className='h-full'>
       <section className='flex h-1/3 flex-col items-center justify-center gap-4'>
         {selectedHorse && priceHistory.length > 0 ? (
-          <PriceLineChart priceHistory={priceHistory} />
+          isExistPriceHistory(priceHistory) ? (
+            <PriceLineChart priceHistory={priceHistory} />
+          ) : (
+            <>
+              <HorseDealIcon />
+              <p>말의 최근 거래 내역이 없습니다!</p>
+            </>
+          )
         ) : (
           <>
             <HorseDealIcon />
@@ -80,7 +88,13 @@ const PurchasePanel: React.FC = () => {
       </section>
 
       <div className='bg-primary flex items-center gap-4 border-t border-b border-black p-4'>
-        <Dropdown options={Object.values(rankMap)} value={rank} onChange={handleRankChange} className='w-2/5' />
+        <Dropdown
+          options={Object.values(rankMap)}
+          value={rankNameMap[rank as keyof typeof rankNameMap]}
+          onChange={handleRankChange}
+          placeholder='전체'
+          className='w-2/5'
+        />
         <Input value={keyword} onChange={handleKeywordChange} />
         <SearchIcon onClick={handleSearch} className='cursor-pointer' />
       </div>
@@ -91,7 +105,7 @@ const PurchasePanel: React.FC = () => {
             <PurchaseItem
               key={item.tradeId}
               item={item}
-              isPriceHistoryOpen={selectedHorse !== ''}
+              isPriceHistoryOpen={selectedHorse === item.horseId}
               onPriceHistoryClick={() => handlePriceHistoryClick(item.horseId)}
             />
           ))

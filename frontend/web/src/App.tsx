@@ -76,11 +76,11 @@ function App() {
                     }
                   />
                   <Route
-                    path='/market/sell/:horseId'
+                    path='/market/sell'
                     element={
-                      <ProtectedPage>
-                        <SellPage />
-                      </ProtectedPage>
+                      // <ProtectedPage>
+                      <SellPage />
+                      // </ProtectedPage>
                     }
                   />
 

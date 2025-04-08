@@ -15,15 +15,11 @@ import Loading from '@/components/ui/Loading';
 import Error from '@/components/ui/Error';
 
 const StatPanel: React.FC = () => {
-  const [rank, setRank] = useState<string>('all');
+  const [rank, setRank] = useState<string>('');
   const [selectedHorse, setSelectedHorse] = useState<HorseCardType>();
 
   const handleCardClick = (horse: HorseCardType) => {
     setSelectedHorse(horse);
-  };
-
-  const handleRankChange = (rank: string) => {
-    setRank(rankNameMap[rank as keyof typeof rankNameMap]);
   };
 
   const horseStats = [
@@ -77,12 +73,12 @@ const StatPanel: React.FC = () => {
       )}
 
       <section className='bg-primary p-4'>
-        <Dropdown options={Object.values(rankMap)} value={rank} onChange={handleRankChange} />
+        <Dropdown options={Object.values(rankMap)} value={rank} onChange={setRank} placeholder='전체' />
       </section>
 
       <ErrorBoundary renderFallback={(error) => <Error errorMessage={error?.message} />}>
         <Suspense fallback={<Loading />}>
-          <CardList rank={rank} onClick={handleCardClick} />
+          <CardList rank={rankNameMap[rank as keyof typeof rankNameMap]} onClick={handleCardClick} />
         </Suspense>
       </ErrorBoundary>
     </div>

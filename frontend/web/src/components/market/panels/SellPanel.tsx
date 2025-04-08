@@ -17,37 +17,45 @@ const SellPanel: React.FC = () => {
   const [selectedHorse, setSelectedHorse] = useState<HorseCardType | null>(null);
 
   const { push } = useInternalRouter();
-  const { openModal } = useModal();
+  const { ModalWrapper, openModal, closeModal } = useModal();
 
-  const handleHorseCardClick = (horse: HorseCardType | null) => {
-    setSelectedHorse(horse);
+  const handleHorseCardClick = (horse: HorseCardType) => {
+    setSelectedHorse((prev) => {
+      if (prev?.cardId === horse.cardId) {
+        return null;
+      }
+      return horse;
+    });
   };
 
-  const handleSellButtonClick = () => {
-    openModal({
-      title: <p className='text-stroke'>판매할 말을 선택해 주세요!</p>,
-      confirmText: '선택',
-      content: (
-        <Suspense fallback={<Loading />}>
-          <HorseSelectModalContent selectedHorse={selectedHorse} onHorseCardClick={handleHorseCardClick} />
-        </Suspense>
-      ),
-      onConfirm: () => {
-        if (selectedHorse) {
-          push(`/market/sell/${selectedHorse.horseId}`);
-        }
-      },
-      onCancel: () => {
-        setSelectedHorse(null);
-      },
-    });
+  const handleConfirm = () => {
+    if (selectedHorse) {
+      push('/market/sell', selectedHorse);
+      closeModal(null);
+    }
+  };
+
+  const handleClose = () => {
+    setSelectedHorse(null);
+    closeModal(null);
   };
 
   return (
     <div className='flex h-full flex-col divide-y divide-black'>
+      <ModalWrapper>
+        <Suspense fallback={<Loading />}>
+          <HorseSelectModalContent
+            selectedHorse={selectedHorse}
+            onHorseCardClick={handleHorseCardClick}
+            onClose={handleClose}
+            onConfirm={handleConfirm}
+          />
+        </Suspense>
+      </ModalWrapper>
+
       <section className='flex h-1/3 shrink-0 flex-col items-center justify-center gap-4'>
         <HorseDealIcon />
-        <Button onClick={handleSellButtonClick}>말 판매</Button>
+        <Button onClick={openModal}>말 판매</Button>
       </section>
 
       <div className='bg-primary flex items-center gap-4 p-4'>
