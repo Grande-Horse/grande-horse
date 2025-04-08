@@ -31,30 +31,30 @@ public interface CardTradingJpaRepository extends JpaRepository<CardTradeEntity,
 	boolean existsByIdAndStatus(int id, CardTradeStatus status);
 
 	/* TODO
-	   	검색 기능 ngram 사용하여 최적화 시키기
-	   	JPA N+1 문제 확인하기
+		   검색 기능 ngram 사용하여 최적화 시키기
+		   JPA N+1 문제 확인하기
 	 */
 	@Query("""
-			SELECT new com.example.grandehorse.domain.trading.controller.response.TradeCardResponse(
-				t.id,
-				h.id,
-				h.coatColor,
-				h.name,
-				h.horseRank,
-				t.price,
-				h.speed,
-				h.acceleration,
-				h.stamina,
-				t.registeredAt
-			)
-			FROM CardTradeEntity t
-			JOIN HorseEntity h ON t.horseId = h.id
-			WHERE t.status = 'REGISTERED'
-			AND t.id > :cursorId
-			AND (:horseRank IS NULL OR h.horseRank = :horseRank)
-			AND (:search IS NULL OR h.name LIKE CONCAT('%', :search, '%'))
-			ORDER BY t.id ASC
-		""")
+            SELECT new com.example.grandehorse.domain.trading.controller.response.TradeCardResponse(
+                t.id,
+                h.id,
+                h.coatColor,
+                h.name,
+                h.horseRank,
+                t.price,
+                h.speed,
+                h.acceleration,
+                h.stamina,
+                t.registeredAt
+            )
+            FROM CardTradeEntity t
+            JOIN HorseEntity h ON t.horseId = h.id
+            WHERE t.status = 'REGISTERED'
+            AND t.id > :cursorId
+            AND (:horseRank IS NULL OR h.horseRank = :horseRank)
+            AND (:search IS NULL OR h.name LIKE CONCAT('%', :search, '%'))
+            ORDER BY t.id ASC
+        """)
 	Slice<TradeCardResponse> findTradeCardsByCursor(
 		@Param("cursorId") int cursorId,
 		@Param("horseRank") HorseRank horseRank,
@@ -63,29 +63,29 @@ public interface CardTradingJpaRepository extends JpaRepository<CardTradeEntity,
 	);
 
 	/* TODO
-   		검색 기능 ngram 사용하여 최적화 시키기
-   		JPA N+1 문제 확인하기
- 	*/
+		   검색 기능 ngram 사용하여 최적화 시키기
+		   JPA N+1 문제 확인하기
+	 */
 	@Query(value = """
-			SELECT new com.example.grandehorse.domain.trading.controller.response.RegisteredCardResponse(
-				t.id,
-				h.id,
-				h.coatColor,
-				h.name,
-				h.horseRank,
-				t.price,
-				h.speed,
-				h.acceleration,
-				h.stamina,
-				t.registeredAt
-			)
-			FROM CardTradeEntity t
-			JOIN HorseEntity h ON h.id = t.horseId
-			WHERE t.status = 'REGISTERED'
-			AND t.sellerId = :sellerId
-			AND t.id > :cursorId
-			ORDER BY t.id ASC
-		""")
+            SELECT new com.example.grandehorse.domain.trading.controller.response.RegisteredCardResponse(
+                t.id,
+                h.id,
+                h.coatColor,
+                h.name,
+                h.horseRank,
+                t.price,
+                h.speed,
+                h.acceleration,
+                h.stamina,
+                t.registeredAt
+            )
+            FROM CardTradeEntity t
+            JOIN HorseEntity h ON h.id = t.horseId
+            WHERE t.status = 'REGISTERED'
+            AND t.sellerId = :sellerId
+            AND t.id > :cursorId
+            ORDER BY t.id ASC
+        """)
 	Slice<RegisteredCardResponse> findRegisteredCardsByCursor(
 		@Param("sellerId") int sellerId,
 		@Param("cursorId") int cursorId,
@@ -93,26 +93,26 @@ public interface CardTradingJpaRepository extends JpaRepository<CardTradeEntity,
 	);
 
 	@Query("""
-			SELECT new com.example.grandehorse.domain.trading.controller.response.SoldCardResponse(
-				t.id,
-				h.id,
-				h.coatColor,
-				h.name,
-				h.horseRank,
-				t.price,
-				d.speed,
-				d.acceleration,
-				d.stamina,
-				t.soldAt
-			)
-			FROM CardTradeEntity t
-			JOIN HorseEntity h ON h.id = t.horseId
-			JOIN HorseDataEntity d ON d.id = t.horseDataId
-			WHERE t.horseId = :horseId
-			AND t.status = 'SOLD'
-			AND t.id > :cursorId
-			ORDER BY t.id ASC
-		""")
+            SELECT new com.example.grandehorse.domain.trading.controller.response.SoldCardResponse(
+                t.id,
+                h.id,
+                h.coatColor,
+                h.name,
+                h.horseRank,
+                t.price,
+                d.speed,
+                d.acceleration,
+                d.stamina,
+                t.soldAt
+            )
+            FROM CardTradeEntity t
+            JOIN HorseEntity h ON h.id = t.horseId
+            JOIN HorseDataEntity d ON d.id = t.horseDataId
+            WHERE t.horseId = :horseId
+            AND t.status = 'SOLD'
+            AND t.id > :cursorId
+            ORDER BY t.id ASC
+        """)
 	Slice<SoldCardResponse> findSoldCardsByCursor(
 		@Param("horseId") String horseId,
 		@Param("cursorId") int cursorId,
@@ -120,19 +120,19 @@ public interface CardTradingJpaRepository extends JpaRepository<CardTradeEntity,
 	);
 
 	@Query("""
-		SELECT new com.example.grandehorse.domain.trading.controller.response.PriceHistoryResponse(
-			MAX(t.price),
-			AVG(t.price),
-			MIN(t.price),
-			FUNCTION('DATE', t.soldAt)
-		)
-		FROM CardTradeEntity t
-		WHERE t.horseId = :horseId
-		AND t.status = 'SOLD'
-		AND FUNCTION('DATE', t.soldAt) BETWEEN :sevenDaysAgo AND :oneDayAgo
-		GROUP BY FUNCTION('DATE', t.soldAt)
-		ORDER BY FUNCTION('DATE', t.soldAt) DESC
-		""")
+        SELECT new com.example.grandehorse.domain.trading.controller.response.PriceHistoryResponse(
+            MAX(t.price),
+            AVG(t.price),
+            MIN(t.price),
+            FUNCTION('DATE', t.soldAt)
+        )
+        FROM CardTradeEntity t
+        WHERE t.horseId = :horseId
+        AND t.status = 'SOLD'
+        AND FUNCTION('DATE', t.soldAt) BETWEEN :sevenDaysAgo AND :oneDayAgo
+        GROUP BY FUNCTION('DATE', t.soldAt)
+        ORDER BY FUNCTION('DATE', t.soldAt) DESC
+        """)
 	List<PriceHistoryResponse> findPriceHistory(
 		@Param("horseId") String horseId,
 		@Param("oneDayAgo") LocalDate oneDayAgo,

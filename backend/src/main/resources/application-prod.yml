@@ -1,0 +1,29 @@
+server:
+  servlet:
+    context-path: /api/v1
+
+spring:
+  config:
+    import: "application-secret.yml"
+
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: ${DB_URL}
+    username: root
+    password: ${DB_PASSWORD}
+
+  jpa:
+    database-platform: org.hibernate.dialect.MySQL8Dialect
+    hibernate:
+      ddl-auto: none
+
+  data:
+    redis:
+      default:
+        host: j12a606.p.ssafy.io
+        port: 6379
+        password: ${REDIS_DEFAULT_PASSWORD}
+      websocket:
+        host: j12a606.p.ssafy.io
+        port: 3500
+        password: ${REDIS_WEBSOCKET_PASSWORD}

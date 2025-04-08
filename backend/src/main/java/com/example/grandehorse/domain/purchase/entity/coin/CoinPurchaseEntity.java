@@ -12,6 +12,7 @@ import jakarta.persistence.Table;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
@@ -21,6 +22,7 @@ import lombok.NoArgsConstructor;
 @Table(name = "coin_purchase", indexes = {
 	@Index(name = "idx_user_id", columnList = "user_id")
 })
+@Getter
 public class CoinPurchaseEntity {
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -130,9 +130,18 @@ public class UserService {
         UserEntity user = userJpaRepository.findByIdWithPessimisticLock(userId)
                 .orElseThrow(() -> new UserException(CustomError.USER_NOT_EXISTED));
 
-        user.increaseCoin(price);
-        userJpaRepository.save(user);
-    }
+		user.increaseCoin(price);
+		userJpaRepository.save(user);
+	}
+
+	public void decreaseUserCoin(int userId, int price) {
+		UserEntity user = userJpaRepository.findByIdWithPessimisticLock(userId)
+			.orElseThrow(() -> new UserException(CustomError.USER_NOT_EXISTED));
+
+		user.validateCoin(price);
+		user.decreaseCoin(price);
+		userJpaRepository.save(user);
+	}
 
 	@Transactional
 	public void decreaseUserCoin(int userId, int price) {
