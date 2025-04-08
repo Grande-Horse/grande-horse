@@ -14,6 +14,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.data.redis.connection.DefaultStringRedisConnection;
 import org.springframework.data.redis.core.Cursor;
 import org.springframework.data.redis.core.HashOperations;
 import org.springframework.data.redis.core.RedisCallback;
@@ -46,6 +47,9 @@ import com.example.grandehorse.domain.user.service.UserService;
 import com.example.grandehorse.global.exception.CustomError;
 import com.example.grandehorse.global.exception.RaceException;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 @Service
 public class RaceService {
 	private static final String RACE_ROOM_PREFIX = "race_room:";
@@ -272,35 +276,42 @@ public class RaceService {
 
 	public void requestPlayGame(Long roomId, int userId) {
 		String queueKey = "queue:playGame:" + roomId;
-
 		websocketRedisTemplate.opsForList().rightPush(queueKey, String.valueOf(userId));
-
+		System.out.println(websocketRedisTemplate.opsForList().size(queueKey));
 		startGameQueueWorker(roomId);
 	}
 
 	private void startGameQueueWorker(Long roomId) {
 		if (roomQueueWorkers.containsKey(roomId)) {
-			return; // 이미 워커 실행 중
+			log.info("Worker already exists for room " + roomId);
+			return;
 		}
 
 		Thread worker = new Thread(() -> {
 			String queueKey = "queue:playGame:" + roomId;
+			log.info("Worker started for room " + roomId);
 
 			while (!Thread.currentThread().isInterrupted()) {
 				try {
-					List<byte[]> result = websocketRedisTemplate.execute((RedisCallback<List<byte[]>>) connection -> {
-						byte[] key = websocketRedisTemplate.getStringSerializer().serialize(queueKey);
-						return connection.bLPop(0, key); // 블로킹 pop
+					log.info("Waiting for user action in queue: " + queueKey);
+					List<String> result
+						= websocketRedisTemplate.execute((RedisCallback<List<String>>) connection -> {
+						DefaultStringRedisConnection stringConnection = new DefaultStringRedisConnection(connection);
+						return stringConnection.bLPop(0, queueKey);
 					});
 
 					if (result != null && result.size() == 2) {
-						String userIdStr = websocketRedisTemplate.getStringSerializer().deserialize(result.get(1));
+						String userIdStr = result.get(1);
+						log.info("Received userId: " + userIdStr + " for room: " + roomId);
 						playGame(roomId, Integer.parseInt(userIdStr));
 					}
 				} catch (Exception e) {
+					log.error("GameQueueWorker error - roomId: " + roomId, e);
 					break;
 				}
 			}
+
+			log.info("Game queue worker for room " + roomId + " has stopped.");
 		}, "GameQueueWorker-" + roomId);
 
 		worker.start();
@@ -712,6 +723,6 @@ public class RaceService {
 		Map<String, Object> response = new HashMap<>();
 		response.put("isGameFinished", isGameFinished);
 		response.put("progress", progress);
-		messagingTemplate.convertAndSend("/topic/race_room" + roomId + "/game", progress);
+		messagingTemplate.convertAndSend("/topic/race_room/" + roomId + "/game", response);
 	}
 }

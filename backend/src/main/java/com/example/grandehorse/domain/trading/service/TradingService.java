@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.example.grandehorse.domain.card.service.CardService;
+import com.example.grandehorse.domain.horse.entity.HorseRank;
 import com.example.grandehorse.domain.horse.service.HorseService;
 import com.example.grandehorse.domain.trading.controller.request.CreateCardTradeDto;
 import com.example.grandehorse.domain.trading.controller.response.PriceHistoryResponse;
@@ -27,6 +28,7 @@ import com.example.grandehorse.domain.trading.entity.CardTradeEntity;
 import com.example.grandehorse.domain.trading.entity.CardTradeStatus;
 import com.example.grandehorse.domain.trading.repository.CardTradingJpaRepository;
 import com.example.grandehorse.domain.user.service.UserService;
+import com.example.grandehorse.global.exception.CardException;
 import com.example.grandehorse.global.exception.CustomError;
 import com.example.grandehorse.global.exception.TradingException;
 import com.example.grandehorse.global.response.CommonResponse;
@@ -92,11 +94,16 @@ public class TradingService {
 		String search,
 		int limit
 	) {
-		if(rank.equals("all")) {
-			rank = null;
+		HorseRank horseRank = null;
+		if (rank != null && !"all".equalsIgnoreCase(rank) && !rank.isBlank()) {
+			try {
+				horseRank = HorseRank.valueOf(rank.toUpperCase());
+			} catch (IllegalArgumentException ex) {
+				throw new CardException(CustomError.INVALID_RANK_VALUE);
+			}
 		}
 
-		Slice<TradeCardResponse> tradeCardSlice = findTradeCardsByCursor(cursorId, rank, search, limit);
+		Slice<TradeCardResponse> tradeCardSlice = findTradeCardsByCursor(cursorId, horseRank, search, limit);
 		return processPagedResponse(tradeCardSlice, Comparator.comparing(TradeCardResponse::getTradeId).reversed());
 	}
 
@@ -234,7 +241,7 @@ public class TradingService {
 
 	private Slice<TradeCardResponse> findTradeCardsByCursor(
 		int cursorId,
-		String rank,
+		HorseRank horseRank,
 		String search,
 		int limit
 	) {
@@ -242,7 +249,7 @@ public class TradingService {
 
 		return cardTradingJpaRepository.findTradeCardsByCursor(
 			cursorId,
-			rank,
+			horseRank,
 			search,
 			pageable
 		);

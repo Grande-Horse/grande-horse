@@ -12,6 +12,7 @@ import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import com.example.grandehorse.domain.horse.entity.HorseRank;
 import com.example.grandehorse.domain.trading.controller.response.PriceHistoryResponse;
 import com.example.grandehorse.domain.trading.controller.response.RegisteredCardResponse;
 import com.example.grandehorse.domain.trading.controller.response.SoldCardResponse;
@@ -56,7 +57,7 @@ public interface CardTradingJpaRepository extends JpaRepository<CardTradeEntity,
 		""")
 	Slice<TradeCardResponse> findTradeCardsByCursor(
 		@Param("cursorId") int cursorId,
-		@Param("horseRank") String horseRank,
+		@Param("horseRank") HorseRank horseRank,
 		@Param("search") String search,
 		Pageable pageable
 	);

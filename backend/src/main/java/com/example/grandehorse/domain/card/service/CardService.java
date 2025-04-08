@@ -132,7 +132,7 @@ public class CardService {
 		int limit
 	) {
 		HorseRank horseRank = null;
-		if (rank != null && !"ALL".equalsIgnoreCase(rank) && !rank.isBlank()) {
+		if (rank != null && !"all".equalsIgnoreCase(rank) && !rank.isBlank()) {
 			try {
 				horseRank = HorseRank.valueOf(rank.toUpperCase());
 			} catch (IllegalArgumentException ex) {

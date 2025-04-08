@@ -119,7 +119,6 @@ public class RaceController {
 		raceService.requestPlayGame(roomId, userId);
 	}
 
-	// 경기 끝나고 코인 체크
 	@MessageMapping("/race_room/{roomId}/coin")
 	public void checkCoin(
 		@DestinationVariable Long roomId
