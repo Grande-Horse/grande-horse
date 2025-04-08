@@ -170,13 +170,13 @@ const ManagementPanel: React.FC = () => {
             }
             disabled={candidateHorses.length === 0}
           >
-            마당에서 제거
+            목장에서 제거
           </Button>
           <Button
             onClick={() => handleSetRepresentativeHorse(candidateHorses[currentIndex])}
             disabled={candidateHorses.length === 0}
           >
-            대표말 지정
+            경주마 지정
           </Button>
         </div>
       </div>

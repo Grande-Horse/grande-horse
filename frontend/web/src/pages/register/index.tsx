@@ -21,7 +21,7 @@ const NicknameInput = ({ nickname, onNicknameChange, onCheckNickname, isDisabled
       onChange={(e) => onNicknameChange(e.target.value)}
       className='flex-1'
     />
-    <Button disabled={isDisabled} onClick={onCheckNickname} className='disabled:bg-gray min-w-[100px]'>
+    <Button disabled={isDisabled} onClick={onCheckNickname} className='disabled:bg-gray min-w-[90px]'>
       중복 확인
     </Button>
   </div>
@@ -32,27 +32,27 @@ interface NicknameCheckProps {
 }
 
 const NicknameCheck = ({ isAvailable }: NicknameCheckProps) => (
-<div className="h-4">
-  <div
-    className={`text-md font-medium transition-opacity duration-200 ${
-      isAvailable
-        ? 'text-green-500 opacity-100'
-        : 'text-warning opacity-100'
-    }`}
-  >
-    {isAvailable ? '사용 가능한 닉네임입니다.' : '이미 사용중인 닉네임입니다.'}
+  <div className='h-4'>
+    <div
+      className={`text-md font-medium transition-opacity duration-200 ${
+        isAvailable ? 'text-green-500 opacity-100' : 'text-warning opacity-100'
+      }`}
+    >
+      {isAvailable ? '사용 가능한 닉네임입니다.' : '이미 사용중인 닉네임입니다.'}
+    </div>
   </div>
-</div>
 );
 
-const LoadingIndicator = ({ isLoading}: { isLoading: boolean }) => {
+const LoadingIndicator = ({ isLoading }: { isLoading: boolean }) => {
   return (
     <div className='flex items-center gap-2'>
-      {isLoading && <ClipLoader className='absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2' color='white' size={30} />} 
+      {isLoading && (
+        <ClipLoader className='absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2' color='white' size={30} />
+      )}
     </div>
   );
 };
-const ErrorMessage = ({ message }: { message: string }) => <div className='h-4 text-warning'>{message}</div>;
+const ErrorMessage = ({ message }: { message: string }) => <div className='text-warning h-4'>{message}</div>;
 
 const RegisterForm = () => {
   const navigate = useNavigate();
@@ -68,8 +68,8 @@ const RegisterForm = () => {
   };
 
   return (
-    <div className='flex w-full flex-col items-center justify-center gap-4 p-6'>
-      <h1 className='text-2xl font-bold'>회원가입</h1>
+    <div className='flex w-full flex-col items-center justify-center gap-3 pb-4'>
+      <h1 className='text-stroke text-heading2 pb-4'>회원가입</h1>
 
       <NicknameInput
         nickname={state.nickname}
