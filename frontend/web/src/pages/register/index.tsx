@@ -3,6 +3,7 @@ import Input from '@/components/ui/Input';
 import { Button } from '@/components/ui/Button';
 import { useNavigate } from 'react-router-dom';
 import useRegister from '@/hooks/useRegister';
+import { ClipLoader } from 'react-spinners';
 
 interface NicknameInputProps {
   nickname: string;
@@ -31,19 +32,33 @@ interface NicknameCheckProps {
 }
 
 const NicknameCheck = ({ isAvailable }: NicknameCheckProps) => (
-  <div className={`text-sm font-medium ${isAvailable ? 'text-green-500' : 'text-warning'}`}>
+<div className="h-4">
+  <div
+    className={`text-md font-medium transition-opacity duration-200 ${
+      isAvailable
+        ? 'text-green-500 opacity-100'
+        : 'text-warning opacity-100'
+    }`}
+  >
     {isAvailable ? '사용 가능한 닉네임입니다.' : '이미 사용중인 닉네임입니다.'}
   </div>
+</div>
 );
 
-const LoadingMessage = ({ message }: { message: string }) => <div className=''>{message}</div>;
-const ErrorMessage = ({ message }: { message: string }) => <div className='text-warning'>{message}</div>;
+const LoadingIndicator = ({ isLoading}: { isLoading: boolean }) => {
+  return (
+    <div className='flex items-center gap-2'>
+      {isLoading && <ClipLoader className='absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2' color='white' size={30} />} 
+    </div>
+  );
+};
+const ErrorMessage = ({ message }: { message: string }) => <div className='h-4 text-warning'>{message}</div>;
 
 const RegisterForm = () => {
   const navigate = useNavigate();
   const { state, setNickname, validateNickname, submitRegistration } = useRegister();
 
-  const handleRegister = async () => {
+  const handleRegisterRedirect = async () => {
     const reponse = await submitRegistration();
     if (reponse.errorCode === '') {
       navigate('/', { replace: true });
@@ -63,14 +78,14 @@ const RegisterForm = () => {
         isDisabled={!state.nickname}
       />
 
+      <LoadingIndicator isLoading={state.isLoading} />
       <Button
         disabled={!state.isNicknameChecked || !state.isNicknameAvailable || state.isNetworkError}
-        onClick={handleRegister}
+        onClick={handleRegisterRedirect}
         className='bg-green hover:bg-green disabled:bg-gray max-w-md'
       >
         회원가입
       </Button>
-      {state.isLoading && <LoadingMessage message='처리 중...' />}
       {state.isNetworkError && <ErrorMessage message={state.isError ?? ''} />}
       {state.isNicknameChecked && !state.isNetworkError && (
         <NicknameCheck isAvailable={state.isNicknameAvailable ?? false} />
@@ -81,7 +96,7 @@ const RegisterForm = () => {
 
 const RegisterPage = () => (
   <div className='flex h-full flex-col items-center'>
-    <Modal isOpen={true} onClose={() => {}}>
+    <Modal isOpen={true} onClose={() => {}} onConfirm={() => {}}>
       <RegisterForm />
     </Modal>
   </div>

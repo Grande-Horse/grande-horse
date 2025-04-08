@@ -1,7 +1,5 @@
 import { directionMap } from '@/constants/direction';
 import { HORSE_STEP, PASTURE_MAX_X, PASTURE_MAX_Y, PASTURE_MIN_X, PASTURE_MIN_Y } from '@/constants/pasture';
-import { horseCardListMockData2 } from '@/mocks/datas/horse';
-import { HorseCardType } from '@/types/card';
 import { getRandomDirection, getRandomPosition } from '@/utils/random';
 import { createContext, useContext, useState } from 'react';
 
@@ -16,7 +14,6 @@ interface HorseState {
 }
 
 interface HorseContextType {
-  horseList: HorseCardType[];
   horseStates: Record<string, HorseState>;
   initHorsePosition: (id: string) => void;
   moveHorse: (id: string) => void;
@@ -25,7 +22,6 @@ interface HorseContextType {
 const HorseContext = createContext<HorseContextType | null>(null);
 
 export const HorseProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [horseList] = useState<HorseCardType[]>(horseCardListMockData2);
   const [horseStates, setHorseStates] = useState<Record<string, HorseState>>({});
 
   const updateState = (id: string, state: HorseState) => {
@@ -97,9 +93,7 @@ export const HorseProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   };
 
   return (
-    <HorseContext.Provider value={{ horseList, horseStates, initHorsePosition, moveHorse }}>
-      {children}
-    </HorseContext.Provider>
+    <HorseContext.Provider value={{ horseStates, initHorsePosition, moveHorse }}>{children}</HorseContext.Provider>
   );
 };
 
