@@ -33,6 +33,10 @@ const RaceRecordChart: React.FC<RaceRecordChartProps> = ({ cardId }) => {
     ],
   };
 
+  if (raceRecord.totalPrize === 0) {
+    return <div className='flex w-full justify-center'>상위 등수 달성 내역이 없습니다.</div>;
+  }
+
   return <Bar data={chartData} />;
 };
 

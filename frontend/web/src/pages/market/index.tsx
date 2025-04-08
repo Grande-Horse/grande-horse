@@ -4,12 +4,18 @@ import PurchasePanel from '@/components/market/panels/PurchasePanel';
 import SellPanel from '@/components/market/panels/SellPanel';
 import CoinPanel from '@/components/market/panels/CoinPanel';
 import CardpackPanel from '@/components/market/panels/CardpackPanel';
+import { DialogProvider } from '@/contexts/confirmDialogContext';
 
 const MarketPage: React.FC = () => {
   return (
-    <div className='h-body overflow-y-auto'>
-      <Tabs tabList={marketTabList} tabPanels={[<PurchasePanel />, <SellPanel />, <CardpackPanel />, <CoinPanel />]} />
-    </div>
+    <DialogProvider>
+      <div className='h-body overflow-y-auto'>
+        <Tabs
+          tabList={marketTabList}
+          tabPanels={[<PurchasePanel />, <SellPanel />, <CardpackPanel />, <CoinPanel />]}
+        />
+      </div>
+    </DialogProvider>
   );
 };
 
