@@ -5,31 +5,42 @@ import { ClipLoader } from 'react-spinners';
 import SelectedIcon from '@/assets/icons/selectedIcon.svg?react';
 import { getMyHorseCards } from '@/services/stall';
 import { HorseCardType } from '@/types/card';
+import { Button } from '@/components/ui/Button';
 
 interface HorseSelectModalContentProps {
   selectedHorse: HorseCardType | null;
-  onHorseCardClick: (horse: HorseCardType | null) => void;
+  onHorseCardClick: (horse: HorseCardType) => void;
+  onConfirm?: () => void;
+  onClose?: () => void;
 }
 
-const HorseSelectModalContent: React.FC<HorseSelectModalContentProps> = ({ selectedHorse, onHorseCardClick }) => {
+const HorseSelectModalContent: React.FC<HorseSelectModalContentProps> = ({
+  selectedHorse,
+  onHorseCardClick,
+  onConfirm,
+  onClose,
+}) => {
   const { data, hasNextPage, ref } = useInfiniteScroll(queryKey.MY_HORSE_CARDS, getMyHorseCards, 'all');
 
   return (
-    <div className='max-h-[36rem] overflow-y-auto'>
-      <section className='grid grid-cols-2 place-items-center gap-y-5'>
+    <div className='flex max-h-[44rem] flex-col gap-6'>
+      <p className='text-heading4 text-stroke'>판매할 말을 선택해 주세요!</p>
+      <section className='grid grid-cols-2 place-items-center gap-5 overflow-y-auto'>
         {data?.pages.flatMap((page) =>
           page.items.map((item) => (
-            <div className='relative'>
-              {selectedHorse?.horseId === item.id && (
-                <div
-                  key={item.id}
-                  onClick={() => onHorseCardClick(null)}
-                  className='absolute top-1 z-10 flex h-66 w-44 cursor-pointer items-center justify-center rounded-sm bg-black/20'
-                >
-                  <SelectedIcon />
-                </div>
-              )}
-              <SmallHorseCard key={item.id} horse={item} onClick={onHorseCardClick} />
+            <div className='relative' key={item.cardId}>
+              <div
+                onClick={() => onHorseCardClick(item.cardId)}
+                className='absolute top-1 z-10 flex h-66 w-44 cursor-pointer items-center justify-center rounded-sm bg-black/20'
+                style={{
+                  opacity: selectedHorse?.cardId === item.cardId ? 1 : 0,
+                  pointerEvents: selectedHorse?.cardId === item.cardId ? 'auto' : 'none',
+                }}
+              >
+                <SelectedIcon />
+              </div>
+
+              <SmallHorseCard horse={item} onClick={onHorseCardClick} />
             </div>
           ))
         )}
@@ -40,6 +51,13 @@ const HorseSelectModalContent: React.FC<HorseSelectModalContentProps> = ({ selec
           <ClipLoader size={18} color='#3D4B63' />
         </div>
       )}
+
+      <div className='text-body2 flex w-full justify-center gap-5'>
+        <Button onClick={onClose} variant='secondary'>
+          취소
+        </Button>
+        <Button onClick={onConfirm}>선택</Button>
+      </div>
     </div>
   );
 };

@@ -77,7 +77,12 @@ const StatPanel: React.FC = () => {
       )}
 
       <section className='bg-primary p-4'>
-        <Dropdown options={Object.values(rankMap)} value={rank} onChange={handleRankChange} />
+        <Dropdown
+          options={Object.values(rankMap)}
+          value={rankNameMap[rank as keyof typeof rankNameMap]}
+          onChange={handleRankChange}
+          placeholder='전체'
+        />
       </section>
 
       <ErrorBoundary renderFallback={(error) => <Error errorMessage={error?.message} />}>
