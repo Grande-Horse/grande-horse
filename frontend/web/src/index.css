@@ -1,0 +1,243 @@
+@import "tailwindcss";
+
+@font-face {
+  font-family: 'DungGeunMo';
+  src: url('/fonts/DungGeunMo.ttf');
+}
+
+@theme {
+  --color-primary: #3D4B63;
+  --color-secondary: #E0EEFF;
+  --color-background: #536583;
+  --color-black: #000;
+  --color-white: #fff;
+  --color-gray: #AAAAAA;
+  --color-darkgray: #515151;
+  --color-modal: rgba(0, 0, 0, 0.5);
+  --color-kakao: #FEE500;
+  --color-ssafy: #6DCEF5;
+
+  --color-normal: #D9D9D9;
+  --color-rare: #00AAFF;
+  --color-epic: #A100FF;
+  --color-unique: #FFEA00;
+  --color-legend: #00FF2A;
+  --color-legend: #00FF2A;
+  --color-warning: #E5002C;
+
+  --text-heading1: 2.4rem;
+  --text-heading2: 2.2rem;
+  --text-heading3: 2rem;
+  --text-heading4: 1.8rem;
+  --text-body1: 1.6rem;
+  --text-body2: 1.4rem;
+  --text-detail1: 1.2rem;
+  --text-detail2: 1rem;
+  --text-detail3: 0.8rem;
+  --text-detail4: 0.6rem;
+
+  --font-primary: 'DungGeunMo';
+  --container-base: 480px;
+  --container-modal: 320px;
+  --radius-sm: 1rem;
+  
+  --inset-shadow-xs: inset 0 0 4px rgba(1, 1, 1, 0.25);
+}
+
+@utility h-body {
+  height: calc(100vh - 12rem);
+}
+
+@utility text-stroke {
+  -webkit-text-stroke: 2px black;
+  paint-order: stroke fill;
+}
+
+@utility scrollbar-hide {
+  ::-webkit-scrollbar {
+    display: none;
+  }
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+@utility bg-gradient {
+  box-shadow: 
+    inset 5px 5px 10px rgba(255, 255, 255, 0.1),
+    inset -5px 5px 10px rgba(255, 255, 255, 0.1),
+    inset 5px -5px 10px rgba(255, 255, 255, 0.1),
+    inset -5px -5px 10px rgba(255, 255, 255, 0.1);
+  background-blend-mode: multiply;
+  background-image:
+    linear-gradient(to left, rgba(217, 217, 217, 0.1), rgba(255, 255, 255, 0.1), rgba(217, 217, 217, 0.1)),
+    linear-gradient(to top, rgba(217, 217, 217, 0.1), rgba(255, 255, 255, 0.1), rgba(217, 217, 217, 0.1));
+}
+
+/* z-index 관련 */
+@utility z-dropdown {
+  z-index: 1000;
+}
+
+@utility z-modal {
+  z-index: 100;
+}
+
+@utility z-tab {
+  z-index: 10;
+}
+
+@utility z-header {
+  z-index: 30;
+}
+
+@utility z-bottomnavbar {
+  z-index: 10;
+}
+
+@keyframes sprite-down {
+  0% { background-position: 0px -0px; }
+  100% { background-position: -224px -0px; }
+}
+
+@keyframes sprite-up {
+  0% { background-position: 0px -32px; }
+  100% { background-position: -224px -32px; }
+}
+
+@keyframes sprite-right {
+  0% { background-position: 0px -64px; }
+  100% { background-position: -224px -64px; }
+}
+
+@keyframes sprite-down {
+  0% { background-position: 0px -0px; }
+  100% { background-position: -224px -0px; }
+}
+
+@utility horseRun-down {
+  width: 32px;
+  height: 32px;
+  background-repeat: no-repeat;
+  animation: sprite-down 1s steps(7) infinite;
+}
+
+@utility horseRun-up {
+  width: 32px;
+  height: 32px;
+  background-repeat: no-repeat;
+  animation: sprite-up 1s steps(7) infinite;
+}
+
+@utility horseRun-right {
+  width: 32px;
+  height: 32px;
+  background-repeat: no-repeat;
+  animation: sprite-right 1s steps(7) infinite;
+}
+
+@utility horseRun-left {
+  width: 32px;
+  height: 32px;
+  background-repeat: no-repeat;
+  transform: scaleX(-1);
+  animation: sprite-right 1s steps(7) infinite;
+}
+
+@utility horseIdle-down {
+  width: 32px;
+  height: 32px;
+  background-repeat: no-repeat;
+  animation: none;
+  background-position: 0px -0px;
+}
+
+@utility horseIdle-up {
+  width: 32px;
+  height: 32px;
+  background-repeat: no-repeat;
+  animation: none;
+  background-position: 0px -32px;
+}
+
+@utility horseIdle-right {
+  width: 32px;
+  height: 32px;
+  background-repeat: no-repeat;
+  animation: none;
+  background-position: 0px -64px;
+}
+
+@utility horseIdle-left {
+  width: 32px;
+  height: 32px;
+  background-repeat: no-repeat;
+  transform: scaleX(-1);
+  animation: none;
+  background-position: 0px -64px;
+}
+
+@utility image-rendering-pixelated {
+  image-rendering: pixelated;
+  image-rendering: crisp-edges; /* fallback */
+}
+
+@keyframes moveCloudUpper {
+  from {
+    background-position: 0 0;
+  }
+
+  to {
+    background-position: 100% 0;
+  }
+}
+@keyframes moveCloudLower {
+  from {
+    background-position: 0 0;
+  }
+
+  to {
+    background-position: -100% 0;
+  }
+}
+
+@layer utilities {
+  .animate-moveCloudUpper {
+    animation: moveCloudUpper 300s linear infinite;
+  }
+
+  .animate-moveCloudLower {
+    animation: moveCloudLower 2000s linear infinite;
+  }
+}
+
+@layer utilities {
+  @keyframes dot-animation {
+    0% { content: '.'; }
+    30% { content: '..'; }
+    60% { content: '...'; }
+  }
+
+  .dot-animation::after {
+    content: '.';
+    animation: dot-animation 2s infinite steps(1);
+  }
+
+  
+
+  @keyframes slide {
+    0% { background-position: 0% 0; }
+    100% { background-position: 100% 0; }
+  }
+  
+  .animate-slide {
+    animation: slide 8s linear infinite;
+    background-size: cover;
+  }
+
+}
+
+
+html {
+  font-family: 'DungGeunMo';
+  src: url('/fonts/DungGeunMo.ttf');
+}
