@@ -272,6 +272,7 @@ public class RaceService {
 
 	public void requestPlayGame(Long roomId, int userId) {
 		String queueKey = "queue:playGame:" + roomId;
+
 		websocketRedisTemplate.opsForList().rightPush(queueKey, String.valueOf(userId));
 
 		startGameQueueWorker(roomId);
@@ -279,7 +280,7 @@ public class RaceService {
 
 	private void startGameQueueWorker(Long roomId) {
 		if (roomQueueWorkers.containsKey(roomId)) {
-			return;
+			return; // 이미 워커 실행 중
 		}
 
 		Thread worker = new Thread(() -> {
@@ -287,9 +288,9 @@ public class RaceService {
 
 			while (!Thread.currentThread().isInterrupted()) {
 				try {
-					List<byte[]> result = websocketRedisTemplate.execute((RedisCallback<List<byte[]>>)connection -> {
+					List<byte[]> result = websocketRedisTemplate.execute((RedisCallback<List<byte[]>>) connection -> {
 						byte[] key = websocketRedisTemplate.getStringSerializer().serialize(queueKey);
-						return connection.bLPop(0, key);
+						return connection.bLPop(0, key); // 블로킹 pop
 					});
 
 					if (result != null && result.size() == 2) {
@@ -336,16 +337,14 @@ public class RaceService {
 				websocketRedisTemplate.opsForHash().get(roomKey, "bettingCoin").toString()
 			);
 			rewardUsers(bettingCoin, playerCount, roomKey, raceProgresses);
-			sendRaceFinishMessage(roomId, userId);
 
 			Thread worker = roomQueueWorkers.remove(roomId);
 			if (worker != null) {
 				worker.interrupt();
 			}
-			return;
 		}
 
-		sendRaceProgressUpdate(roomId, raceProgresses);
+		sendRaceProgressUpdate(isRaceFinished, roomId, raceProgresses);
 	}
 
 	@Transactional
@@ -628,7 +627,7 @@ public class RaceService {
 			.collect(Collectors.toList());
 		Map<String, Object> response = new HashMap<>();
 
-		String started = websocketRedisTemplate.opsForHash().get(roomKey, "start").toString();
+		boolean started = Boolean.valueOf(websocketRedisTemplate.opsForHash().get(roomKey, "start").toString());
 		response.put("isGameStarted", started);
 		response.put("playersInfo", playersInfo);
 		messagingTemplate.convertAndSend("/topic/race_room/" + roomId, response);
@@ -709,12 +708,10 @@ public class RaceService {
 		return (distanceObj != null) ? Double.parseDouble(distanceObj.toString()) : 0.0;
 	}
 
-	private void sendRaceProgressUpdate(Long roomId, List<PlayerRaceProgress> progress) {
+	private void sendRaceProgressUpdate(boolean isGameFinished, Long roomId, List<PlayerRaceProgress> progress) {
+		Map<String, Object> response = new HashMap<>();
+		response.put("isGameFinished", isGameFinished);
+		response.put("progress", progress);
 		messagingTemplate.convertAndSend("/topic/race_room" + roomId + "/game", progress);
-	}
-
-	private void sendRaceFinishMessage(Long roomId, int winnerId) {
-		Map<String, Integer> winnerInfo = Map.of("winnerId", winnerId);
-		messagingTemplate.convertAndSend("/topic/race_room" + roomId + "/finish", winnerInfo);
 	}
 }
