@@ -67,7 +67,7 @@ pipeline {
                 script {
                     sh 'chmod +x ./backend/gradlew'
                     sh 'docker-compose -f docker-compose.yml down || true'
-                    sh 'docker-compose -f docker-compose.yml up -d --build'
+                    sh 'docker-compose -f docker-compose.yml up -d --build --remove-orphans'
                 }
             }
         }
