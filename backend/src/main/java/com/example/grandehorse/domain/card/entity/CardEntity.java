@@ -99,4 +99,14 @@ public class CardEntity {
 		this.deletedAt = LocalDateTime.now();
 		this.combinationId = combinationId;
 	}
+
+	public void updateWinRecord(int totalPrize) {
+		this.raceCount += 1;
+		this.victoryCount += 1;
+		this.totalPrize += totalPrize;
+	}
+
+	public void updateRaceRecord() {
+		this.raceCount += 1;
+	}
 }
