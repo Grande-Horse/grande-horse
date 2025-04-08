@@ -7,9 +7,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Slice;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -133,45 +133,42 @@ public class CardService {
 		return CommonResponse.listSuccess(raceHorseCards);
 	}
 
+	/**
+	 * - 기존 커서 기반으로 구현.
+	 * - 프론트 연동 이후 오프셋 방식으로 변경.
+	 * - 변수명 'page' 를 'cursorId' 로 대체하여 사용.
+	 */
 	public ResponseEntity<CommonResponse<List<CardResponseDto>>> getUserCardList(
 		int userId,
 		String rank,
-		int cursorId,
+		int page,
 		int limit
 	) {
-		HorseRank horseRank = null;
-		if (rank != null && !"ALL".equalsIgnoreCase(rank) && !rank.isBlank()) {
-			try {
-				horseRank = HorseRank.valueOf(rank.toUpperCase());
-			} catch (IllegalArgumentException ex) {
-				throw new CardException(CustomError.INVALID_RANK_VALUE);
-			}
-		}
+		final HorseRank parsedHorseRank = parseHorseRank(rank);
 
-		Slice<CardResponseDto> userCardSlice = findUserCardsByCursor(userId, horseRank, cursorId, limit);
-		List<CardResponseDto> items = userCardSlice.getContent();
-		boolean hasNextItems = userCardSlice.hasNext();
-		int nextCursorId = getNextCursorId(items, hasNextItems);
+		Pageable pageable = PageRequest.of(page, limit);
+		Page<CardResponseDto> cardPage = cardJpaRepository.findUserCardByPage(userId, parsedHorseRank, pageable);
 
-		return CommonResponse.pagedSuccess(items, hasNextItems, nextCursorId);
+		List<CardResponseDto> items = cardPage.getContent();
+		boolean hasNextItems = cardPage.hasNext();
+		int nextPageNo = getNextPageNo(cardPage.getNumber(), hasNextItems);
+
+		return CommonResponse.pagedSuccess(items, hasNextItems, nextPageNo);
 	}
 
-	private Slice<CardResponseDto> findUserCardsByCursor(
-		int userId,
-		HorseRank horseRank,
-		int cursorId,
-		int limit
-	) {
-		Pageable pageable = PageRequest.of(0, limit);
-
-		return cardJpaRepository.findUserCardsByCursor(userId, horseRank, cursorId, pageable);
+	private HorseRank parseHorseRank(String rank) {
+		if (rank == null || "ALL".equalsIgnoreCase(rank) || rank.isBlank()) {
+			return null;
+		}
+		try {
+			return HorseRank.valueOf(rank.toUpperCase());
+		} catch (IllegalArgumentException ex) {
+			throw new CardException(CustomError.INVALID_RANK_VALUE);
+		}
 	}
 
-	private int getNextCursorId(List<CardResponseDto> items, boolean hasNextPage) {
-		if (!hasNextPage || items.isEmpty()) {
-			return -1;
-		}
-		return items.get(items.size() - 1).getCardId();
+	private int getNextPageNo(int currentPageNo, boolean hasNextPage) {
+		return hasNextPage ? currentPageNo + 1 : -1;
 	}
 
 	public ResponseEntity<CommonResponse<CardRaceRecordResponseDto>> getCardRaceRecord(int userId, int cardId) {

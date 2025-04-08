@@ -38,10 +38,10 @@ public class CardController {
 	public ResponseEntity<CommonResponse<List<CardResponseDto>>> getUserCardList(
 		@RequestAttribute("userId") int userId,
 		@RequestParam(name = "rank", required = false, defaultValue = "ALL") String horseRank,
-		@RequestParam(name = "cursorId", required = false, defaultValue = "0") int cursorId,
+		@RequestParam(name = "cursorId", required = false, defaultValue = "0") int page,
 		@RequestParam(name = "limit", required = false, defaultValue = "12") int limit
 	) {
-		return cardService.getUserCardList(userId, horseRank, cursorId, limit);
+		return cardService.getUserCardList(userId, horseRank, page, limit);
 	}
 
 	@GetMapping("/{cardId}/race-record")
