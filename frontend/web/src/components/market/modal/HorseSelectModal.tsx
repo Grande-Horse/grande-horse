@@ -41,21 +41,23 @@ const HorseSelectModal: React.FC = () => {
         ) : (
           <section className='scrollbar-hide grid grid-cols-2 place-items-center gap-5 overflow-y-auto'>
             {data?.pages.flatMap((page) =>
-              page.items.map((item) => (
-                <div className='relative' key={item.cardId}>
-                  <div
-                    className='absolute top-1 z-10 flex h-66 w-44 cursor-pointer items-center justify-center rounded-sm bg-black/20'
-                    style={{
-                      opacity: selectedHorse?.cardId === item.cardId ? 1 : 0,
-                      pointerEvents: selectedHorse?.cardId === item.cardId ? 'auto' : 'none',
-                    }}
-                  >
-                    <SelectedIcon />
-                  </div>
+              page.items
+                .filter((item) => item.status === 0)
+                .map((item) => (
+                  <div className='relative' key={item.cardId}>
+                    <div
+                      className='absolute top-1 z-10 flex h-66 w-44 cursor-pointer items-center justify-center rounded-sm bg-black/20'
+                      style={{
+                        opacity: selectedHorse?.cardId === item.cardId ? 1 : 0,
+                        pointerEvents: selectedHorse?.cardId === item.cardId ? 'auto' : 'none',
+                      }}
+                    >
+                      <SelectedIcon />
+                    </div>
 
-                  <SmallHorseCard horse={item} onClick={setSelectedHorse} />
-                </div>
-              ))
+                    <SmallHorseCard horse={item} onClick={setSelectedHorse} />
+                  </div>
+                ))
             )}
           </section>
         )}

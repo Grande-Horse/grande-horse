@@ -8,9 +8,10 @@ import { ClipLoader } from 'react-spinners';
 interface CardListProps {
   rank: string;
   onClick: (horse: HorseCardType) => void;
+  type?: 'default' | 'combine';
 }
 
-const CardList: React.FC<CardListProps> = ({ rank, onClick }) => {
+const CardList: React.FC<CardListProps> = ({ rank, onClick, type = 'default' }) => {
   const { data, fetchNextPage, hasNextPage } = useGetMyHorseCards(rank);
 
   const { ref, inView } = useInView();
@@ -25,7 +26,9 @@ const CardList: React.FC<CardListProps> = ({ rank, onClick }) => {
     <>
       <section className='grid grid-cols-3 place-items-center px-1 py-2'>
         {data.pages.flatMap((page) =>
-          page.items.map((item) => <SmallHorseCard key={item.cardId} horse={item} onClick={onClick} />)
+          page.items
+            .filter((item) => type !== 'combine' || item.status === 0)
+            .map((item) => <SmallHorseCard key={item.cardId} horse={item} onClick={onClick} />)
         )}
       </section>
       {hasNextPage && (
