@@ -12,6 +12,11 @@ interface Chat {
   time: string;
 }
 
+interface RaceData {
+  isGameStarted: boolean;
+  playersInfo: RoomJoinUserData[];
+}
+
 const RacetrackRoomPage = () => {
   const navigate = useNavigate();
   const { state } = useLocation();
@@ -37,17 +42,30 @@ const RacetrackRoomPage = () => {
     const chatPath = `/topic/race_room/${roomId}/chat`;
     const usersPath = `/topic/race_room/${roomId}`;
 
-    subscribe(chatPath, (data: Chat) => {
-      if (data.sender === 'SYSTEM' && data.message === '[알림] 경주가 시작됩니다!') {
-        navigate(`/racetrack/room/${roomId}/race`, { state: { roomId }, replace: true });
+    subscribe(
+      chatPath,
+      (data: Chat) => {
+        setChatContent((prev) => {
+          return [...prev, data];
+        });
+      },
+      (error) => {
+        console.log(error);
       }
-      setChatContent((prev) => {
-        return [...prev, data];
-      });
-    });
-    subscribe(usersPath, (data: RoomJoinUserData[]) => {
-      setUsers(data);
-    });
+    );
+    subscribe(
+      usersPath,
+      (data: RaceData) => {
+        if (data.isGameStarted) {
+          navigate(`/racetrack/room/${roomId}/race`, { state: { roomId, playsers: data.playersInfo }, replace: true });
+        }
+        console.log('playersInfo', data.playersInfo);
+        setUsers(data.playersInfo);
+      },
+      (error) => {
+        console.log(error);
+      }
+    );
 
     publish(`/app/race_room/${roomId}/join`);
 

@@ -6,10 +6,26 @@ export interface RaceRecordType {
   totalPrize?: number;
 }
 
-export interface RaceResultType {
-  prize: number;
-  userName: string;
-  horseName: string;
-  coin: number;
-  time: number;
+export interface RaceUser {
+  userId: number;
+  distance: number;
 }
+
+export interface GameResult {
+  userNickname: string;
+  totalPrize: number;
+  raceRank: number;
+}
+
+export interface ProgressData {
+  type: 'progressData';
+  progress: RaceUser[];
+}
+
+export interface ResultData {
+  type: 'resultData';
+  gameResult: GameResult[];
+  roomId?: number;
+}
+
+export type GameData = ProgressData | ResultData;
