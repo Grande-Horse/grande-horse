@@ -50,7 +50,7 @@ const pastureHorseReducer = (state: PastureHorseState, action: PastureHorseActio
         if (state.candidateHorses.length >= state.maxHorses) {
           return {
             ...state,
-            error: `마당에는 최대 ${state.maxHorses}마리까지만 추가할 수 있습니다.`,
+            error: `후보 말은 ${state.maxHorses}마리까지만 추가할 수 있습니다.`,
           };
         }
 
@@ -72,7 +72,7 @@ const pastureHorseReducer = (state: PastureHorseState, action: PastureHorseActio
       if (state.candidateHorses.length >= state.maxHorses) {
         return {
           ...state,
-          error: `마당에는 최대 ${state.maxHorses}마리까지만 추가할 수 있습니다.`,
+          error: `후보 말은 ${state.maxHorses}마리까지만 추가할 수 있습니다.`,
         };
       }
 
@@ -150,7 +150,7 @@ export const PastureHorseContextProvider = ({ children }: { children: ReactNode 
     if (state.candidateHorses.length >= state.maxHorses) {
       dispatch({
         type: 'SET_ERROR',
-        payload: `마당에는 최대 ${state.maxHorses}마리까지만 추가할 수 있습니다.`,
+        payload: `후보 말은 ${state.maxHorses}마리까지만 추가할 수 있습니다.`,
       });
       return;
     }

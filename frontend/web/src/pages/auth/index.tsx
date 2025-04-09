@@ -45,7 +45,7 @@ const AuthPage = () => {
       } catch (error) {
         console.error('OAuth 로그인 실패:', error);
         setError('로그인 처리 중 오류가 발생했습니다');
-        navigate('/');
+        navigate('/landing');
       } finally {
         setLoading(false);
       }
