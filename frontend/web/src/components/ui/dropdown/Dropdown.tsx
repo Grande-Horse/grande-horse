@@ -2,7 +2,6 @@ import { useState } from 'react';
 import DownArrowIcon from '@/assets/icons/downArrowIcon.svg?react';
 import DropdownList from '@/components/ui/dropdown/DropdownList';
 import useClickOutsideRef from '@/hooks/useClickOutsideRef';
-import { rankMap } from '@/constants/rank';
 
 interface DropdownProps {
   options: readonly string[];

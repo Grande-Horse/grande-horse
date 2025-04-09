@@ -1,4 +1,4 @@
-import { HorseType } from '@/types/horse';
+import { HorseCardType } from '@/types/card';
 
 export interface PriceHistoryType {
   date: string;
@@ -7,7 +7,7 @@ export interface PriceHistoryType {
   lowestPrice: number;
 }
 
-export interface TradingItemType extends HorseType {
+export interface TradingItemType extends HorseCardType {
   tradeId: number;
   price: number;
 }

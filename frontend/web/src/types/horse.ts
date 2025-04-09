@@ -28,6 +28,7 @@ export interface PastureHorseStatusType {
 }
 
 export interface PastureHorsePropsType {
+  horse: HorseType;
   position: PastureHorsePositionType;
   direction: string;
   status: PastureHorseStatusType;
@@ -37,3 +38,18 @@ export interface PastureHorsePropsType {
     y: number;
   };
 }
+
+
+export interface CandidateHorseType {
+  cardId: number;
+  horseId: string;
+  status: number;
+  coatColor: CoatColorType;
+  name: string;
+  horseRank: RankType;
+  weight: number;
+  speed: number;
+  acceleration: number;
+  stamina: number;
+}
+

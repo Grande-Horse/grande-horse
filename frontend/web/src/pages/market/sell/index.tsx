@@ -1,28 +1,47 @@
 import HorseProfileCard from '@/components/cards/HorseProfileCard';
 import CoinIcon from '@/assets/icons/coinIcon.svg?react';
 import { Button } from '@/components/ui/Button';
-import { useState } from 'react';
-import { HorseType } from '@/types/horse';
-import { horseMockData } from '@/mocks/datas/horse';
 import { sellHorse } from '@/services/trading';
 import Tabs from '@/components/ui/Tabs';
 import { sellTabList } from '@/constants/tabList';
-import { useParams } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import TradeListPanel from '@/components/market/panels/TradeListPanel';
 import PriceHistoryPanel from '@/components/market/panels/PriceHistoryPanel';
+import { useState } from 'react';
+import { HorseCardType } from '@/types/card';
+import Input from '@/components/ui/Input';
+import useInternalRouter from '@/hooks/useInternalRouter';
 
 const SellPage: React.FC = () => {
-  const { horseId } = useParams<{ horseId: string }>();
+  const location = useLocation();
+  const state = location.state;
 
-  // TODO: 해당 말 카드의 정보 불러오기
-  const [horse] = useState<HorseType>(horseMockData);
+  const [horse] = useState<HorseCardType>(state);
+  const [price, setPrice] = useState<number>();
+
+  const { replace } = useInternalRouter();
+
+  const handlePriceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setPrice(Number(e.target.value));
+  };
 
   const handleSellHorse = async () => {
+    if (!price || price <= 0) {
+      alert('판매 가격은 0원 이상입니다.');
+      return;
+    }
+
+    if (price % 10 !== 0) {
+      alert('판매 가격은 10원 단위입니다.');
+      return;
+    }
+
     try {
       await sellHorse({
-        cardId: 2,
-        price: 500,
+        cardId: Number(horse.cardId),
+        price: price,
       });
+      replace('/market#1');
     } catch (error) {
       console.error(error);
     }
@@ -35,13 +54,15 @@ const SellPage: React.FC = () => {
           <HorseProfileCard name={horse.name} rank={horse.horseRank} coatColor={horse.coatColor} />
         </div>
 
-        <div className='bg-gradient mr-8 flex grow flex-col items-center justify-between rounded-sm p-2'>
-          <Price label='평균가' price={300} />
-          <Price label='최저가' price={200} />
-          <Price label='최고가' price={400} />
+        <div className='bg-gradient mr-8 flex grow flex-col items-center justify-between rounded-sm p-4'>
+          <p className='text-stroke'>판매 가격을 설정해 주세요!</p>
+          <div className='flex w-full grow items-center justify-center gap-5 px-4'>
+            <CoinIcon width={18} />
+            <Input value={price} onChange={handlePriceChange} type='number' />
+          </div>
 
-          <div className='flex w-full justify-center gap-5 p-2'>
-            <Button onClick={handleSellHorse} className='w-full'>
+          <div className='flex w-full justify-center gap-5'>
+            <Button onClick={handleSellHorse} className='px-12'>
               판매하기
             </Button>
           </div>
@@ -50,27 +71,10 @@ const SellPage: React.FC = () => {
 
       <Tabs
         tabList={sellTabList}
-        tabPanels={[<PriceHistoryPanel horseId={horse.horseId} />, <TradeListPanel horseId={horse.id} />]}
+        tabPanels={[<PriceHistoryPanel horseId={horse.horseId} />, <TradeListPanel horseId={horse.horseId} />]}
       />
     </div>
   );
 };
 
 export default SellPage;
-
-interface PriceProps {
-  label: string;
-  price: number;
-}
-
-const Price: React.FC<PriceProps> = ({ label, price }) => {
-  return (
-    <div className='-mt-1 flex w-full items-center justify-between gap-2 px-4'>
-      <p className='text-stroke'>{label}</p>
-      <span className='flex items-center gap-2'>
-        <CoinIcon width={18} />
-        <p>{price}</p>
-      </span>
-    </div>
-  );
-};

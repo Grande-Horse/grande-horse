@@ -1,13 +1,14 @@
 import { HorseCardType } from '@/types/card';
-import { useRef, useState } from 'react';
+
+import { useRef, useState, useEffect } from 'react';
 import Horse from '@/components/pasture/Horse';
 import HorseInfoPanel from '@/components/pasture/HorseInfoPanel';
-import { useHorseContext } from '@/contexts/pastureHorseContext';
+import { usePastureHorse } from '@/contexts/PastureHorseContextProvider';
 import useUserInfo from '@/hooks/useQueries/useUserInfo';
 
 const HomePage: React.FC = () => {
-  const { horseList } = useHorseContext();
   const [selectedHorse, setSelectedHorse] = useState<HorseCardType | null>(null);
+  const { dispatch, state } = usePastureHorse();
 
   useUserInfo();
 
@@ -18,11 +19,13 @@ const HomePage: React.FC = () => {
     setSelectedHorse((prev) => {
       if (prev?.cardId === horse.cardId) {
         if (horseSoundRef2.current) {
+          horseSoundRef2.current.volume = 0.3;
           horseSoundRef2.current.play();
         }
         return null;
       } else {
         if (horseSoundRef.current) {
+          horseSoundRef.current.volume = 0.3;
           horseSoundRef.current.play();
         }
         return horse;
@@ -30,10 +33,17 @@ const HomePage: React.FC = () => {
     });
   };
 
+  // 페이지 변경 시 selectedHorse 초기화
+  useEffect(() => {
+    return () => {
+      dispatch({ type: 'SELECT_HORSE', payload: null });
+    };
+  }, []);
+
   return (
     <div className='h-body relative flex w-full items-center justify-center'>
       <div className='w-base fixed top-0 h-screen bg-[url(@/assets/images/backgrounds/pastureBg.png)] bg-cover bg-left bg-no-repeat'></div>
-      {horseList.map((horse) => (
+      {state.candidateHorses.map((horse) => (
         <Horse
           key={horse.cardId}
           horseCard={horse}

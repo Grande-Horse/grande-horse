@@ -1,5 +1,5 @@
 import { CURSOR_LIMIT } from '@/constants/service';
-import { horseCardListMockData, horseCardMockData } from '@/mocks/datas/horse';
+import { horseCardListMockDataV2 } from '@/mocks/datas/horse';
 import { raceRecordMockData } from '@/mocks/datas/race';
 import { HorseCardType } from '@/types/card';
 import { RaceRecordType } from '@/types/race';

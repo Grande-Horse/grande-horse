@@ -27,7 +27,7 @@ const CoinPanel: React.FC = () => {
         </div>
       </div>
 
-      <div className='flex gap-8 px-8 py-6'>
+      {/* <div className='flex gap-8 px-8 py-6'>
         <div className='bg-primary flex h-40 w-40 rounded-sm'>
           <CoinFootIcon width={60} className='translate-x-11 translate-y-9' />
         </div>
@@ -36,7 +36,7 @@ const CoinPanel: React.FC = () => {
           <p className='text-stroke'>1000걸음</p>
           <Button className='self-end px-12'>교환</Button>
         </div>
-      </div>
+      </div> */}
 
       <div className='flex gap-8 px-8 py-6'>
         <div className='bg-primary flex h-40 w-40 rounded-sm'>
