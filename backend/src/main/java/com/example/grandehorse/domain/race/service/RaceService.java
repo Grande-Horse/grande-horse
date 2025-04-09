@@ -369,8 +369,6 @@ public class RaceService {
             );
 
             sendRaceProgress(roomId, raceProgresses);
-            sendRaceResult(roomId, gameResults);
-            broadcastRaceRooms();
 
             for (Object idObj : playerIds) {
                 int currentUserId = Integer.parseInt(idObj.toString());
@@ -380,6 +378,9 @@ public class RaceService {
             }
             websocketRedisTemplate.delete("queue:playGame:" + roomId);
             websocketRedisTemplate.opsForHash().put(roomKey, "start", "false");
+
+            sendRaceResult(roomId, gameResults);
+            broadcastRaceRooms();
 
             Thread worker = roomQueueWorkers.get(roomId);
             if (worker != null) {
