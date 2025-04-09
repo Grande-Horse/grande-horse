@@ -20,7 +20,7 @@ const FlipCard = ({
         position: isFlipped ? 'fixed' : 'absolute',
         top: isFlipped ? '50%' : '85%',
         left: isFlipped ? '50%' : `${index * 10}rem`,
-        transform: isFlipped ? 'translate(-50%, -70%) scale(0.9) rotateY(180deg)' : 'translate(-50%, -50%) scale(0.3)',
+        transform: isFlipped ? 'translate(-50%, -70%) scale(0.9) rotateY(180deg)' : 'translate(-35%, -50%) scale(0.3)',
         zIndex: isFlipped ? 50 : 10,
       }}
     >

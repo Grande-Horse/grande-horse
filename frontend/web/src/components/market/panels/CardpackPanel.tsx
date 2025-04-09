@@ -29,16 +29,29 @@ const CardpackPanel: React.FC = () => {
     },
   });
 
+  const dailyMutation = useMutation({
+    mutationFn: () => buyDailyCardpack(),
+    onSuccess: (data) => {
+      queryClient.refetchQueries({ queryKey: [queryKey.COIN] });
+      push('/market/card/result', { state: { data } });
+    },
+    onError: (error) => {
+      if (error.response?.data.errorCode === 'PC6') {
+        alert('오늘의 말 6장 획득 횟수를 초과했습니다.');
+      }
+    },
+  });
+
   const handleBuyButtonClick = async (cardpackId: number, price: number) => {
     if (data!.coin < price) {
       alert('코인이 부족합니다 T-T');
+      return;
     }
     await mutation.mutateAsync(cardpackId);
   };
 
   const handleDailyCardpackButtonClick = async () => {
-    const result = await buyDailyCardpack();
-    push('/market/card/result', result);
+    await dailyMutation.mutateAsync();
   };
 
   return (
