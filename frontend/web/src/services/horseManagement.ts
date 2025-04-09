@@ -52,6 +52,8 @@ export const useUpdateCandidateHorse = () => {
       const serverError = error.response?.data;
       if (serverError?.errorCode === 'CA5') {
         alert('경주마는 후보 말에서 해제할 수 없습니다.');
+      } else if (serverError?.errorCode === 'CA6') {
+        alert('후보 말은 6마리까지만 추가할 수 있습니다.');
       } else {
         alert(serverError?.message || '알 수 없는 오류가 발생했습니다.');
       }
