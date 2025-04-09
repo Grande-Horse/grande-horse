@@ -348,7 +348,7 @@ public class RaceService {
 			distanceMap.put(currentUserId, distance);
 		}
 
-		boolean isRaceFinished = distanceMap.values().stream().anyMatch(d -> d >= 1000.0);
+		boolean isRaceFinished = distanceMap.values().stream().anyMatch(d -> d >= 1900.0);
 		if (isRaceFinished) {
 			int playerCount = playerIds.size();
 			int bettingCoin = Integer.parseInt(
@@ -369,8 +369,16 @@ public class RaceService {
 				.orElse(-1)
 			);
 
+			for (Object idObj : playerIds) {
+				int currentUserId = Integer.parseInt(idObj.toString());
+				String userKey = roomKey + ":user:" + currentUserId;
+				websocketRedisTemplate.opsForHash().put(userKey, "isReady", "false");
+			}
+			websocketRedisTemplate.delete("queue:playGame:" + roomId);
+			websocketRedisTemplate.opsForHash().put(roomKey, "start", "false");
 			sendRaceProgress(roomId, raceProgresses);
 			sendRaceResult(roomId, gameResults);
+			broadcastRaceRooms();
 
 			Thread worker = roomQueueWorkers.get(roomId);
 			if (worker != null) {
@@ -381,29 +389,6 @@ public class RaceService {
 		}
 
 		sendRaceProgress(roomId, raceProgresses);
-	}
-
-	public void checkCoin(Long roomId) {
-		String roomKey = RACE_ROOM_PREFIX + roomId;
-		List<Object> playerIds = websocketRedisTemplate.opsForList().range(roomKey + ":players", 0, -1);
-
-		int bettingCoin = Integer.parseInt(
-			websocketRedisTemplate.opsForHash().get(roomKey, "bettingCoin").toString()
-		);
-
-		List<PlayerCoin> playerCoins = playerIds.stream()
-			.map(id -> Integer.parseInt(id.toString()))
-			.map(userId -> {
-				int coin = userService.findUserById(userId).getCoin();
-				if (coin < bettingCoin) {
-					return new PlayerCoin(userId, false);
-				}
-
-				return new PlayerCoin(userId, true);
-			})
-			.collect(Collectors.toList());
-
-		messagingTemplate.convertAndSend("/topic/race_room/" + roomId, playerCoins);
 	}
 
 	private List<RaceRoom> getRaceRooms() {
@@ -685,6 +670,8 @@ public class RaceService {
 		String roomKey = RACE_ROOM_PREFIX + roomId;
 		response.put("type", "resultData");
 		response.put("roomId", roomId);
+		response.put("roomName", websocketRedisTemplate.opsForHash().get(roomKey, "roomName").toString());
+		response.put("maxPlayers", websocketRedisTemplate.opsForHash().get(roomKey, "maxPlayers").toString());
 		response.put("gameResult", gameResults);
 		List<Object> playerIds = websocketRedisTemplate.opsForList().range(roomKey + ":players", 0, -1);
 		List<PlayerInfo> playersInfo = playerIds.stream()
