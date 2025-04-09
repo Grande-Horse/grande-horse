@@ -18,7 +18,7 @@ const PurchasePanel: React.FC = () => {
   const [keyword, setKeyword] = useState<string>('');
   const [search, setSearch] = useState<string>('');
 
-  const { data, fetchNextPage, hasNextPage } = useGetAllHorseTrading(rank, search);
+  const { data: tradingList, fetchNextPage, hasNextPage } = useGetAllHorseTrading(rank, search);
 
   const [priceHistory, setPriceHistory] = useState<PriceHistoryType[]>([]);
   const [selectedHorse, setSelectedHorse] = useState<string>('');
@@ -100,7 +100,7 @@ const PurchasePanel: React.FC = () => {
       </div>
 
       <section className='divide-y-1 divide-black'>
-        {data?.pages.flatMap((page) =>
+        {tradingList?.pages.flatMap((page) =>
           page.items.map((item) => (
             <PurchaseItem
               key={item.tradeId}

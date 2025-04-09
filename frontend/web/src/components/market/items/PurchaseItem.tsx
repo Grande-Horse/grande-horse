@@ -5,8 +5,9 @@ import StatBar from '@/components/charts/StatBar';
 import { purchaseHorse } from '@/services/trading';
 import { RegisteredItemType } from '@/types/trading';
 import DotHorseCard from '@/components/cards/DotHorseCard';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { queryKey } from '@/constants/queryKey';
+import { getMyCoin } from '@/services/coin';
 
 interface PurchaseItemProps {
   item: RegisteredItemType;
@@ -21,6 +22,11 @@ const PurchaseItem: React.FC<PurchaseItemProps> = ({
 }) => {
   const queryClient = useQueryClient();
 
+  const { data } = useQuery({
+    queryKey: [queryKey.COIN],
+    queryFn: getMyCoin,
+  });
+
   const mutation = useMutation({
     mutationFn: () => purchaseHorse(tradeId),
     onSuccess: () => {
@@ -29,7 +35,10 @@ const PurchaseItem: React.FC<PurchaseItemProps> = ({
     },
   });
 
-  const handlePurchaseHorse = () => {
+  const handlePurchaseHorse = (price: number) => {
+    if (data!.coin < price) {
+      alert('코인이 부족합니다 T-T');
+    }
     mutation.mutate();
   };
 
@@ -62,7 +71,7 @@ const PurchaseItem: React.FC<PurchaseItemProps> = ({
           ) : (
             <Button onClick={onPriceHistoryClick}>변동 시세 보기</Button>
           )}
-          <Button onClick={handlePurchaseHorse}>구매하기</Button>
+          <Button onClick={() => handlePurchaseHorse(price)}>구매하기</Button>
         </div>
       </div>
     </div>
