@@ -50,10 +50,10 @@ pipeline {
                 withCredentials([usernamePassword(credentialsId: 'DockerHub_Login', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
                     sh """
                         echo \$DOCKER_PASS | docker login -u \$DOCKER_USER --password-stdin
-                        docker build -t imkm/grandehorse:backend-latest ./backend
+                        docker build --no-cache -t imkm/grandehorse:backend-latest ./backend
                         docker push imkm/grandehorse:backend-latest
 
-                        docker build -t imkm/grandehorse:frontend-latest ./frontend/web
+                        docker build --no-cache -t imkm/grandehorse:frontend-latest ./frontend/web
                         docker push imkm/grandehorse:frontend-latest
 
                         docker logout
@@ -67,7 +67,8 @@ pipeline {
                 script {
                     sh 'chmod +x ./backend/gradlew'
                     sh 'docker-compose -f docker-compose.yml down || true'
-                    sh 'docker-compose -f docker-compose.yml up -d --build --remove-orphans'
+                    sh 'docker-compose -f docker-compose.yml build --no-cache'
+                    sh 'docker-compose -f docker-compose.yml up -d --remove-orphans'
                 }
             }
         }
