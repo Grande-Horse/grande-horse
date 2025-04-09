@@ -126,10 +126,8 @@ public class CardService {
 		cardRecordJpaRepository.save(cardRecord);
 	}
 
-	public ResponseEntity<CommonResponse<List<CardResponseDto>>> getRaceCards(int userId) {
-		List<CardResponseDto> raceHorseCards = cardJpaRepository.findRaceCards(userId, List.of((byte)2, (byte)3));
-
-		return CommonResponse.listSuccess(raceHorseCards);
+	public List<CardResponseDto> getRaceCards(int userId) {
+		return cardJpaRepository.findRaceCards(userId, List.of((byte)2, (byte)3));
 	}
 
 	/**

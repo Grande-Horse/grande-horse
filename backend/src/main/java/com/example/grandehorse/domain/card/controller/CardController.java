@@ -31,7 +31,8 @@ public class CardController {
 	public ResponseEntity<CommonResponse<List<CardResponseDto>>> getRaceCards(
 		@RequestAttribute("userId") int userId
 	) {
-		return cardService.getRaceCards(userId);
+		List<CardResponseDto> raceHorseCards = cardService.getRaceCards(userId);
+		return CommonResponse.listSuccess(raceHorseCards);
 	}
 
 	@GetMapping
