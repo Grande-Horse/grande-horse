@@ -66,7 +66,7 @@ const CardpackPanel: React.FC = () => {
               <p>100</p>
             </span>
           </div>
-          <p className='text-stroke'>노멀 등급 이상의 말 획득</p>
+          <p className='text-stroke'>노멀 등급 이하의 말 획득</p>
           <Button onClick={() => handleBuyButtonClick(2)} className='self-end px-12'>
             구매
           </Button>
@@ -88,7 +88,7 @@ const CardpackPanel: React.FC = () => {
               <p>300</p>
             </span>
           </div>
-          <p className='text-stroke'>레어 등급 이상의 말 획득</p>
+          <p className='text-stroke'>레어 등급 이하의 말 획득</p>
           <Button onClick={() => handleBuyButtonClick(3)} className='self-end px-12'>
             구매
           </Button>
@@ -110,7 +110,7 @@ const CardpackPanel: React.FC = () => {
               <p>500</p>
             </span>
           </div>
-          <p className='text-stroke'>에픽 등급 이상의 말 획득</p>
+          <p className='text-stroke'>에픽 등급 이하의 말 획득</p>
           <Button onClick={() => handleBuyButtonClick(4)} className='self-end px-12'>
             구매
           </Button>
@@ -132,7 +132,7 @@ const CardpackPanel: React.FC = () => {
               <p>1000</p>
             </span>
           </div>
-          <p className='text-stroke'>유니크 등급 이상의 말 획득</p>
+          <p className='text-stroke'>유니크 등급 이하의 말 획득</p>
           <Button onClick={() => handleBuyButtonClick(5)} className='self-end px-12'>
             구매
           </Button>
