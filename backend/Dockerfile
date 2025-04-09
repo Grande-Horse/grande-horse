@@ -1,5 +1,9 @@
 FROM openjdk:17-jdk-alpine
 
+RUN apk add --no-cache tzdata
+
+ENV TZ=Asia/Seoul
+
 WORKDIR /app
 
 COPY . .
