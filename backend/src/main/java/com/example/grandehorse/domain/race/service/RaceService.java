@@ -32,7 +32,6 @@ import com.example.grandehorse.domain.horse.service.HorseService;
 import com.example.grandehorse.domain.race.controller.request.CreateRaceRoomRequest;
 import com.example.grandehorse.domain.race.controller.response.ChatMessage;
 import com.example.grandehorse.domain.race.controller.response.GameResult;
-import com.example.grandehorse.domain.race.controller.response.PlayerCoin;
 import com.example.grandehorse.domain.race.controller.response.PlayerInfo;
 import com.example.grandehorse.domain.race.controller.response.PlayerRaceProgress;
 import com.example.grandehorse.domain.race.controller.response.RaceRoom;
@@ -373,6 +372,7 @@ public class RaceService {
 				int currentUserId = Integer.parseInt(idObj.toString());
 				String userKey = roomKey + ":user:" + currentUserId;
 				websocketRedisTemplate.opsForHash().put(userKey, "isReady", "false");
+				websocketRedisTemplate.opsForHash().put(userKey, "distance", "0.0");
 			}
 			websocketRedisTemplate.delete("queue:playGame:" + roomId);
 			websocketRedisTemplate.opsForHash().put(roomKey, "start", "false");
