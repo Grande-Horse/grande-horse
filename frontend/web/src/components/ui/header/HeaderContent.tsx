@@ -34,10 +34,6 @@ const DefaultContent: React.FC<DefaultContentProps> = ({ coin, foot }) => {
           <CoinIcon />
           <p className='text-stroke'>{coin.toLocaleString()}</p>
         </div>
-        <div className='flex items-center justify-center gap-3'>
-          <FootIcon />
-          <p className='text-stroke'>{foot.toLocaleString()}</p>
-        </div>
 
         <div onClick={togglePlay} className='flex items-center justify-center gap-3'>
           <SoundIcon className='cursor-pointer' />
@@ -89,10 +85,6 @@ const RaceTrackContent: React.FC<DefaultContentProps> = ({ coin, foot }) => {
         <div className='flex items-center justify-center gap-3'>
           <CoinIcon />
           <p className='text-stroke'>{coin.toLocaleString()}</p>
-        </div>
-        <div className='flex items-center justify-center gap-3'>
-          <FootIcon />
-          <p className='text-stroke'>{foot.toLocaleString()}</p>
         </div>
       </div>
     </>

@@ -5,6 +5,8 @@ import StatBar from '@/components/charts/StatBar';
 import { purchaseHorse } from '@/services/trading';
 import { RegisteredItemType } from '@/types/trading';
 import DotHorseCard from '@/components/cards/DotHorseCard';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { queryKey } from '@/constants/queryKey';
 
 interface PurchaseItemProps {
   item: RegisteredItemType;
@@ -17,12 +19,18 @@ const PurchaseItem: React.FC<PurchaseItemProps> = ({
   isPriceHistoryOpen = false,
   onPriceHistoryClick,
 }) => {
-  const handlePurchaseHorse = async () => {
-    try {
-      await purchaseHorse(tradeId);
-    } catch (error) {
-      console.error(error);
-    }
+  const queryClient = useQueryClient();
+
+  const mutation = useMutation({
+    mutationFn: () => purchaseHorse(tradeId),
+    onSuccess: () => {
+      queryClient.refetchQueries({ queryKey: [queryKey.TRADING] });
+      alert('구매 완료하였습니다.');
+    },
+  });
+
+  const handlePurchaseHorse = () => {
+    mutation.mutate();
   };
 
   return (
