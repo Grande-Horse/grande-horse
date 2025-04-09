@@ -56,7 +56,7 @@ const HomePage: React.FC = () => {
         />
       ))}
 
-      {selectedHorse && <HorseInfoPanel selectedHorse={selectedHorse} />}
+      {selectedHorse && <HorseInfoPanel selectedHorse={selectedHorse} setSelectedHorse={setSelectedHorse} />}
 
       <audio ref={horseSoundRef} src='/music/horse.mp3' />
       <audio ref={horseSoundRef2} src='/music/horse2.mp3' />
