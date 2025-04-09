@@ -47,14 +47,22 @@ const Race: React.FC<RaceProps> = ({ user, info, players }) => {
   }, []);
 
   useEffect(() => {
-    const interval = setInterval(() => {
+    let animationFrameId: number;
+
+    const updateCamera = () => {
       setCameraX((prev) => {
         const delta = targetX - prev;
-        return Math.abs(delta) < 1 ? targetX : prev + delta * 0.1;
+        const next = Math.abs(delta) < 1 ? targetX : prev + delta * 0.1;
+        if (next !== targetX) {
+          animationFrameId = requestAnimationFrame(updateCamera);
+        }
+        return next;
       });
-    }, 50);
+    };
 
-    return () => clearInterval(interval);
+    animationFrameId = requestAnimationFrame(updateCamera);
+
+    return () => cancelAnimationFrame(animationFrameId);
   }, [targetX]);
 
   return (
@@ -75,7 +83,7 @@ const Race: React.FC<RaceProps> = ({ user, info, players }) => {
           className='absolute top-0 left-0 flex h-full min-w-[2000px] flex-col items-center justify-evenly'
           style={{
             transform: `translateX(${cameraX}px)`,
-            transition: 'transform 1s ease-out',
+            transition: 'transform 0.3s ease-out',
           }}
         >
           {players.map((player, idx) => {
