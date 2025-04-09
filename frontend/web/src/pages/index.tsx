@@ -4,7 +4,6 @@ import { useRef, useState, useEffect } from 'react';
 import Horse from '@/components/pasture/Horse';
 import HorseInfoPanel from '@/components/pasture/HorseInfoPanel';
 import { usePastureHorse } from '@/contexts/PastureHorseContextProvider';
-import { useHorseContext } from '@/contexts/pastureHorseContext';
 import useUserInfo from '@/hooks/useQueries/useUserInfo';
 
 const HomePage: React.FC = () => {

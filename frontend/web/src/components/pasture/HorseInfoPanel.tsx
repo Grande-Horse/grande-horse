@@ -28,7 +28,7 @@ const HorseInfoPanel: React.FC<HorseInfoPanelProps> = ({ selectedHorse }) => {
   return (
     <section className='bg-background absolute top-0 flex w-10/11 flex-col items-center justify-center rounded-sm py-5 pr-7 pl-3 inset-shadow-sm inset-shadow-white/30'>
       <div className='flex w-full'>
-        <div className='w-54 shrink-1 self-start'>
+        <div className='shrink-1 self-start'>
           <HorseProfileCard
             name={selectedHorse.name}
             rank={selectedHorse.horseRank}
@@ -36,8 +36,8 @@ const HorseInfoPanel: React.FC<HorseInfoPanelProps> = ({ selectedHorse }) => {
           />
         </div>
 
-        <div className='bg-gradient ml-6 flex flex-2 items-center rounded-sm p-2'>
-          <ul className='flex w-full flex-col justify-center pr-3 pl-2'>
+        <div className='bg-gradient flex flex-2 items-center rounded-sm p-2'>
+          <ul className='flex w-full flex-col justify-center truncate pr-3 pl-2'>
             {horseStats.map((stat) => (
               <li key={stat.label} className='flex flex-1 items-center justify-between'>
                 <div className='flex items-center'>
@@ -52,8 +52,8 @@ const HorseInfoPanel: React.FC<HorseInfoPanelProps> = ({ selectedHorse }) => {
       </div>
 
       <div className='mt-4 flex w-full gap-5 pl-4'>
-        <Button className='flex-1'>출전마로 설정</Button>
-        <Button className='flex-1'>마구간으로 이동</Button>
+        <Button className='flex-1'>경주마로 지정</Button>
+        <Button className='flex-1'>목장에서 제거</Button>
       </div>
     </section>
   );

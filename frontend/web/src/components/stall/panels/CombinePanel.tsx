@@ -97,7 +97,7 @@ const CombinePanel: React.FC = () => {
 
       <ErrorBoundary renderFallback={(error) => <Error errorMessage={error?.message} />}>
         <Suspense fallback={<Loading />}>
-          <CardList rank={rankNameMap[rank as keyof typeof rankNameMap]} onClick={handleAddCard} />
+          <CardList type='combine' rank={rankNameMap[rank as keyof typeof rankNameMap]} onClick={handleAddCard} />
         </Suspense>
       </ErrorBoundary>
     </div>

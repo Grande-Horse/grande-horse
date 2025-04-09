@@ -5,7 +5,7 @@ import useInfiniteScroll from '@/hooks/useQueries/useInfiniteScroll';
 import { queryKey } from '@/constants/queryKey';
 import { getMyHorseTrading } from '@/services/trading';
 import { ClipLoader } from 'react-spinners';
-import HorseSelectModalContent from '@/components/market/modal/HorseSelectModalContent';
+import HorseSelectModal from '@/components/market/modal/HorseSelectModal';
 import { useDialog } from '@/contexts/confirmDialogContext';
 
 const SellPanel: React.FC = () => {
@@ -15,7 +15,7 @@ const SellPanel: React.FC = () => {
 
   return (
     <div className='flex h-full flex-col divide-y divide-black'>
-      {isOpen && <HorseSelectModalContent />}
+      {isOpen && <HorseSelectModal />}
 
       <section className='flex h-1/3 shrink-0 flex-col items-center justify-center gap-4'>
         <HorseDealIcon />
