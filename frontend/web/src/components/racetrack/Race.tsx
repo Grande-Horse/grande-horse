@@ -14,10 +14,9 @@ interface RaceProps {
   info: RaceUser[];
   user: UserInfoData | undefined | null;
   players: RoomJoinUserData[];
-  isRunning: ('run' | 'idle')[];
 }
 
-const Race: React.FC<RaceProps> = ({ user, info, players, isRunning }) => {
+const Race: React.FC<RaceProps> = ({ user, info, players }) => {
   const MAX_DISTANCE = 2000;
   const TRACK_WIDTH = 2000;
 
@@ -108,7 +107,7 @@ const Race: React.FC<RaceProps> = ({ user, info, players, isRunning }) => {
                       <div className='triangle-down'></div>
                     </div>
                   )}
-                  <Horse color={player.horseColor} direction='right' state={isRunning[idx]} />
+                  <Horse color={player.horseColor} direction='right' state={'run'} />
                 </div>
               </div>
             );
