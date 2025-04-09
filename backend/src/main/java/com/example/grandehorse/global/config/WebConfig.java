@@ -39,4 +39,9 @@ public class WebConfig implements WebMvcConfigurer {
 			.allowCredentials(true)
 			.maxAge(3600);
 	}
+
+	@Bean
+    public Jackson2ObjectMapperBuilderCustomizer jacksonTimeZoneCustomizer() {
+        return builder -> builder.timeZone(TimeZone.getTimeZone("Asia/Seoul"));
+    }
 }
