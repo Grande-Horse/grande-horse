@@ -14,6 +14,7 @@ import com.example.grandehorse.domain.card.controller.response.CardResponseDto;
 import com.example.grandehorse.domain.card.service.CardService;
 import com.example.grandehorse.domain.user.controller.request.SignUpDto;
 import com.example.grandehorse.domain.user.controller.response.CoinResponse;
+import com.example.grandehorse.domain.user.controller.response.SignInfoResponse;
 import com.example.grandehorse.domain.user.controller.response.UserInfoResponse;
 import com.example.grandehorse.domain.user.entity.SocialProvider;
 import com.example.grandehorse.domain.user.entity.UserEntity;
@@ -75,7 +76,7 @@ public class UserService {
 	}
 
 	@Transactional
-	public ResponseEntity<CommonResponse<Void>> processSocialSignUp(SignUpDto signUpDto, String socialToken,
+	public ResponseEntity<CommonResponse<SignInfoResponse>> processSocialSignUp(SignUpDto signUpDto, String socialToken,
 		HttpServletResponse response) {
 		validateSocialToken(socialToken);
 
@@ -99,7 +100,7 @@ public class UserService {
 
 		userJpaRepository.save(userEntity);
 		CookieUtil.deleteCookie(response, SOCIAL_TOKEN);
-		return CommonResponse.success(null);
+		return CommonResponse.success(SignInfoResponse.success());
 	}
 
 	private void validateSocialToken(String socialToken) {
