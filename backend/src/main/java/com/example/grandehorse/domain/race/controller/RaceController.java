@@ -118,11 +118,4 @@ public class RaceController {
 		int userId = (int)sessionAttributes.get("userId");
 		raceService.requestPlayGame(roomId, userId);
 	}
-
-	@MessageMapping("/race_room/{roomId}/coin")
-	public void checkCoin(
-		@DestinationVariable Long roomId
-	) {
-		raceService.checkCoin(roomId);
-	}
 }
