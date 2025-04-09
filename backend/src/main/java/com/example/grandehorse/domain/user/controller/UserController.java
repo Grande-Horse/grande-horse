@@ -1,5 +1,6 @@
 package com.example.grandehorse.domain.user.controller;
 
+import com.example.grandehorse.domain.user.controller.response.SignInfoResponse;
 import com.example.grandehorse.domain.user.controller.response.UserInfoResponse;
 
 import jakarta.servlet.http.HttpServletResponse;
@@ -28,7 +29,7 @@ public class UserController {
 	}
 
 	@PostMapping("")
-	public ResponseEntity<CommonResponse<Void>> signUp(
+	public ResponseEntity<CommonResponse<SignInfoResponse>> signUp(
 		@RequestBody SignUpDto signUpDto,
 		@CookieValue(value = "socialToken", required = false) String socialToken,
 		HttpServletResponse response
