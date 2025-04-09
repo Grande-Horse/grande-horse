@@ -18,6 +18,8 @@ const StatPanel: React.FC = () => {
   const [rank, setRank] = useState<string>('');
   const [selectedHorse, setSelectedHorse] = useState<HorseCardType>();
 
+  const [index, setIndex] = useState<number>(0);
+
   const handleCardClick = (horse: HorseCardType) => {
     setSelectedHorse(horse);
   };
@@ -37,8 +39,8 @@ const StatPanel: React.FC = () => {
   return (
     <div className='flex h-full flex-col divide-y divide-black'>
       {selectedHorse ? (
-        <section className='flex gap-4 py-5'>
-          <div className='flex-1'>
+        <section className='flex w-full justify-center gap-4 py-5'>
+          <div className='h-54 flex-1'>
             <HorseProfileCard
               name={selectedHorse.name}
               rank={selectedHorse.horseRank}
@@ -46,26 +48,41 @@ const StatPanel: React.FC = () => {
             />
           </div>
 
-          <div className='bg-gradient mr-8 flex flex-2 items-center rounded-sm p-2'>
-            <ErrorBoundary renderFallback={(error) => <Error errorMessage={error?.message} />}>
-              <Suspense fallback={<Loading />}>
-                <div className='m-auto w-7/8'>
-                  <RaceRecordChart cardId={selectedHorse.cardId} />
-                </div>
-              </Suspense>
-            </ErrorBoundary>
+          <div className='mr-8 flex-2'>
+            <div className='bg-gradient flex h-54 items-center rounded-sm p-2'>
+              {index === 1 ? (
+                <ErrorBoundary renderFallback={(error) => <Error errorMessage={error?.message} />}>
+                  <Suspense fallback={<Loading />}>
+                    <div className='m-auto w-7/8'>
+                      <RaceRecordChart cardId={selectedHorse.cardId} />
+                    </div>
+                  </Suspense>
+                </ErrorBoundary>
+              ) : (
+                <ul className='flex h-full w-full flex-col justify-center pr-3 pl-2'>
+                  {horseStats.map((stat) => (
+                    <li key={stat.label} className='flex flex-1 items-center justify-between'>
+                      <div className='flex items-center'>
+                        <span>{stat.icon}</span>
+                        <p className='text-black'>{stat.label}</p>
+                      </div>
+                      <p className='text-stroke'>{stat.value}</p>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
 
-            {/* <ul className='flex h-full w-full flex-col justify-center pr-3 pl-2'>
-              {horseStats.map((stat) => (
-                <li key={stat.label} className='flex flex-1 items-center justify-between'>
-                  <div className='flex items-center'>
-                    <span>{stat.icon}</span>
-                    <p className='text-black'>{stat.label}</p>
-                  </div>
-                  <p className='text-stroke'>{stat.value}</p>
-                </li>
-              ))}
-            </ul> */}
+            <div className='flex w-full justify-center gap-3 pt-5'>
+              <div
+                onClick={() => setIndex(0)}
+                className={`h-2 w-2 cursor-pointer rounded-full ${index === 0 ? 'bg-white' : 'bg-primary'}`}
+              ></div>
+              <div
+                onClick={() => setIndex(1)}
+                className={`bg-primary h-2 w-2 cursor-pointer rounded-full ${index === 1 ? 'bg-white' : 'bg-primary'}`}
+              ></div>
+            </div>
           </div>
         </section>
       ) : (

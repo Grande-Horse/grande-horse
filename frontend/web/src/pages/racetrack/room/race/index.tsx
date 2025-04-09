@@ -98,8 +98,9 @@ const RaceTrackRacePage = () => {
   useEffect(() => {
     if (!state?.roomId) return;
     const destination = `/app/race_room/${state.roomId}/game`;
-    addEventListeners(() => publish(destination));
-
+    if (!waiting) {
+      addEventListeners(() => publish(destination));
+    }
     return () => {
       removeEventListeners();
     };

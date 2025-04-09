@@ -5,10 +5,12 @@ import Horse from '@/components/pasture/Horse';
 import HorseInfoPanel from '@/components/pasture/HorseInfoPanel';
 import { usePastureHorse } from '@/contexts/PastureHorseContextProvider';
 import useUserInfo from '@/hooks/useQueries/useUserInfo';
+import { useStompClient } from '@/contexts/StompContext';
 
 const HomePage: React.FC = () => {
   const [selectedHorse, setSelectedHorse] = useState<HorseCardType | null>(null);
   const { dispatch, state } = usePastureHorse();
+  const { unsubscribeAll, publish } = useStompClient();
 
   useUserInfo();
 
@@ -35,6 +37,8 @@ const HomePage: React.FC = () => {
 
   // 페이지 변경 시 selectedHorse 초기화
   useEffect(() => {
+    publish('/app/force_leave');
+    unsubscribeAll();
     return () => {
       dispatch({ type: 'SELECT_HORSE', payload: null });
     };

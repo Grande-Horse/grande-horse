@@ -2,8 +2,8 @@
  * 속도를 0~100 사이로 정규화
  */
 export const normalizeSpeed = (value: number): number => {
-  const min = 40;
-  const max = 80;
+  const min = 35;
+  const max = 95;
 
   return normalize(value, min, max);
 };
@@ -12,8 +12,8 @@ export const normalizeSpeed = (value: number): number => {
  * 가속도를 0~100 사이로 정규화
  */
 export const normalizeAcceleration = (value: number): number => {
-  const min = 30;
-  const max = 70;
+  const min = 40;
+  const max = 80;
 
   return normalize(value, min, max);
 };

@@ -8,7 +8,7 @@ import { RoomCreateModal, type RoomCreateModalReturn } from '@/components/racetr
 
 import { useStompClient } from '@/contexts/StompContext';
 import { type RoomData, type RoomCreateData } from '@/types/room';
-import { RankType } from '@/types/horse';
+import { type RankType } from '@/types/horse';
 
 const RacetrackPage = () => {
   const navigate = useNavigate();
@@ -17,6 +17,8 @@ const RacetrackPage = () => {
   const { connected, publish, subscribe, unsubscribe } = useStompClient();
 
   const [roomList, setRoomList] = useState<RoomData[]>([]);
+
+  const [isOpen, setIsOpen] = useState(false);
 
   const handleCreateRoom = (roomData: RoomCreateData) => {
     if (!connected) {
@@ -40,18 +42,9 @@ const RacetrackPage = () => {
   };
 
   const { ModalWrapper, openModal, closeModal } = useModal<RoomCreateModalReturn>();
-  const handleOpenModal = async () => {
-    const value = await openModal();
-    if (value) {
-      const payload = {
-        roomName: value.roomName,
-        maxPlayers: value.maxPlayers,
-        rankRestriction: value.rankRestriction as RankType,
-        bettingCoin: value.bettingCoin,
-      };
 
-      handleCreateRoom(payload);
-    }
+  const handleOpenModal = () => {
+    setIsOpen(true);
   };
 
   useEffect(() => {
@@ -66,14 +59,15 @@ const RacetrackPage = () => {
 
     return () => {
       unsubscribe('/topic/waiting_rooms');
+      publish('/app/force_leave');
     };
   }, [connected]);
 
   return (
     <div className='h-body relative flex flex-col gap-5 p-5'>
-      <ModalWrapper>
-        <RoomCreateModal close={closeModal} />
-      </ModalWrapper>
+      <div className={`${isOpen ? 'z-modal fixed inset-0' : 'hidden'}`}>
+        <RoomCreateModal close={closeModal} setIsOpen={setIsOpen} />
+      </div>
       <div className='bg-background flex h-16 w-full justify-end'>
         <Button onClick={handleOpenModal}>
           <p className='px-10'>방 생성</p>

@@ -1,5 +1,5 @@
 import { createContext, useReducer, useContext, useEffect } from 'react';
-import { autoLogin, registerUser } from '@/services/auth';
+import { autoLogin, checkNicknameDuplicated, registerUser } from '@/services/auth';
 import { useNavigate, useLocation } from 'react-router-dom';
 import useUserInfo from '@/hooks/useQueries/useUserInfo';
 
@@ -8,6 +8,9 @@ interface AuthState {
   isLoggedIn: boolean;
   isLoading: boolean;
   isRegistered: boolean;
+  isNicknameAvailable: boolean;
+  handleRegister: (nickname: string) => Promise<void>;
+  checkNickname: (nickname: string) => Promise<boolean>;
   user: {
     nickname?: string;
     provider?: 'KAKAO' | 'SSAFY';
@@ -21,15 +24,20 @@ type AuthAction =
   | { type: 'LOGOUT' }
   | { type: 'REGISTER_REQUIRED' }
   | { type: 'REGISTER_SUCCESS' }
+  | { type: 'REGISTER_FAILED' }
   | { type: 'SET_LOADING'; payload: boolean }
   | { type: 'SET_ERROR'; payload: string | null }
-  | { type: 'NICKNAME_AVAILABLE' };
+  | { type: 'NICKNAME_AVAILABLE'; payload: string }
+  | { type: 'NICKNAME_UNAVAILABLE'; payload: string };
 
 const initialState: AuthState = {
   isAuthenticated: false,
+  isLoading: false,
   isLoggedIn: false,
   isRegistered: false,
-  isLoading: false,
+  isNicknameAvailable: false,
+  handleRegister: () => Promise.resolve(),
+  checkNickname: () => Promise.resolve(false),
   user: null,
   error: null,
 };
@@ -66,6 +74,12 @@ const authReducer = (state: AuthState, action: AuthAction): AuthState => {
         error: null,
         user: action.payload?.user || state.user,
       };
+    case 'NICKNAME_UNAVAILABLE':
+      return {
+        ...state,
+        error: action.payload,
+        isLoading: false,
+      };
     case 'REGISTER_REQUIRED':
       sessionStorage.setItem('isAuthenticated', 'true');
       sessionStorage.setItem('isRegistered', 'false');
@@ -87,6 +101,15 @@ const authReducer = (state: AuthState, action: AuthAction): AuthState => {
         isLoading: false,
         error: null,
       };
+
+    case 'REGISTER_FAILED':
+      return {
+        ...state,
+        isAuthenticated: true,
+        isRegistered: false,
+        isLoading: false,
+        error: action.payload,
+      };
     default:
       return state;
   }
@@ -97,8 +120,9 @@ interface AuthContextType {
   dispatch: React.Dispatch<AuthAction>;
   handleOauthRedirect: (provider: string) => Promise<void>;
   handleAutoLogin: () => Promise<void>;
-  handleRegister: (nickname: string) => Promise<void>;
+  handleRegister: (nickname: string) => Promise<boolean | void>; // 반환 타입 변경
   handleLogout: () => void;
+  checkNickname: (nickname: string) => Promise<boolean>; // 새로 추가
 }
 
 export const AuthContext = createContext<AuthContextType | null>(null);
@@ -115,7 +139,7 @@ export const AuthContextProvider: React.FC<{ children: React.ReactNode }> = ({ c
   const [state, dispatch] = useReducer(authReducer, initialState);
   const navigate = useNavigate();
   const location = useLocation();
-  const {data: user} = useUserInfo();
+  const { data: user } = useUserInfo();
 
   const { VITE_SSAFY_CLIENT_ID, VITE_SSAFY_REDIRECT_URI, VITE_KAKAO_CLIENT_ID, VITE_KAKAO_REDIRECT_URI } = import.meta
     .env;
@@ -150,13 +174,13 @@ export const AuthContextProvider: React.FC<{ children: React.ReactNode }> = ({ c
       if (response) {
         // 로그인 성공 시
         if (response.errorCode === '') {
-          dispatch({ 
+          dispatch({
             type: 'LOGIN_SUCCESS',
           });
         } else {
           // 회원가입 필요 시
           console.log('회원가입 필요');
-          dispatch({ 
+          dispatch({
             type: 'REGISTER_REQUIRED',
           });
         }
@@ -170,33 +194,96 @@ export const AuthContextProvider: React.FC<{ children: React.ReactNode }> = ({ c
     }
   };
 
+  const checkNickname = async (nickname: string) => {
+    if (!nickname) {
+      dispatch({
+        type: 'SET_ERROR',
+        payload: '닉네임을 입력해주세요',
+      });
+      return false;
+    }
 
+    try {
+      dispatch({ type: 'SET_LOADING', payload: true });
+      const isDuplicated = await checkNicknameDuplicated(nickname);
+
+      if (!isDuplicated) {
+        dispatch({ type: 'NICKNAME_AVAILABLE' });
+        return true;
+      } else {
+        dispatch({
+          type: 'NICKNAME_UNAVAILABLE',
+          payload: '이미 사용중인 닉네임입니다',
+        });
+        return false;
+      }
+    } catch (error) {
+      let errorMessage = '닉네임 확인 중 오류가 발생했습니다';
+
+      if (error.response?.data?.errorCode === 'C1') {
+        errorMessage = '3자 이상 10자 이하로 입력해 주세요.';
+      }
+
+      dispatch({
+        type: 'SET_ERROR',
+        payload: errorMessage,
+      });
+      return false;
+    }
+  };
+
+  //
   const handleRegister = async (nickname: string) => {
     if (!state.isAuthenticated) {
       dispatch({
         type: 'SET_ERROR',
         payload: '사용자 정보가 없습니다',
       });
-      return;
+      return false;
     }
 
     try {
       dispatch({ type: 'SET_LOADING', payload: true });
       const response = await registerUser(nickname);
-      if (response.errorCode === '') {
-        dispatch({
-          type: 'NICKNAME_AVAILABLE',
-        });
-      }
 
-      dispatch({
-        type: 'REGISTER_SUCCESS',
-      });
+      if (response.isSuccess) {
+        // 회원가입 성공 후 자동 로그인 시도
+        try {
+          const loginResponse = await autoLogin();
+          if (loginResponse && loginResponse.errorCode === '') {
+            dispatch({ type: 'REGISTER_SUCCESS' });
+            dispatch({ type: 'LOGIN_SUCCESS' });
+            return true;
+          } else {
+            dispatch({
+              type: 'SET_ERROR',
+              payload: '로그인에 실패했습니다',
+            });
+            dispatch({ type: 'REGISTER_SUCCESS' });
+            return false;
+          }
+        } catch (loginError) {
+          dispatch({
+            type: 'SET_ERROR',
+            payload: '로그인에 실패했습니다',
+          });
+          dispatch({ type: 'REGISTER_SUCCESS' });
+          return false;
+        }
+      } else {
+        dispatch({
+          type: 'SET_ERROR',
+          payload: response.errorCode || '회원가입 실패',
+        });
+        return false;
+      }
     } catch (error) {
+      const errorMessage = error.response?.data?.message || '회원가입 실패';
       dispatch({
         type: 'SET_ERROR',
-        payload: '회원가입 실패',
+        payload: errorMessage,
       });
+      return false;
     }
   };
 
@@ -210,7 +297,7 @@ export const AuthContextProvider: React.FC<{ children: React.ReactNode }> = ({ c
     const isAuthenticated = sessionStorage.getItem('isAuthenticated') === 'true';
     const isLoggedIn = sessionStorage.getItem('isLoggedIn') === 'true';
     const isRegistered = sessionStorage.getItem('isRegistered') === 'true';
-    
+
     // 저장된 인증 데이터가 있는 경우
     if (isAuthenticated) {
       if (isRegistered && isLoggedIn) {
@@ -235,25 +322,28 @@ export const AuthContextProvider: React.FC<{ children: React.ReactNode }> = ({ c
     if (state.isAuthenticated) {
       if (state.isRegistered) {
         if (state.isLoggedIn) {
-          // 로그인 완료 
+          // 로그인 완료
           const publicRoutes = ['/landing', '/login', '/register'];
-          if (  publicRoutes.includes(location.pathname)) {
-            // navigate('/', { replace: true });
+          if (publicRoutes.includes(location.pathname)) {
+            navigate('/', { replace: true });
           }
         } else {
-          // 회원가입 완료, 로그인 아직 안된 경우 
-          dispatch({ type: 'LOGIN_SUCCESS' }); // 자동 로그인 완료
+          // 회원가입 완료, 로그인 아직 안된 경우
+          // 자동 로그인 시도
+          handleAutoLogin().catch((error) => {
+            console.error('자동 로그인 실패:', error);
+          });
         }
       } else {
         // 인증 완료, 회원가입 아직 안된 경우
-        if (  location.pathname !== '/register') {
+        if (location.pathname !== '/register') {
           navigate('/register', { replace: true });
         }
       }
     } else {
       // 인증 안된 경우
       const publicRoutes = ['/landing', '/login'];
-      if (  !publicRoutes.includes(location.pathname) && location.pathname !== '/') {
+      if (!publicRoutes.includes(location.pathname) && location.pathname !== '/') {
         navigate('/landing', { replace: true });
       }
     }
@@ -263,8 +353,11 @@ export const AuthContextProvider: React.FC<{ children: React.ReactNode }> = ({ c
     state,
     dispatch,
     handleOauthRedirect,
+    checkNickname,
     handleAutoLogin,
-    handleRegister,
+    handleRegister: async (nickname: string) => {
+      return await handleRegister(nickname);
+    },
     handleLogout,
   };
 
