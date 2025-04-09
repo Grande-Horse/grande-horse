@@ -6,6 +6,7 @@ import org.springframework.messaging.handler.annotation.DestinationVariable;
 import org.springframework.messaging.handler.annotation.Header;
 import org.springframework.messaging.handler.annotation.MessageMapping;
 import org.springframework.messaging.handler.annotation.Payload;
+import org.springframework.messaging.simp.annotation.SubscribeMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.example.grandehorse.domain.race.controller.request.CreateRaceRoomRequest;
@@ -17,6 +18,13 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class RaceController {
 	private final RaceService raceService;
+
+	@MessageMapping("/initial_waiting_rooms")
+	public void getInitialWaitingRooms(
+		@Header("simpSessionId") String sessionId
+	) {
+		raceService.getInitialWaitingRooms(sessionId);
+	}
 
 	/**
 	 * 대기방 목록을 갱신하여 모든 구독자에게 전송하는 메서드
@@ -117,5 +125,15 @@ public class RaceController {
 	) {
 		int userId = (int)sessionAttributes.get("userId");
 		raceService.requestPlayGame(roomId, userId);
+	}
+
+	@MessageMapping("/race_room/{roomId}/change")
+	public void changeRepresentativeHorse(
+		@DestinationVariable Long roomId,
+		@Header("simpSessionAttributes") Map<String, Object> sessionAttributes,
+		@Payload String cardId
+	) {
+		int userId = (int)sessionAttributes.get("userId");
+		raceService.changeRepresentativeHorse(roomId, userId, Integer.parseInt(cardId));
 	}
 }
