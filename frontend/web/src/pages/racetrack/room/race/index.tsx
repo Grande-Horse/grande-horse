@@ -16,7 +16,6 @@ interface StateType {
 
 const RaceTrackRacePage = () => {
   const [waiting, setWaiting] = useState(true);
-  const [isRunning, setIsRunning] = useState<('run' | 'idle')[]>([]);
 
   const { state } = useLocation() as { state: StateType };
   const { data } = useUserInfo();
@@ -99,18 +98,7 @@ const RaceTrackRacePage = () => {
   useEffect(() => {
     if (!state?.roomId) return;
     const destination = `/app/race_room/${state.roomId}/game`;
-    addEventListeners(() => {
-      const currentIndex = players.findIndex((p) => p.userId === data?.id);
-      if (currentIndex !== -1) {
-        setIsRunning((prev) => {
-          const newState = [...prev];
-          newState[currentIndex] = 'run';
-          return newState;
-        });
-
-        publish(destination);
-      }
-    });
+    addEventListeners(() => publish(destination));
 
     return () => {
       removeEventListeners();
@@ -126,12 +114,6 @@ const RaceTrackRacePage = () => {
     }
   }, [isOpen]);
 
-  useEffect(() => {
-    if (state?.playsers) {
-      setIsRunning(new Array(state.playsers.length).fill('idle'));
-    }
-  }, [state?.playsers]);
-
   return (
     <div className='flex h-dvh flex-col items-center justify-center'>
       <ModalWrapper>
@@ -139,7 +121,7 @@ const RaceTrackRacePage = () => {
       </ModalWrapper>
 
       {waiting && <RaceWaiting color={data ? data.representativeCard.coatColor : 'black'} setWaiting={setWaiting} />}
-      {!waiting && <Race players={players} user={data} info={raceUsers} isRunning={isRunning} />}
+      {!waiting && <Race players={players} user={data} info={raceUsers} />}
     </div>
   );
 };
