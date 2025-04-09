@@ -453,6 +453,7 @@ public class CardService {
 		cardEntity.updateWinRecord(totalPrize);
 	}
 
+	@Transactional
 	public void updateCardRaceRecord(int cardId) {
 		CardEntity cardEntity = cardJpaRepository.findCardByIdWithPessimisticLock(cardId)
 			.orElseThrow(() -> new CardException(CustomError.CARD_NOT_EXISTED));

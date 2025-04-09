@@ -6,8 +6,6 @@ import com.example.grandehorse.domain.horse.entity.HorseEntity;
 import com.example.grandehorse.domain.horse.service.HorseService;
 import com.example.grandehorse.domain.race.controller.request.CreateRaceRoomRequest;
 import com.example.grandehorse.domain.race.controller.response.*;
-import com.example.grandehorse.domain.race.entity.RaceEntity;
-import com.example.grandehorse.domain.race.entity.RaceRecordEntity;
 import com.example.grandehorse.domain.race.repository.RaceJpaRepository;
 import com.example.grandehorse.domain.race.repository.RaceRecordJpaRepository;
 import com.example.grandehorse.domain.user.entity.UserEntity;
@@ -15,23 +13,17 @@ import com.example.grandehorse.domain.user.service.UserService;
 import com.example.grandehorse.global.exception.CustomError;
 import com.example.grandehorse.global.exception.RaceException;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.aop.framework.AopContext;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.context.annotation.EnableAspectJAutoProxy;
 import org.springframework.data.redis.connection.DefaultStringRedisConnection;
 import org.springframework.data.redis.core.*;
 import org.springframework.data.redis.core.script.RedisScript;
 import org.springframework.messaging.simp.SimpMessageHeaderAccessor;
 import org.springframework.messaging.simp.SimpMessageType;
 import org.springframework.messaging.simp.SimpMessagingTemplate;
-import org.springframework.scheduling.annotation.Async;
-import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZoneId;
 import java.util.*;
@@ -40,7 +32,6 @@ import java.util.stream.Collectors;
 
 @Slf4j
 @Service
-@EnableAsync
 public class RaceService {
     private static final String RACE_ROOM_PREFIX = "race_room:";
     private static final Map<String, Integer> RANK_PRIORITY = Map.of(
@@ -59,6 +50,8 @@ public class RaceService {
     private final CardService cardService;
     private final HorseService horseService;
     private final UserService userService;
+    private final RaceResultService raceResultService;
+
 
     private final RaceJpaRepository raceJpaRepository;
     private final RaceRecordJpaRepository raceRecordJpaRepository;
@@ -69,6 +62,7 @@ public class RaceService {
             CardService cardService,
             HorseService horseService,
             UserService userService,
+            RaceResultService raceResultService,
             RaceJpaRepository raceJpaRepository,
             RaceRecordJpaRepository raceRecordJpaRepository
     ) {
@@ -77,6 +71,7 @@ public class RaceService {
         this.cardService = cardService;
         this.horseService = horseService;
         this.userService = userService;
+        this.raceResultService = raceResultService;
         this.raceJpaRepository = raceJpaRepository;
         this.raceRecordJpaRepository = raceRecordJpaRepository;
     }
@@ -276,22 +271,22 @@ public class RaceService {
     public void requestPlayGame(Long roomId, int userId) {
         String queueKey = "queue:playGame:" + roomId;
         websocketRedisTemplate.opsForList().rightPush(queueKey, String.valueOf(userId));
+
         if (!roomQueueWorkers.containsKey(roomId)) {
-            log.info("Worker already exists for room " + roomId);
-            startGameQueueWorker(roomId);
+            log.info("Creating new worker for room {}", roomId);
+            Thread worker = new Thread(() -> startGameQueueWorker(roomId));
+            worker.start();
+            roomQueueWorkers.put(roomId, worker);
         }
     }
 
-    @Async
     public void startGameQueueWorker(Long roomId) {
-        roomQueueWorkers.put(roomId, Thread.currentThread());
-
         String queueKey = "queue:playGame:" + roomId;
-        log.info("Async Worker started for room " + roomId);
+        log.info("Async Worker started for room {}", roomId);
 
         while (!Thread.currentThread().isInterrupted()) {
             try {
-                log.info("Waiting for user action in queue: " + queueKey);
+                log.info("Waiting for user action in queue: {}", queueKey);
                 List<String> result = websocketRedisTemplate.execute((RedisCallback<List<String>>) connection -> {
                     DefaultStringRedisConnection stringConnection = new DefaultStringRedisConnection(connection);
                     return stringConnection.bLPop(0, queueKey);
@@ -299,18 +294,18 @@ public class RaceService {
 
                 if (result != null && result.size() == 2) {
                     String userIdStr = result.get(1);
-                    log.info("Received userId: " + userIdStr + " for room: " + roomId);
+                    log.info("Received userId: {} for room: {}", userIdStr, roomId);
 
-                    playGame(roomId, Integer.parseInt(userIdStr)); // 그냥 this로 호출해도 됨!
+                    playGame(roomId, Integer.parseInt(userIdStr));
                 }
 
             } catch (Exception e) {
-                log.error("GameQueueWorker error - roomId: " + roomId, e);
+                log.error("GameQueueWorker error - roomId: {}", roomId, e);
                 break;
             }
         }
 
-        log.info("Game queue worker for room " + roomId + " has stopped.");
+        log.info("Game queue worker for room {} has stopped.", roomId);
         roomQueueWorkers.remove(roomId);
     }
 
@@ -319,7 +314,6 @@ public class RaceService {
         List<Object> playerIds = websocketRedisTemplate.opsForList().range(roomKey + ":players", 0, -1);
 
         List<PlayerRaceProgress> raceProgresses = new ArrayList<>();
-        List<GameResult> gameResults;
         Map<Integer, Double> distanceMap = new HashMap<>();
 
         for (Object idObj : playerIds) {
@@ -327,11 +321,12 @@ public class RaceService {
             String userKey = roomKey + ":user:" + currentUserId;
 
             double distance = getPlayerDistance(userKey);
-
             if (currentUserId == userId) {
                 double moveDistance = calculateDistance(websocketRedisTemplate.opsForHash().entries(userKey));
                 distance += moveDistance;
                 websocketRedisTemplate.opsForHash().put(userKey, "distance", String.valueOf(distance));
+
+                log.info("User {} moved. Current distance: {}", currentUserId, distance);
             }
 
             raceProgresses.add(new PlayerRaceProgress(currentUserId, distance));
@@ -342,101 +337,35 @@ public class RaceService {
         if (isRaceFinished) {
             int playerCount = playerIds.size();
             int bettingCoin = Integer.parseInt(
-                    websocketRedisTemplate.opsForHash().get(roomKey, "bettingCoin").toString()
+                    String.valueOf(websocketRedisTemplate.opsForHash().get(roomKey, "bettingCoin"))
             );
-            gameResults = rewardUsers(bettingCoin, playerCount, roomKey, raceProgresses);
+
+            List<GameResult> gameResults = raceResultService.processRaceResult(
+                    bettingCoin,
+                    playerCount,
+                    roomKey,
+                    raceProgresses,
+                    websocketRedisTemplate
+            );
+
+            log.info("Race finished! Winner: {}", raceProgresses.stream()
+                    .max(Comparator.comparing(PlayerRaceProgress::getDistance))
+                    .map(PlayerRaceProgress::getUserId)
+                    .orElse(-1)
+            );
+
             sendRaceProgress(roomId, raceProgresses);
             sendRaceResult(roomId, gameResults);
 
-            Thread worker = roomQueueWorkers.remove(roomId);
+            Thread worker = roomQueueWorkers.get(roomId);
             if (worker != null) {
                 worker.interrupt();
+                roomQueueWorkers.remove(roomId);
             }
             return;
         }
 
         sendRaceProgress(roomId, raceProgresses);
-    }
-
-    @Transactional
-    private List<GameResult> rewardUsers(
-            int bettingCoin,
-            int playerCount,
-            String roomKey,
-            List<PlayerRaceProgress> allPlayers
-    ) {
-        int totalPrize = bettingCoin * playerCount;
-        int ownerId = Integer.parseInt(
-                websocketRedisTemplate.opsForValue().get(roomKey + ":owner").toString()
-        );
-        int raceId = saveRace(ownerId, totalPrize, (byte) playerCount);
-
-        allPlayers.sort((p1, p2) -> Double.compare(p2.getDistance(), p1.getDistance()));
-        int winnerId = allPlayers.get(0).getUserId();
-
-        List<GameResult> gameResults = new ArrayList<>();
-
-        for (int i = 0; i < allPlayers.size(); i++) {
-            int rankNumber = i + 1;
-            int userId = allPlayers.get(i).getUserId();
-            String userKey = roomKey + ":user:" + userId;
-
-            int cardId = Integer.parseInt(
-                    websocketRedisTemplate.opsForHash().get(userKey, "cardId").toString()
-            );
-            String nickname = websocketRedisTemplate.opsForHash().get(userKey, "userNickname").toString();
-
-            if (userId == winnerId) {
-                userService.increaseUserCoin(userId, totalPrize);
-                cardService.updateCardWinRecord(cardId, totalPrize);
-                saveRaceRecord(userId, cardId, raceId, (byte) rankNumber, totalPrize, bettingCoin);
-
-                gameResults.add(new GameResult(nickname, totalPrize, rankNumber));
-            } else {
-                userService.decreaseUserCoin(userId, bettingCoin);
-                cardService.updateCardRaceRecord(cardId);
-                saveRaceRecord(userId, cardId, raceId, (byte) rankNumber, 0, bettingCoin);
-
-                gameResults.add(new GameResult(nickname, 0, rankNumber));
-            }
-        }
-
-        return gameResults;
-    }
-
-    private int saveRace(
-            int ownerId,
-            int totalPrize,
-            byte playerCount
-    ) {
-        RaceEntity raceEntity = RaceEntity.builder()
-                .userId(ownerId)
-                .totalPrize(totalPrize)
-                .playerCount(playerCount)
-                .racedAt(LocalDateTime.now())
-                .build();
-        RaceEntity savedRaceEntity = raceJpaRepository.save(raceEntity);
-        return savedRaceEntity.getId();
-    }
-
-    private void saveRaceRecord(
-            int userId,
-            int cardId,
-            int raceId,
-            byte rankNumber,
-            int totalPrize,
-            int fee
-    ) {
-        RaceRecordEntity raceRecordEntity = RaceRecordEntity.builder()
-                .userId(userId)
-                .cardId(cardId)
-                .raceId(raceId)
-                .rankNumber(rankNumber)
-                .price(totalPrize)
-                .fee(fee)
-                .racedAt(LocalDateTime.now())
-                .build();
-        raceRecordJpaRepository.save(raceRecordEntity);
     }
 
     public void checkCoin(Long roomId) {
