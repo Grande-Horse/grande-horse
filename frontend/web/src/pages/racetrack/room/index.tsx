@@ -59,7 +59,6 @@ const RacetrackRoomPage = () => {
         if (data.isGameStarted) {
           navigate(`/racetrack/room/${roomId}/race`, { state: { roomId, playsers: data.playersInfo }, replace: true });
         }
-        console.log('playersInfo', data.playersInfo);
         setUsers(data.playersInfo);
       },
       (error) => {
@@ -67,7 +66,12 @@ const RacetrackRoomPage = () => {
       }
     );
 
-    publish(`/app/race_room/${roomId}/join`);
+    if (state.isEnd) {
+      setUsers(state.playersInfo);
+      setMaxPlayers(state.maxPlayers);
+    } else {
+      publish(`/app/race_room/${roomId}/join`);
+    }
 
     return () => {
       unsubscribe(chatPath);

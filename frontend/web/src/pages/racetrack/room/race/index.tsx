@@ -16,6 +16,8 @@ interface StateType {
 
 const RaceTrackRacePage = () => {
   const [waiting, setWaiting] = useState(true);
+  const [isRunning, setIsRunning] = useState<('run' | 'idle')[]>([]);
+
   const { state } = useLocation() as { state: StateType };
   const { data } = useUserInfo();
   const { subscribe, publish } = useStompClient();
@@ -27,8 +29,42 @@ const RaceTrackRacePage = () => {
     { raceRank: 0, totalPrize: 0, userNickname: '' },
   ]);
 
+  const [playersInfo, setPlayersInfo] = useState<RoomJoinUserData[]>();
+  const [roomName, setRoomName] = useState<string>('');
+  const [maxPlayers, setMaxPlayers] = useState<number>(6);
+  const [roomId, setRoomId] = useState<number>(0);
+
   const navigate = useNavigate();
   const { ModalWrapper, openModal } = useModal();
+  const [isOpen, setIsOpen] = useState(true);
+
+  let handleKeyDown: ((e: KeyboardEvent) => void) | null = null;
+  let handleTouchStart: (() => void) | null = null;
+  let handleMouseDown: (() => void) | null = null;
+
+  const addEventListeners = (callback: () => void) => {
+    handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'ArrowRight' && !e.repeat) {
+        callback();
+      }
+    };
+    handleTouchStart = () => callback();
+    handleMouseDown = () => callback();
+
+    window.addEventListener('keydown', handleKeyDown);
+    window.addEventListener('touchstart', handleTouchStart);
+    window.addEventListener('mousedown', handleMouseDown);
+  };
+
+  const removeEventListeners = () => {
+    if (handleKeyDown) window.removeEventListener('keydown', handleKeyDown);
+    if (handleTouchStart) window.removeEventListener('touchstart', handleTouchStart);
+    if (handleMouseDown) window.removeEventListener('mousedown', handleMouseDown);
+
+    handleKeyDown = null;
+    handleTouchStart = null;
+    handleMouseDown = null;
+  };
 
   useEffect(() => {
     if (!state) {
@@ -43,9 +79,13 @@ const RaceTrackRacePage = () => {
       `/topic/race_room/${roomId}/game`,
       (data: GameData) => {
         if (data.type === 'resultData') {
+          removeEventListeners();
           openModal();
           setGameResult(data.gameResult);
-          // navigate(`/racetrack/room/${roomId}/`, { state: { roomId, gameResult: data.gameResult } });
+          setPlayersInfo(data.playersInfo);
+          setRoomName(data.roomName);
+          setMaxPlayers(data.maxPlayers);
+          setRoomId(data.roomId);
         } else {
           setRaceUsers(data.progress);
         }
@@ -57,31 +97,49 @@ const RaceTrackRacePage = () => {
   }, [state, data]);
 
   useEffect(() => {
-    if (!state) {
-      return;
-    }
-    const roomId = state.roomId;
+    if (!state?.roomId) return;
+    const destination = `/app/race_room/${state.roomId}/game`;
+    addEventListeners(() => {
+      const currentIndex = players.findIndex((p) => p.userId === data?.id);
+      if (currentIndex !== -1) {
+        setIsRunning((prev) => {
+          const newState = [...prev];
+          newState[currentIndex] = 'run';
+          return newState;
+        });
 
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'ArrowRight') {
-        publish(`/app/race_room/${roomId}/game`);
+        publish(destination);
       }
-    };
-
-    window.addEventListener('keydown', handleKeyDown);
+    });
 
     return () => {
-      window.removeEventListener('keydown', handleKeyDown);
+      removeEventListeners();
     };
-  }, []);
+  }, [state?.roomId, publish]);
+
+  useEffect(() => {
+    if (!isOpen) {
+      navigate(`/racetrack/room/${roomId}?title=${roomName}`, {
+        state: { playersInfo, isEnd: true, maxPlayers, roomId },
+        replace: true,
+      });
+    }
+  }, [isOpen]);
+
+  useEffect(() => {
+    if (state?.playsers) {
+      setIsRunning(new Array(state.playsers.length).fill('idle'));
+    }
+  }, [state?.playsers]);
 
   return (
     <div className='flex h-dvh flex-col items-center justify-center'>
       <ModalWrapper>
-        <RaceResult gameResult={gameResult} />
+        <RaceResult gameResult={gameResult} setIsOpen={setIsOpen} />
       </ModalWrapper>
+
       {waiting && <RaceWaiting color={data ? data.representativeCard.coatColor : 'black'} setWaiting={setWaiting} />}
-      {!waiting && <Race players={players} user={data} info={raceUsers} />}
+      {!waiting && <Race players={players} user={data} info={raceUsers} isRunning={isRunning} />}
     </div>
   );
 };

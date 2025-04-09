@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import raceTopBg from '@/assets/images/backgrounds/raceTopBg.webp';
 import raceLineBg from '@/assets/images/backgrounds/raceLineBg.webp';
 import Horse from '@/components/racetrack/Horse';
@@ -14,27 +14,55 @@ interface RaceProps {
   info: RaceUser[];
   user: UserInfoData | undefined | null;
   players: RoomJoinUserData[];
+  isRunning: ('run' | 'idle')[];
 }
 
-const Race: React.FC<RaceProps> = ({ user, info, players }) => {
-  const MAX_DISTANCE = 2030;
-  const TRACK_WIDTH = 2060;
-  const VIEWPORT_WIDTH = window.innerWidth;
+const Race: React.FC<RaceProps> = ({ user, info, players, isRunning }) => {
+  const MAX_DISTANCE = 2000;
+  const TRACK_WIDTH = 2000;
+
+  const containerRef = useRef<HTMLDivElement | null>(null);
+  const [viewportWidth, setViewportWidth] = useState<number>(1920);
+  const [cameraX, setCameraX] = useState(0);
+
   const pxPerDistance = TRACK_WIDTH / MAX_DISTANCE;
 
   const myHorseDistance = info.find((i) => i.userId === user?.id)?.distance || 0;
   const myHorseX = myHorseDistance * pxPerDistance;
 
-  const cameraTranslateX = Math.min(0, Math.max(VIEWPORT_WIDTH - TRACK_WIDTH, -myHorseX));
+  const targetX = Math.min(0, Math.max(viewportWidth - TRACK_WIDTH, -(myHorseX - viewportWidth / 2)));
 
   const backgroundProgress = Math.min(myHorseX / TRACK_WIDTH, 1);
   const backgroundPositionX = `${backgroundProgress * 100}%`;
 
+  useEffect(() => {
+    const handleResize = () => {
+      if (containerRef.current) {
+        setViewportWidth(containerRef.current.offsetWidth);
+      }
+    };
+
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCameraX((prev) => {
+        const delta = targetX - prev;
+        return Math.abs(delta) < 1 ? targetX : prev + delta * 0.1;
+      });
+    }, 50);
+
+    return () => clearInterval(interval);
+  }, [targetX]);
+
   return (
-    <div className='flex h-full w-full flex-col justify-center overflow-hidden bg-[#55da54]'>
+    <div ref={containerRef} className='flex h-full w-full flex-col justify-center overflow-hidden bg-[#55da54]'>
       <div className='relative h-60 w-full overflow-hidden bg-[#55da54]'>
         <div
-          className='absolute top-0 left-0 h-full min-w-[2060px] bg-cover bg-no-repeat'
+          className='absolute top-0 left-0 h-full min-w-[2000px] bg-cover bg-no-repeat'
           style={{
             backgroundImage: `url(${raceTopBg})`,
             transform: `translateX(-${backgroundProgress * (TRACK_WIDTH - window.innerWidth)}px)`,
@@ -45,13 +73,13 @@ const Race: React.FC<RaceProps> = ({ user, info, players }) => {
 
       <div className='relative h-full w-full overflow-hidden'>
         <div
-          className='absolute top-0 left-0 flex h-full min-w-[2060px] flex-col items-center justify-evenly'
+          className='absolute top-0 left-0 flex h-full min-w-[2000px] flex-col items-center justify-evenly'
           style={{
-            transform: `translateX(${cameraTranslateX}px)`,
+            transform: `translateX(${cameraX}px)`,
             transition: 'transform 1s ease-out',
           }}
         >
-          {players.map((player) => {
+          {players.map((player, idx) => {
             const isMine = player.userId === user?.id;
             const distance = info.find((i) => i.userId === player.userId)?.distance || 0;
             const horseX = distance * pxPerDistance;
@@ -80,7 +108,7 @@ const Race: React.FC<RaceProps> = ({ user, info, players }) => {
                       <div className='triangle-down'></div>
                     </div>
                   )}
-                  <Horse color={player.horseColor} direction='right' state='run' />
+                  <Horse color={player.horseColor} direction='right' state={isRunning[idx]} />
                 </div>
               </div>
             );

@@ -1,3 +1,5 @@
+import { RoomJoinUserData } from './room';
+
 export interface RaceRecordType {
   totalFirstPlaces: number;
   totalSecondPlaces: number;
@@ -24,8 +26,11 @@ export interface ProgressData {
 
 export interface ResultData {
   type: 'resultData';
+  roomId: number;
+  roomName: string;
   gameResult: GameResult[];
-  roomId?: number;
+  playersInfo: RoomJoinUserData[];
+  maxPlayers: number;
 }
 
 export type GameData = ProgressData | ResultData;
