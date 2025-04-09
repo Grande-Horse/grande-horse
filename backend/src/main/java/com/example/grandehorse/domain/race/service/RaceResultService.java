@@ -62,7 +62,7 @@ public class RaceResultService {
                 gameResults.add(new GameResult(nickname, totalPrize, rankNumber));
             } else {
                 userService.decreaseUserCoin(userId, bettingCoin);
-                cardService.updateCardRaceRecord(cardId); // 비관적 락 사용
+                cardService.updateCardRaceRecord(cardId);
                 saveRaceRecord(userId, cardId, raceId, (byte) rankNumber, 0, bettingCoin);
                 gameResults.add(new GameResult(nickname, -bettingCoin, rankNumber));
             }
