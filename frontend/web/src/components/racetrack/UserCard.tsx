@@ -1,4 +1,5 @@
 import Horse from '@/components/racetrack/Horse';
+import CrownIcon from '@/assets/icons/crownIcon.svg?react';
 import { rankTextColor } from '@/constants/rank';
 import { type RoomJoinUserData } from '@/types/room';
 
@@ -17,9 +18,15 @@ const bgImageClass = {
 const UserCard: React.FC<UserCardProps> = ({ user }) => {
   return (
     <div
-      className={`${bgImageClass[user.horseRank]} ${rankTextColor[user.horseRank]} text-stroke flex flex-col items-center justify-between rounded-2xl bg-cover bg-center px-4 py-6`}
+      className={`${bgImageClass[user.horseRank]} ${rankTextColor[user.horseRank]} text-stroke relative flex flex-col items-center justify-between rounded-2xl bg-cover bg-center px-4 py-6`}
     >
-      <p className='text-heading4 flex w-full items-center justify-center rounded-xl shadow-inner shadow-black/20'>
+      {user.roomOwner && (
+        <div className='absolute top-0 left-0'>
+          <CrownIcon />
+        </div>
+      )}
+
+      <p className='text-body2 flex w-full items-center justify-center rounded-xl py-2 shadow-inner shadow-black/20'>
         {user.userNickname}
       </p>
       <Horse color={user.horseColor} direction='right' state='idle' />

@@ -2,13 +2,11 @@ import { useEffect, useState } from 'react';
 import { useNavigate, useNavigationType } from 'react-router-dom';
 
 import { Button } from '@/components/ui/Button';
-import useModal from '@/components/ui/modal/useModal';
 import RoomList from '@/components/racetrack/RoomList';
-import { RoomCreateModal, type RoomCreateModalReturn } from '@/components/racetrack/RoomCreateModal';
+import { RoomCreateModal } from '@/components/racetrack/RoomCreateModal';
 
 import { useStompClient } from '@/contexts/StompContext';
 import { type RoomData, type RoomCreateData } from '@/types/room';
-import { type RankType } from '@/types/horse';
 
 const RacetrackPage = () => {
   const navigate = useNavigate();
@@ -20,28 +18,7 @@ const RacetrackPage = () => {
 
   const [isOpen, setIsOpen] = useState(false);
 
-  const handleCreateRoom = (roomData: RoomCreateData) => {
-    if (!connected) {
-      console.warn('STOMP 연결되지 않음. 방 생성 실패');
-      return;
-    }
-
-    subscribe(
-      '/user/queue/subscribe',
-      (roomId: string) => {
-        navigate(`/racetrack/room/${roomId}?title=${roomData.roomName}`, {
-          state: { roomId, maxPlayers: roomData.maxPlayers },
-        });
-      },
-      (error) => {
-        console.log(error);
-      }
-    );
-
-    publish('/app/createRoom', roomData);
-  };
-
-  const { ModalWrapper, openModal, closeModal } = useModal<RoomCreateModalReturn>();
+  const [roomData, setRoomData] = useState<RoomCreateData>();
 
   const handleOpenModal = () => {
     setIsOpen(true);
@@ -51,7 +28,6 @@ const RacetrackPage = () => {
     subscribe('/topic/waiting_rooms', (data: { raceRooms: RoomData[] }) => {
       setRoomList(data.raceRooms);
     });
-    publish('/app/waiting_rooms');
 
     if (navigationType === 'POP') {
       publish('/app/force_leave');
@@ -63,10 +39,46 @@ const RacetrackPage = () => {
     };
   }, [connected]);
 
+  useEffect(() => {
+    subscribe(
+      '/user/queue/subscribe',
+      (data: any) => {
+        if (data.type === 'createRoom') {
+          if (!roomData) {
+            console.warn('roomData가 설정되지 않았습니다.');
+            return;
+          }
+          navigate(`/racetrack/room/${data.roomId}?title=${roomData.roomName}`, {
+            state: { roomId: data.roomId, maxPlayers: roomData.maxPlayers },
+            replace: true,
+          });
+        } else {
+          setRoomList(data.initialRooms);
+        }
+      },
+      (error) => {
+        console.log(error);
+      }
+    );
+
+    return () => {
+      unsubscribe('/user/queue/subscribe');
+    };
+  }, [roomData]);
+
+  useEffect(() => {
+    publish('/app/initial_waiting_rooms');
+  }, []);
+
   return (
     <div className='h-body relative flex flex-col gap-5 p-5'>
-      <div className={`${isOpen ? 'z-modal fixed inset-0' : 'hidden'}`}>
-        <RoomCreateModal close={closeModal} setIsOpen={setIsOpen} />
+      <div className={` ${isOpen ? 'bg-modal z-modal fixed inset-0 flex items-center justify-center' : 'hidden'}`}>
+        <RoomCreateModal
+          onSuccess={(data) => {
+            setRoomData(data);
+          }}
+          setIsOpen={setIsOpen}
+        />
       </div>
       <div className='bg-background flex h-16 w-full justify-end'>
         <Button onClick={handleOpenModal}>
