@@ -136,11 +136,7 @@ const ManagementPanel: React.FC = () => {
     }
   };
 
-  const { data, hasNextPage, ref } = useInfiniteScroll(
-    queryKey.MY_HORSE_CARDS,
-    () => getMyHorseCards(rankNameMap[rank as keyof typeof rankNameMap]),
-    { enabled: true }
-  );
+  const { data, hasNextPage, ref } = useInfiniteScroll(queryKey.MY_HORSE_CARDS, getMyHorseCards);
 
   return (
     <div className='flex h-full flex-col'>
@@ -174,32 +170,28 @@ const ManagementPanel: React.FC = () => {
         <HorsesCountIndicator />
         <section className='grid grid-cols-3 place-items-center px-1 py-2'>
           {data.pages.flatMap((page) =>
-            page.items
-              .filter(
-                (item) => !rank || rank === '전체' || item.horseRank === rankNameMap[rank as keyof typeof rankNameMap]
-              )
-              .map((item) => (
-                <div
-                  key={item.cardId}
-                  className='relative z-10'
-                  onClick={() => {
-                    candidateMutation.mutate(item.cardId, {
-                      onSuccess: () => {
-                        dispatch({ type: 'TOGGLE_CANDIDATE_HORSE', payload: item });
-                        setCurrentHorseId(item.cardId);
-                      },
-                    });
-                  }}
-                >
-                  {(item.status === 2 || item.status === 3) && (
-                    <div className='absolute inset-0 z-20 flex items-center justify-center rounded-xl bg-black/60'>
-                      <SelectedIcon />
-                    </div>
-                  )}
+            page.items.map((item) => (
+              <div
+                key={item.cardId}
+                className='relative z-10'
+                onClick={() => {
+                  candidateMutation.mutate(item.cardId, {
+                    onSuccess: () => {
+                      dispatch({ type: 'TOGGLE_CANDIDATE_HORSE', payload: item });
+                      setCurrentHorseId(item.cardId);
+                    },
+                  });
+                }}
+              >
+                {(item.status === 2 || item.status === 3) && (
+                  <div className='absolute inset-0 z-20 flex items-center justify-center rounded-xl bg-black/60'>
+                    <SelectedIcon />
+                  </div>
+                )}
 
-                  <SmallHorseCard horse={item} />
-                </div>
-              ))
+                <SmallHorseCard horse={item} />
+              </div>
+            ))
           )}
         </section>
         {hasNextPage && (
