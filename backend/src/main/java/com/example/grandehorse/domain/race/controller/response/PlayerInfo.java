@@ -23,4 +23,6 @@ public class PlayerInfo {
 	private boolean isRoomOwner;
 
 	private boolean isReady;
+
+	private boolean hasEnoughCoin;
 }
