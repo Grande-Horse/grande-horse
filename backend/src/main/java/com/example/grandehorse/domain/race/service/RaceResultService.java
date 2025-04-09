@@ -34,7 +34,7 @@ public class RaceResultService {
             List<PlayerRaceProgress> allPlayers,
             RedisTemplate<String, Object> websocketRedisTemplate
     ) {
-        int totalPrize = bettingCoin * playerCount;
+        int totalPrize = bettingCoin * (playerCount-1);
         int ownerId = Integer.parseInt(
                 websocketRedisTemplate.opsForValue().get(roomKey + ":owner").toString()
         );
@@ -64,7 +64,7 @@ public class RaceResultService {
                 userService.decreaseUserCoin(userId, bettingCoin);
                 cardService.updateCardRaceRecord(cardId); // 비관적 락 사용
                 saveRaceRecord(userId, cardId, raceId, (byte) rankNumber, 0, bettingCoin);
-                gameResults.add(new GameResult(nickname, 0, rankNumber));
+                gameResults.add(new GameResult(nickname, -bettingCoin, rankNumber));
             }
         }
 
