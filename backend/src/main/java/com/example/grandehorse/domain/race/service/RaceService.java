@@ -656,7 +656,7 @@ public class RaceService {
 
         double baseDistance = speed * 0.5 + accel * 0.3 + stamina * 0.2 - weight * 0.1;
 
-        double randomMultiplier = 0.7 + (random.nextDouble() * 0.5); // 0.7 ~ 1.2
+        double randomMultiplier = 0.7 + (random.nextDouble() * 0.5);
 
         return baseDistance * randomMultiplier;
     }
