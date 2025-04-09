@@ -91,5 +91,4 @@ public interface CardJpaRepository extends JpaRepository<CardEntity, Integer> {
 	Optional<String> findHorseIdById(int id);
 
 	boolean existsByUserIdAndStatus(int userId, byte status);
-
 }
