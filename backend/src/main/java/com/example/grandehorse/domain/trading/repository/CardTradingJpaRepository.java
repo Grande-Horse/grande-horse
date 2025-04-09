@@ -53,12 +53,14 @@ public interface CardTradingJpaRepository extends JpaRepository<CardTradeEntity,
             AND t.id > :cursorId
             AND (:horseRank IS NULL OR h.horseRank = :horseRank)
             AND (:search IS NULL OR h.name LIKE CONCAT('%', :search, '%'))
+			AND (:sellerId IS NULL OR t.sellerId != :sellerId)
             ORDER BY t.id ASC
         """)
 	Slice<TradeCardResponse> findTradeCardsByCursor(
 		@Param("cursorId") int cursorId,
 		@Param("horseRank") HorseRank horseRank,
 		@Param("search") String search,
+		@Param("sellerId") int sellerId,
 		Pageable pageable
 	);
 

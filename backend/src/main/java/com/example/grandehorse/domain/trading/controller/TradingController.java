@@ -64,9 +64,10 @@ public class TradingController {
 		@RequestParam(name = "cursorId") int cursorId,
 		@RequestParam(name = "rank") String rank,
 		@RequestParam(name = "search") String search,
+		@RequestAttribute("userId") int sellerId,
 		@RequestParam(name = "limit") int limit
 	) {
-		return tradingService.getTradeCards(cursorId, rank, search, limit);
+		return tradingService.getTradeCards(cursorId, rank, search, sellerId, limit);
 	}
 
 	@GetMapping("/registered-cards")

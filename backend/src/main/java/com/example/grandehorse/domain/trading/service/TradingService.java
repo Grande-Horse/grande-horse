@@ -92,6 +92,7 @@ public class TradingService {
 		int cursorId,
 		String rank,
 		String search,
+		int sellerId,
 		int limit
 	) {
 		HorseRank horseRank = null;
@@ -103,7 +104,7 @@ public class TradingService {
 			}
 		}
 
-		Slice<TradeCardResponse> tradeCardSlice = findTradeCardsByCursor(cursorId, horseRank, search, limit);
+		Slice<TradeCardResponse> tradeCardSlice = findTradeCardsByCursor(cursorId, horseRank, search, sellerId, limit);
 		return processPagedResponse(tradeCardSlice, Comparator.comparing(TradeCardResponse::getTradeId).reversed());
 	}
 
@@ -243,6 +244,7 @@ public class TradingService {
 		int cursorId,
 		HorseRank horseRank,
 		String search,
+		int sellerId,
 		int limit
 	) {
 		Pageable pageable = PageRequest.of(0, limit);
@@ -251,6 +253,7 @@ public class TradingService {
 			cursorId,
 			horseRank,
 			search,
+			sellerId,
 			pageable
 		);
 	}
