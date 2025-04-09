@@ -1,9 +1,9 @@
 import PastureIcon from '@/assets/icons/pastureIcon.svg?react';
+import SelectedIcon from '@/assets/icons/selectedIcon.svg?react';
 import SmallHorseCard from '@/components/cards/SmallHorseCard';
 import Dropdown from '@/components/ui/dropdown/Dropdown';
 import { horseImageClass } from '@/constants/horse';
 import { rankMap, rankNameMap } from '@/constants/rank';
-import { horseCardListMockData } from '@/mocks/datas/horse';
 import { useState, useEffect } from 'react';
 import { usePastureHorse } from '@/contexts/PastureHorseContextProvider';
 import { Button } from '@/components/ui/Button';
@@ -13,59 +13,47 @@ import { HorseCardType } from '@/types/card';
 import { queryKey } from '@/constants/queryKey';
 import { getMyHorseCards } from '@/services/stall';
 import { ClipLoader } from 'react-spinners';
+import { useRepresentativeHorse, useUpdateCandidateHorse } from '@/services/horseManagement';
 
 const pastureBgUrl = `bg-[url('@/assets/images/backgrounds/managementPastureBg.webp')] bg-contain bg-center`;
 
 const ManagementPanel: React.FC = () => {
   const [rank, setRank] = useState<string>('');
-  const [horseList, setHorseList] = useState<HorseCardType[]>(horseCardListMockData);
-  const [currentIndex, setcurrentIndex] = useState<number>(0);
-  const [candidateHorses, setPastureHorses] = useState<HorseCardType[]>([]);
-  const [isSettingCandidateHorse, setIsSettingCandidateHorse] = useState<boolean>(false);
-
+  const [currentHorseId, setCurrentHorseId] = useState<number | null>(null);
   const { state, dispatch } = usePastureHorse();
 
   useEffect(() => {
-    setPastureHorses(state.candidateHorses);
-
-    // 말이 제거된 경우 인덱스 조정
-    if (currentIndex >= state.candidateHorses.length && state.candidateHorses.length > 0) {
-      setcurrentIndex(state.candidateHorses.length - 1);
-    } else if (state.candidateHorses.length === 0) {
-      setcurrentIndex(0);
+    if (state.candidateHorses.length === 0) {
+      setCurrentHorseId(null);
+    } else if (!state.candidateHorses.some((h) => h.cardId === currentHorseId)) {
+      setCurrentHorseId(state.candidateHorses[0].cardId);
     }
-  }, [state.candidateHorses, currentIndex]);
+  }, [state.candidateHorses, currentHorseId]);
 
-  const handleSetCandidateHorses = (horse: HorseCardType) => {
-    console.log(horse);
-    dispatch({ type: 'SET_CANDIDATE_HORSES', payload: horse });
-
-    // 현재 마당에 있는 말들 중에서 선택한 말의 인덱스를 찾음
-    const existingIndex = candidateHorses.findIndex((h) => h.horseId === horse.horseId);
-
-    if (existingIndex >= 0) {
-      // 이미 마당에 있는 말이면 해당 인덱스로 설정
-      setcurrentIndex(existingIndex);
-    } else if (candidateHorses.length < state.maxHorses) {
-      // 새로 추가된 말이면 마지막 인덱스로 설정
-      setcurrentIndex(candidateHorses.length);
-    }
-  };
-
-  const handleSetRepresentativeHorse = async (horse: HorseCardType) => {
-    if (candidateHorses[currentIndex]) {
-      console.log(horse);
-      dispatch({ type: 'SET_REPRESENTATIVE_HORSE', payload: horse });
-    }
+  const getCurrentHorse = () => {
+    return state.candidateHorses.find((h) => h.cardId === currentHorseId) ?? null;
   };
 
   const ChangeHorseButton = ({ type }: { type: 'minus' | 'plus' }) => {
     const handleChangeIndex = (type: 'minus' | 'plus') => {
-      if (type === 'minus') setcurrentIndex(currentIndex === 0 ? candidateHorses.length - 1 : currentIndex - 1);
-      else setcurrentIndex((currentIndex + 1) % candidateHorses.length);
+      if (state.candidateHorses.length === 0 || currentHorseId === null) return;
+      const currentIndex = state.candidateHorses.findIndex((h) => h.cardId === currentHorseId);
+      if (currentIndex === -1) return;
+      const newIndex =
+        type === 'minus'
+          ? currentIndex === 0
+            ? state.candidateHorses.length - 1
+            : currentIndex - 1
+          : (currentIndex + 1) % state.candidateHorses.length;
+      setCurrentHorseId(state.candidateHorses[newIndex].cardId);
     };
+
     return (
-      <button onClick={() => handleChangeIndex(type)} className='flex h-8 w-8 items-center justify-center rounded-full'>
+      <button
+        onClick={() => handleChangeIndex(type)}
+        className='flex h-8 w-8 items-center justify-center rounded-full'
+        disabled={state.candidateHorses.length === 0}
+      >
         {type === 'minus' ? (
           <div className='h-0 w-0 border-t-[8px] border-r-[12px] border-b-[8px] border-t-transparent border-r-white border-b-transparent' />
         ) : (
@@ -75,121 +63,134 @@ const ManagementPanel: React.FC = () => {
     );
   };
 
-  const PastureHorsesIndicator = () => {
-    return (
-      <div className='flex h-2 gap-2'>
-        {candidateHorses.map((horse, index) => (
-          <button
-            key={horse.horseId}
-            onClick={() => setcurrentIndex(index)}
-            className={`h-2 w-2 rounded-full transition-colors ${currentIndex === index ? 'bg-white' : 'bg-primary'}`}
-          />
-        ))}
-      </div>
-    );
-  };
+  const PastureHorsesIndicator = () => (
+    <div className='bg-primary flex h-8 w-40 max-w-full items-center justify-center gap-2 rounded-full'>
+      {state.candidateHorses.map((horse) => {
+        const isCurrent = horse.cardId === currentHorseId;
+        const isRepresentative = horse.status === 3 || state.representativeHorse?.cardId === horse.cardId;
+
+        return (
+          <div key={horse.cardId} className='relative flex h-4 w-4 items-center justify-center'>
+            <button
+              onClick={() => setCurrentHorseId(horse.cardId)}
+              className={`h-2 w-2 rounded-full transition-colors ${isCurrent ? 'bg-white' : 'bg-background'}`}
+            />
+          </div>
+        );
+      })}
+    </div>
+  );
 
   const SelectedHorseInfo = () => {
+    const currentHorse = getCurrentHorse();
+    const isRepresentative = currentHorse?.status === 3 || state.representativeHorse?.cardId === currentHorse?.cardId;
+
     return (
-      <>
-        <div className='flex flex-col items-center gap-10'>
-          <CrownIcon
-            className={`${candidateHorses[currentIndex] === state.representativeHorse ? 'block' : 'invisible'}`}
-            width={32}
-            height={32}
-          />
-          <div className='flex items-center gap-10'>
-            <ChangeHorseButton type='minus' />
-            <div className={`relative rounded-[100%] ${pastureBgUrl} h-24 w-100 shadow-md`}>
-              {candidateHorses[currentIndex] && (
-                <div
-                  className={`image-rendering-pixelated absolute left-[44%] scale-200 cursor-pointer ${horseImageClass[candidateHorses[currentIndex].coatColor]} horseRun-right`}
-                />
-              )}
-            </div>
-            <ChangeHorseButton type='plus' />
+      <div className='flex flex-col items-center gap-8'>
+        <PastureHorsesIndicator />
+        <div className='flex items-center gap-10'>
+          <ChangeHorseButton type='minus' />
+          <div className={`relative rounded-[100%] ${pastureBgUrl} h-24 w-100 shadow-md`}>
+            {currentHorse && (
+              <div
+                className={`image-rendering-pixelated absolute left-[44%] scale-200 cursor-pointer ${horseImageClass[currentHorse.coatColor]} horseRun-right`}
+              />
+            )}
           </div>
-          <div className='h-10'>{candidateHorses[currentIndex]?.name}</div>
-          <PastureHorsesIndicator />
+          <ChangeHorseButton type='plus' />
         </div>
-      </>
-    );
-  };
-
-  // 에러 메시지 표시 컴포넌트
-  const ErrorMessage = () => {
-    if (!state.error) return null;
-
-    return (
-      <div className='text-warning relative mb-4 rounded border bg-red-100 px-4 py-3' role='alert'>
-        <span className='block sm:inline'>{state.error}</span>
-      </div>
-    );
-  };
-
-  // 말 수 표시 컴포넌트
-  const HorsesCountIndicator = () => {
-    return (
-      <div className='my-4 flex justify-start px-4 text-gray-700'>
-        <div
-          className={`flex items-center gap-2 rounded-full px-4 ${candidateHorses.length === state.maxHorses ? 'bg-green-400' : 'bg-white'}`}
-        >
-          <PastureIcon />
-
-          <span className='block sm:inline'>
-            {candidateHorses.length} / {state.maxHorses} 마리
-          </span>
+        <div className='flex items-center gap-2'>
+          {isRepresentative && <CrownIcon width={20} height={20} />}
+          <div className='h-10'>{currentHorse?.name || '선택된 말이 없습니다'}</div>
         </div>
       </div>
     );
   };
 
-  const { data, hasNextPage, ref } = useInfiniteScroll(
-    queryKey.MY_HORSE_CARDS,
-    getMyHorseCards,
-    rankNameMap[rank as keyof typeof rankNameMap]
+  const HorsesCountIndicator = () => (
+    <div className='my-2 flex px-4 text-white'>
+      <div className={`bg-primary flex items-center gap-2 rounded-full px-4`}>
+        <PastureIcon />
+        <span>{state.candidateHorses.length} / 6 마리</span>
+      </div>
+    </div>
   );
+
+  const candidateMutation = useUpdateCandidateHorse();
+  const { setRepresentative: representativeMutation, unsetRepresentative: unsetRepresentativeMutation } =
+    useRepresentativeHorse();
+
+  const handleToggleRepresentative = (horse: HorseCardType) => {
+    if (horse.status === 3) {
+      unsetRepresentativeMutation.mutate(horse.cardId, {
+        onSuccess: () => {
+          dispatch({ type: 'TOGGLE_REPRESENTATIVE_HORSE', payload: null });
+        },
+      });
+    } else {
+      representativeMutation.mutate(horse.cardId, {
+        onSuccess: () => {
+          dispatch({ type: 'TOGGLE_REPRESENTATIVE_HORSE', payload: { ...horse, status: 3 } });
+        },
+      });
+    }
+  };
+
+  const { data, hasNextPage, ref } = useInfiniteScroll(queryKey.MY_HORSE_CARDS, getMyHorseCards);
 
   return (
     <div className='flex h-full flex-col'>
-      {/* <ErrorMessage /> */}
-      <section className='mt-10 flex flex-col items-center justify-center gap-4'>
+      <section className='my-10 flex flex-col items-center justify-center gap-2'>
         <SelectedHorseInfo />
-      </section>
-      <div className='flex items-center justify-around gap-2'>
-        <HorsesCountIndicator />
-        <div className='flex gap-2'>
+        <div className='flex w-full items-center justify-center gap-2'>
           <Button
-            onClick={() =>
-              candidateHorses.length > 0 &&
-              handleSetCandidateHorses({
-                ...candidateHorses[currentIndex],
-                cardId: parseInt(candidateHorses[currentIndex].horseId, 10),
-                status: 0,
-              })
-            }
-            disabled={candidateHorses.length === 0}
+            onClick={() => {
+              const currentHorse = getCurrentHorse();
+              if (currentHorse) {
+                handleToggleRepresentative(currentHorse);
+              }
+            }}
+            disabled={state.candidateHorses.length === 0}
           >
-            목장에서 제거
-          </Button>
-          <Button
-            onClick={() => handleSetRepresentativeHorse(candidateHorses[currentIndex])}
-            disabled={candidateHorses.length === 0}
-          >
-            경주마 지정
+            {getCurrentHorse()?.status === 3 ? '경주마 해제' : '경주마 지정'}
           </Button>
         </div>
-      </div>
-      <section className='bg-primary border-t border-b border-black p-4'>
-        <Dropdown options={Object.values(rankMap)} value={rank} onChange={setRank} placeholder='등급 선택' />
       </section>
-      <div
-        className={`top-0 left-0 z-10 aspect-[320/492] cursor-pointer flex-col items-center justify-between bg-contain bg-center bg-no-repeat`}
-      >
+      <section className='bg-primary border-t border-b border-black p-4'>
+        <Dropdown
+          options={Object.values(rankMap)}
+          value={rank}
+          onChange={(value) => {
+            setRank(value);
+          }}
+          placeholder='전체'
+        />
+      </section>
+      <div>
+        <HorsesCountIndicator />
         <section className='grid grid-cols-3 place-items-center px-1 py-2'>
           {data.pages.flatMap((page) =>
             page.items.map((item) => (
-              <SmallHorseCard key={item.tradeId} horse={item} onClick={() => handleSetCandidateHorses(item)} />
+              <div
+                key={item.cardId}
+                className='relative z-10'
+                onClick={() => {
+                  candidateMutation.mutate(item.cardId, {
+                    onSuccess: () => {
+                      dispatch({ type: 'TOGGLE_CANDIDATE_HORSE', payload: item });
+                      setCurrentHorseId(item.cardId);
+                    },
+                  });
+                }}
+              >
+                {(item.status === 2 || item.status === 3) && (
+                  <div className='absolute inset-0 z-20 flex items-center justify-center rounded-xl bg-black/60'>
+                    <SelectedIcon />
+                  </div>
+                )}
+
+                <SmallHorseCard horse={item} />
+              </div>
             ))
           )}
         </section>
@@ -198,16 +199,6 @@ const ManagementPanel: React.FC = () => {
             <ClipLoader size={18} color='#3D4B63' />
           </div>
         )}
-        {/* <div */}
-        {/*   className={`absolute top-0 left-0 z-10 h-full w-full rounded-xl ${isInPasture ? 'bg-modal' : ''}`} */}
-        {/*   onClick={() => handleSetCandidateHorses(horse)} */}
-        {/*   style={{ zIndex: isInPasture ? 10 : 0 }} */}
-        {/* /> */}
-        {/* <SmallHorseCard */}
-        {/*   key={horse.horseId} */}
-        {/*   onClick={() => handleSetCandidateHorses(horse)} */}
-        {/*   horse={{ ...horse, cardId: parseInt(horse.horseId, 10), status: 0 }} */}
-        {/* /> */}
       </div>
     </div>
   );

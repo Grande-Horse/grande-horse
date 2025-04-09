@@ -61,7 +61,7 @@ const CardResultPage: React.FC = () => {
           onClick={() => setFlippedIndex(flippedIndex === index ? null : index)}
         />
       ))}
-      <div className='fixed flex translate-1/2 justify-center gap-4'>
+      <div className='fixed top-14 flex translate-1/2 justify-center gap-4'>
         <Button
           onClick={() => {
             navigate('/market#2');

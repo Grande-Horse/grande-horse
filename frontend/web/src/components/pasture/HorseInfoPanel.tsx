@@ -7,12 +7,19 @@ import SpeedIcon from '@/assets/icons/speedIcon.svg?react';
 import AccelerationIcon from '@/assets/icons/accelerationIcon.svg?react';
 import StaminaIcon from '@/assets/icons/staminaIcon.svg?react';
 import { rankMap } from '@/constants/rank';
+import { unsetRepresentativeHorse, useRepresentativeHorse, useUpdateCandidateHorse } from '@/services/horseManagement';
+import { usePastureHorse } from '@/contexts/PastureHorseContextProvider';
 
 interface HorseInfoPanelProps {
-  selectedHorse: HorseCardType;
+  selectedHorse: HorseCardType | null;
+  setSelectedHorse: (horse: HorseCardType | null) => void;
 }
 
-const HorseInfoPanel: React.FC<HorseInfoPanelProps> = ({ selectedHorse }) => {
+const HorseInfoPanel: React.FC<HorseInfoPanelProps> = ({ selectedHorse, setSelectedHorse }) => {
+  const { dispatch } = usePastureHorse();
+  const candidateMutation = useUpdateCandidateHorse();
+  const { setRepresentative: representativeMutation, unsetRepresentative: unsetRepresentativeMutation } =
+    useRepresentativeHorse();
   const horseStats = [
     {
       icon: <RankIcon />,
@@ -52,8 +59,39 @@ const HorseInfoPanel: React.FC<HorseInfoPanelProps> = ({ selectedHorse }) => {
       </div>
 
       <div className='mt-4 flex w-full gap-5 pl-4'>
-        <Button className='flex-1'>경주마로 지정</Button>
-        <Button className='flex-1'>목장에서 제거</Button>
+        <Button
+          className='flex-1'
+          onClick={() => {
+            if (selectedHorse?.status === 3) {
+              unsetRepresentativeMutation.mutate(selectedHorse.cardId, {
+                onSuccess: () => {
+                  dispatch({ type: 'TOGGLE_REPRESENTATIVE_HORSE', payload: null });
+                },
+              });
+            } else {
+              representativeMutation.mutate(selectedHorse.cardId, {
+                onSuccess: () => {
+                  dispatch({ type: 'TOGGLE_REPRESENTATIVE_HORSE', payload: selectedHorse });
+                },
+              });
+            }
+          }}
+        >
+          {selectedHorse?.status === 3 ? '경주마 해제' : '경주마 지정'}
+        </Button>
+        <Button
+          className='flex-1'
+          onClick={() => {
+            candidateMutation.mutate(selectedHorse.cardId, {
+              onSuccess: () => {
+                dispatch({ type: 'TOGGLE_CANDIDATE_HORSE', payload: selectedHorse });
+                setSelectedHorse(null);
+              },
+            });
+          }}
+        >
+          후보 말 해제
+        </Button>
       </div>
     </section>
   );

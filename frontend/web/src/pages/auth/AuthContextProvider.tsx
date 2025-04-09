@@ -179,7 +179,6 @@ export const AuthContextProvider: React.FC<{ children: React.ReactNode }> = ({ c
           });
         } else {
           // 회원가입 필요 시
-          console.log('회원가입 필요');
           dispatch({
             type: 'REGISTER_REQUIRED',
           });
