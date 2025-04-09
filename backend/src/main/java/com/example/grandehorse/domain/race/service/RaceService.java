@@ -90,6 +90,18 @@ public class RaceService {
 		this.raceRecordJpaRepository = raceRecordJpaRepository;
 	}
 
+	public void getInitialWaitingRooms(String sessionId) {
+		Map<String, Object> response = new HashMap<>();
+		response.put("type", "initialRooms");
+		List<RaceRoom> raceRooms = getRaceRooms();
+		response.put("initialRooms", raceRooms);
+		SimpMessageHeaderAccessor headerAccessor = SimpMessageHeaderAccessor.create(SimpMessageType.MESSAGE);
+		headerAccessor.setSessionId(sessionId);
+		headerAccessor.setLeaveMutable(true);
+		messagingTemplate.convertAndSendToUser(sessionId, "/queue/subscribe", response,
+			headerAccessor.getMessageHeaders());
+	}
+
 	public void broadcastRaceRooms() {
 		List<RaceRoom> raceRooms = getRaceRooms();
 		messagingTemplate.convertAndSend("/topic/waiting_rooms", Map.of("raceRooms", raceRooms));
@@ -122,10 +134,13 @@ public class RaceService {
 		String ownerKey = roomKey + ":owner";
 		websocketRedisTemplate.opsForValue().set(ownerKey, String.valueOf(userId));
 
+		Map<String, Object> response = new HashMap<>();
+		response.put("type", "createRoom");
+		response.put("roomId", String.valueOf(roomId));
 		SimpMessageHeaderAccessor headerAccessor = SimpMessageHeaderAccessor.create(SimpMessageType.MESSAGE);
 		headerAccessor.setSessionId(sessionId);
 		headerAccessor.setLeaveMutable(true);
-		messagingTemplate.convertAndSendToUser(sessionId, "/queue/subscribe", String.valueOf(roomId),
+		messagingTemplate.convertAndSendToUser(sessionId, "/queue/subscribe", response,
 			headerAccessor.getMessageHeaders());
 	}
 
@@ -642,7 +657,8 @@ public class RaceService {
 		RaceRoomError errorResponse = RaceRoomError.builder().errorCode(errorCode).build();
 
 		messagingTemplate.convertAndSendToUser(
-			sessionId, "/queue/subscribe", errorResponse, headerAccessor.getMessageHeaders());
+			sessionId, "/queue/subscribe", errorResponse, headerAccessor.getMessageHeaders()
+		);
 	}
 
 	private double calculateDistance(Map<Object, Object> stats) {
@@ -680,5 +696,35 @@ public class RaceService {
 			.collect(Collectors.toList());
 		response.put("playersInfo", playersInfo);
 		messagingTemplate.convertAndSend("/topic/race_room/" + roomId + "/game", response);
+	}
+
+	public void changeRepresentativeHorse(Long roomId, int userId, int cardId) {
+		cardService.changeRepresentativeCard(userId, cardId);
+
+		String roomKey = RACE_ROOM_PREFIX + roomId;
+		String userKey = roomKey + ":user:" + userId;
+
+		CardEntity cardEntity = cardService.findRepresentativeCard(userId);
+		HorseEntity horseEntity = horseService.findHorseById(cardEntity.getHorseId());
+		websocketRedisTemplate.opsForHash()
+			.put(userKey, "cardId", String.valueOf(cardId));
+		websocketRedisTemplate.opsForHash()
+			.put(userKey, "horseId", horseEntity.getId());
+		websocketRedisTemplate.opsForHash()
+			.put(userKey, "horseName", horseEntity.getName());
+		websocketRedisTemplate.opsForHash()
+			.put(userKey, "horseColor", horseEntity.getCoatColor().toLowerCase());
+		websocketRedisTemplate.opsForHash()
+			.put(userKey, "horseRank", horseEntity.getHorseRank().toLowerCase());
+		websocketRedisTemplate.opsForHash()
+			.put(userKey, "horseWeight", String.valueOf(horseEntity.getWeight()));
+		websocketRedisTemplate.opsForHash()
+			.put(userKey, "horseSpeed", String.valueOf(horseEntity.getSpeed()));
+		websocketRedisTemplate.opsForHash()
+			.put(userKey, "horseAcceleration", String.valueOf(horseEntity.getAcceleration()));
+		websocketRedisTemplate.opsForHash()
+			.put(userKey, "horseStamina", String.valueOf(horseEntity.getStamina()));
+
+		broadcastPlayersInfo(roomId, roomKey);
 	}
 }
