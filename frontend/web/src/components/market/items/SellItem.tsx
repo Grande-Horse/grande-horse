@@ -5,6 +5,8 @@ import StatBar from '@/components/charts/StatBar';
 import { cancelHorseSelling } from '@/services/trading';
 import { SoldItemType } from '@/types/trading';
 import DotHorseCard from '@/components/cards/DotHorseCard';
+import { useMutation, useQueryClient } from '@tanstack/react-query';
+import { queryKey } from '@/constants/queryKey';
 
 interface SellItemProps {
   item: SoldItemType;
@@ -13,14 +15,18 @@ interface SellItemProps {
 const SellItem: React.FC<SellItemProps> = ({
   item: { horseId: id, name, coatColor, horseRank: rank, speed, acceleration, stamina, tradeId, price, soldAt },
 }) => {
-  const handleCancelHorseSelling = async () => {
-    const tradeId = 3;
+  const queryClient = useQueryClient();
 
-    try {
-      await cancelHorseSelling(tradeId);
-    } catch (error) {
-      console.error(error);
-    }
+  const mutation = useMutation({
+    mutationFn: () => cancelHorseSelling(tradeId),
+    onSuccess: () => {
+      queryClient.refetchQueries({ queryKey: [queryKey.MY_TRADING] });
+      alert('판매 취소하였습니다.');
+    },
+  });
+
+  const handleCancelHorseSelling = async () => {
+    mutation.mutate();
   };
 
   return (

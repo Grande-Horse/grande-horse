@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useState } from 'react';
 import Dropdown from '@/components/ui/dropdown/Dropdown';
 import { Button } from '@/components/ui/Button';
 import Input from '@/components/ui/Input';
@@ -16,42 +16,35 @@ interface RoomCreateModalReturn {
 }
 
 interface RoomCreateModalProps {
-  close: (value: RoomCreateModalReturn | null) => void;
+  setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
-const RoomCreateModal = ({ close }: RoomCreateModalProps) => {
-  const roomNameInputRef = useRef<HTMLInputElement>(null);
-  const [maxPlayers, setMaxPlayers] = useState<string>('');
+const MAX_ROOM_NAME_LENGTH = 20;
+
+const RoomCreateModal = () => {
+  const [roomName, setRoomName] = useState<string>('');
+  const [maxPlayers, setMaxPlayers] = useState<number>(0);
   const [rankRestriction, setRankRestriction] = useState<RankKrType | ''>('');
-  const bettingCoinInputRef = useRef<HTMLInputElement>(null);
+  const [bettingCoin, setBettingCoin] = useState<number>(0);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-
-    const roomName = roomNameInputRef.current?.value.trim() ?? '';
-    const maxPlayersNum = Number(maxPlayers) || 2;
-
-    const bettingRaw = bettingCoinInputRef.current?.value ?? '';
-    const bettingCoin = Number(bettingRaw.trim().replace(/['"]/g, '')) || 0;
-
-    close({
-      roomName,
-      maxPlayers: maxPlayersNum,
-      rankRestriction: rankRestriction ? rankNameMap[rankRestriction] : 'all',
-      bettingCoin,
-    });
-  };
-  const closeModalWithoutSave = () => {
-    close(null);
   };
 
   const handleDropDownOnChange = (value: string | RankKrType, name: 'maxPlayers' | 'rankRestriction') => {
     if (name === 'maxPlayers') {
-      setMaxPlayers(value as string);
+      setMaxPlayers(Number(value));
     } else {
       setRankRestriction(value as RankKrType);
     }
   };
+  const isFormValid =
+    roomName.trim().length > 0 &&
+    roomName.trim().length <= 20 &&
+    maxPlayers > 0 &&
+    rankRestriction !== '' &&
+    bettingCoin > 0 &&
+    bettingCoin <= 99999;
 
   return (
     <div className='z-modal fixed inset-0 flex items-center justify-center'>
@@ -62,13 +55,18 @@ const RoomCreateModal = ({ close }: RoomCreateModalProps) => {
             placeholder='제목'
             id='roomName'
             className='text-detail1 placeholder:text-black'
-            ref={roomNameInputRef}
+            value={roomName}
+            onChange={(e) => {
+              if (e.target.value.length <= MAX_ROOM_NAME_LENGTH) {
+                setRoomName(e.target.value);
+              }
+            }}
           />
           <Dropdown
             className='text-detail1 w-full'
             options={PARTICIPANT_NUMBERS}
             placeholder='인원수'
-            value={maxPlayers}
+            value={maxPlayers === 0 ? '' : String(maxPlayers)}
             onChange={(value) => handleDropDownOnChange(value, 'maxPlayers')}
           />
           <Dropdown
@@ -82,14 +80,21 @@ const RoomCreateModal = ({ close }: RoomCreateModalProps) => {
             placeholder='배팅 코인'
             id='bettingCoin'
             type='number'
-            ref={bettingCoinInputRef}
+            value={bettingCoin === 0 ? '' : bettingCoin}
+            onChange={(e) => {
+              const rawValue = e.target.value;
+              if (!/^\d*$/.test(rawValue)) return;
+              const numericValue = Math.min(Number(rawValue), 999999);
+              setBettingCoin(numericValue);
+            }}
             className='text-detail1 placeholder:text-black'
+            max={999999}
           />
           <div className='flex w-full gap-3 pt-5'>
             <Button type='button' className='flex-1' onClick={closeModalWithoutSave}>
               취소
             </Button>
-            <Button type='submit' className='flex-1' disabled={!roomNameInputRef.current?.value}>
+            <Button type='submit' className='flex-1' disabled={!isFormValid}>
               생성
             </Button>
           </div>
