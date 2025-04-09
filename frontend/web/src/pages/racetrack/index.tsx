@@ -32,7 +32,7 @@ const RacetrackPage = () => {
         });
       },
       (error) => {
-        console.log(error, '방 생성 에러');
+        console.log(error);
       }
     );
 

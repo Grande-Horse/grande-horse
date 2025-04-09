@@ -5,7 +5,6 @@ import HorseChangeModal from '@/components/racetrack/HorseChangeModal';
 import RoomReadyButton from '@/components/racetrack/RoomReadyButton';
 import { type RoomJoinUserData } from '@/types/room';
 import { useStompClient } from '@/contexts/StompContext';
-import { useNavigate } from 'react-router-dom';
 import useUserInfo from '@/hooks/useQueries/useUserInfo';
 
 interface RoomActionButtonsProps {
@@ -15,13 +14,11 @@ interface RoomActionButtonsProps {
 
 const RoomActionButtons: React.FC<RoomActionButtonsProps> = ({ roomId, users }) => {
   const { publish } = useStompClient();
-  const navigate = useNavigate();
   const { data } = useUserInfo();
 
   const user = users.find((user) => user.userId === data?.id);
   const { ModalWrapper, openModal, closeModal } = useModal();
 
-  // api요청 또는 publish 요청을 통해서 방에 입장하는 로직 추가 예정
   const handleOpenModal = () => {
     openModal();
   };

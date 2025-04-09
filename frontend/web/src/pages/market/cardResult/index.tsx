@@ -1,6 +1,9 @@
 import FlipCard from '@/components/cards/FlipCard';
 import { useEffect, useState } from 'react';
 import { HorseCardType } from '@/types/card';
+import { Button } from '@/components/ui/Button';
+import { useNavigate, useLocation } from 'react-router-dom';
+import useInternalRouter from '@/hooks/useInternalRouter';
 
 interface CardResultType {
   cardId: number;
@@ -17,6 +20,14 @@ interface CardResultType {
 
 const CardResultPage: React.FC = () => {
   const [flippedIndex, setFlippedIndex] = useState<number | null>(null);
+  const [data, setData] = useState<CardResultType[]>([]);
+  const navigate = useNavigate();
+  const { goBack } = useInternalRouter();
+  const { state } = useLocation();
+
+  useEffect(() => {
+    setData(state.state.data);
+  }, []);
 
   useEffect(() => {
     const container = document.querySelector('.h-body');
@@ -29,81 +40,6 @@ const CardResultPage: React.FC = () => {
       behavior: 'smooth',
     });
   }, [flippedIndex]);
-
-  const data: HorseCardType[] = [
-    {
-      cardId: 0,
-      horseId: 'STRING',
-      status: 1,
-      coatColor: 'black',
-      name: 'STRING',
-      horseRank: 'rare',
-      weight: 1,
-      speed: 1,
-      acceleration: 1,
-      stamina: 1,
-    },
-    {
-      cardId: 1,
-      horseId: 'STRING',
-      status: 1,
-      coatColor: 'black',
-      name: 'STRING',
-      horseRank: 'rare',
-      weight: 1,
-      speed: 1,
-      acceleration: 1,
-      stamina: 1,
-    },
-    {
-      cardId: 2,
-      horseId: 'STRING',
-      status: 1,
-      coatColor: 'black',
-      name: 'STRING',
-      horseRank: 'normal',
-      weight: 1,
-      speed: 1,
-      acceleration: 1,
-      stamina: 1,
-    },
-    {
-      cardId: 3,
-      horseId: 'STRING',
-      status: 1,
-      coatColor: 'black',
-      name: 'STRING',
-      horseRank: 'normal',
-      weight: 1,
-      speed: 1,
-      acceleration: 1,
-      stamina: 1,
-    },
-    {
-      cardId: 4,
-      horseId: 'STRING',
-      status: 1,
-      coatColor: 'black',
-      name: 'STRING',
-      horseRank: 'epic',
-      weight: 1,
-      speed: 1,
-      acceleration: 1,
-      stamina: 1,
-    },
-    {
-      cardId: 5,
-      horseId: 'STRING',
-      status: 1,
-      coatColor: 'black',
-      name: 'STRING',
-      horseRank: 'rare',
-      weight: 1,
-      speed: 1,
-      acceleration: 1,
-      stamina: 1,
-    },
-  ];
 
   return (
     <div className='h-body relative w-full overflow-x-scroll scroll-smooth'>
@@ -125,6 +61,22 @@ const CardResultPage: React.FC = () => {
           onClick={() => setFlippedIndex(flippedIndex === index ? null : index)}
         />
       ))}
+      <div className='fixed flex translate-1/2 justify-center gap-4'>
+        <Button
+          onClick={() => {
+            navigate('/market#2');
+          }}
+        >
+          마시장으로 돌아가기
+        </Button>
+        <Button
+          onClick={() => {
+            navigate('/stall');
+          }}
+        >
+          말 관리
+        </Button>
+      </div>
     </div>
   );
 };

@@ -241,3 +241,10 @@ html {
   font-family: 'DungGeunMo';
   src: url('/fonts/DungGeunMo.ttf');
 }
+
+.triangle-down {
+  @apply w-0 h-0;
+  border-left: 10px solid transparent;
+  border-right: 10px solid transparent;
+  border-top: 10px solid #3D4B63;
+}
