@@ -25,4 +25,5 @@ export interface RoomJoinUserData {
   ready: boolean;
   roomOwner: boolean;
   userNickname: string;
+  hasEnoughCoin: boolean;
 }

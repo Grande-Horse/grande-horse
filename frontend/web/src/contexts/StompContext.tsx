@@ -58,7 +58,6 @@ export const StompProvider = ({ children }: { children: React.ReactNode }) => {
       try {
         const data = JSON.parse(message.body);
 
-        console.log(data);
         if ('errorCode' in data) {
           onError?.(data.errorCode);
         } else {

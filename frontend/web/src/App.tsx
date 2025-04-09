@@ -19,7 +19,7 @@ import { MusicProvider } from '@/contexts/musicContext';
 import CardResultPage from './pages/market/cardResult';
 import RaceTrackRacePage from '@/pages/racetrack/room/race';
 import { HorseProvider } from '@/contexts/pastureHorseContext';
-import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
+import { ReactQueryDevtools } from '@tanstack/react-query-devtools';
 
 // 인증만 필요한 라우트 래퍼
 // const AuthOnlyPage = ({ children }: { children: React.ReactNode }) => (
@@ -32,7 +32,6 @@ import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 // const PublicPage = ({ children }: { children: React.ReactNode }) => (
 //     <ProtectedRoute requireAuth={false}>{children}</ProtectedRoute>
 // );
-
 
 function App() {
   const queryClient = new QueryClient();
