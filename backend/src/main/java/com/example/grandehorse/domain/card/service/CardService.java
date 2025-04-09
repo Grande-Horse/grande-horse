@@ -3,14 +3,12 @@ package com.example.grandehorse.domain.card.service;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Slice;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -455,6 +453,7 @@ public class CardService {
 		cardEntity.updateWinRecord(totalPrize);
 	}
 
+	@Transactional
 	public void updateCardRaceRecord(int cardId) {
 		CardEntity cardEntity = cardJpaRepository.findCardByIdWithPessimisticLock(cardId)
 			.orElseThrow(() -> new CardException(CustomError.CARD_NOT_EXISTED));

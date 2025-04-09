@@ -3,6 +3,9 @@ server:
     context-path: /api/v1
 
 spring:
+  jackson:
+    time-zone: Asia/Seoul
+    
   config:
     import: "application-secret.yml"
 
