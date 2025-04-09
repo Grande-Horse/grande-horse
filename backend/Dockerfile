@@ -10,4 +10,4 @@ RUN find /app -name "*SNAPSHOT.jar" -exec cp {} /app/app.jar \;
 
 ENV SPRING_PROFILES_ACTIVE=prod
 
-ENTRYPOINT ["java", "-jar", "app.jar"]
+ENTRYPOINT ["java", "-Duser.timezone=Asia/Seoul", "-jar", "app.jar"]
