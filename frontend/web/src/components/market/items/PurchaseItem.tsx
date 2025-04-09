@@ -18,7 +18,6 @@ const PurchaseItem: React.FC<PurchaseItemProps> = ({
   onPriceHistoryClick,
 }) => {
   const handlePurchaseHorse = async () => {
-    const tradeId = 1;
     try {
       await purchaseHorse(tradeId);
     } catch (error) {
