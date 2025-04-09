@@ -4,6 +4,7 @@ import ssafyLogo from '@/assets/images/ssafy-logo.png';
 import { useEffect, useContext } from 'react';
 import { AuthContext } from '@/pages/auth/AuthContextProvider';
 import { ClipLoader } from 'react-spinners';
+import { autoLogin } from '@/services/auth';
 
 const cloudBgImages = {
   upper: `bg-[url(@/assets/images/backgrounds/landingBgCloudUpper.png)]`,
@@ -60,15 +61,8 @@ const LandingPage: React.FC = () => {
   };
 
   const authContext = useContext(AuthContext);
-  const navigate = useNavigate();
 
-  useEffect(() => {
-    if (authContext?.state.isAuthenticated) {
-      navigate('/');
-    }
-  }, [authContext?.state.isAuthenticated, navigate]);
-
-  if (authContext?.state.loading)
+  if (authContext?.state.isLoading)
     return (
       <div className='flex h-screen w-full items-center justify-center'>
         <ClipLoader color='#FFF' size={50} />
