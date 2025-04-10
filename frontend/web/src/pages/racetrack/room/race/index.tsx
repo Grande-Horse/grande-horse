@@ -28,7 +28,7 @@ const RaceTrackRacePage = () => {
     { raceRank: 0, totalPrize: 0, userNickname: '', userId: 0 },
   ]);
 
-  const [playersInfo, setPlayersInfo] = useState<RoomJoinUserData[]>([]);
+  const [playersInfo, setPlayersInfo] = useState<RoomJoinUserData[]>();
   const [roomName, setRoomName] = useState<string>('');
   const [maxPlayers, setMaxPlayers] = useState<number>(6);
   const [roomId, setRoomId] = useState<number>(0);
@@ -43,7 +43,7 @@ const RaceTrackRacePage = () => {
 
   const addEventListeners = (callback: () => void) => {
     handleKeyDown = (e: KeyboardEvent) => {
-      if ((e.key === ' ' || e.code === 'Space') && !e.repeat) {
+      if (e.key === 'ArrowRight' && !e.repeat) {
         callback();
       }
     };
