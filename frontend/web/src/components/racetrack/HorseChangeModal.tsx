@@ -5,6 +5,7 @@ import Horse from '@/components/racetrack/Horse';
 import { Button } from '@/components/ui/Button';
 
 import { type CandidateHorseType } from '@/types/horse';
+import useUserInfo from '@/hooks/useQueries/useUserInfo';
 
 interface HorseChangeModalProps {
   onSuccess: (data: CandidateHorseType[]) => void;
@@ -22,16 +23,18 @@ const HorseChangeModal: React.FC<HorseChangeModalProps> = ({ onSuccess, horseLis
     legend: `bg-[url(@/assets/images/backgrounds/legendBg.webp)]`,
   } as const;
 
-  const [selectedHorseId, setSelectedHorseId] = useState<string | null>(null);
+  const { data } = useUserInfo();
+
+  const [selectedHorseId, setSelectedHorseId] = useState<string | undefined>(data?.representativeCard.horseId);
 
   const [activeHorseStates, setActiveHorseStates] = useState<boolean[]>(new Array(horseList.length).fill(false));
 
   const handleCardClick = (horseId: string) => {
-    setSelectedHorseId((prevId) => (prevId === horseId ? null : horseId));
+    setSelectedHorseId((prevId) => (prevId === horseId ? undefined : horseId));
   };
 
   const handleSelectedClick = () => {
-    setSelectedHorseId(null);
+    setSelectedHorseId(undefined);
   };
 
   const setActiveHorse = (index: number, isActive: boolean) => {
@@ -44,13 +47,13 @@ const HorseChangeModal: React.FC<HorseChangeModalProps> = ({ onSuccess, horseLis
 
   const handleChangeClick = () => {
     onSuccess(horseList.filter((horse) => String(horse.horseId) === selectedHorseId));
-    setSelectedHorseId(null);
+    setSelectedHorseId(undefined);
     setActiveHorseStates(new Array(horseList.length).fill(false));
     setIsOpen(false);
   };
 
   const handleCancelClick = () => {
-    setSelectedHorseId(null);
+    setSelectedHorseId(undefined);
     setActiveHorseStates(new Array(horseList.length).fill(false));
     setIsOpen(false);
   };
