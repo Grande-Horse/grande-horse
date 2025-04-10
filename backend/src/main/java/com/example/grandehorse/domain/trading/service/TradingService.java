@@ -2,6 +2,7 @@ package com.example.grandehorse.domain.trading.service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -133,34 +134,34 @@ public class TradingService {
 		스케줄링 돌려서 매일 밤 12시에 데이터 들고와서 레디스에 올려놓는 방식으로 리팩토링하기 (성능 개선 예정)
 	 */
 	public ResponseEntity<CommonResponse<List<PriceHistoryResponse>>> getPriceHistory(String horseId) {
-		LocalDate now = LocalDate.now();
-		LocalDate oneDayAgo = now.minusDays(1);
-		LocalDate sevenDaysAgo = now.minusDays(7);
+		LocalDate today = LocalDate.now();
+		LocalDate sixDaysAgo = today.minusDays(6);
 
-		List<PriceHistoryResponse> priceHistory
-			= cardTradingJpaRepository.findPriceHistory(horseId, oneDayAgo, sevenDaysAgo);
+		LocalDateTime startDateTime = sixDaysAgo.atStartOfDay();
+		LocalDateTime endDateTime = today.atTime(LocalTime.MAX);
+
+		List<PriceHistoryResponse> priceHistory =
+			cardTradingJpaRepository.findPriceHistory(horseId, startDateTime, endDateTime);
 
 		Map<LocalDate, PriceHistoryResponse> priceHistoryByDate = priceHistory.stream()
 			.collect(Collectors.toMap(PriceHistoryResponse::getDate, Function.identity()));
 
-		priceHistory = fillMissingPriceHistory(sevenDaysAgo, oneDayAgo, priceHistoryByDate);
+		priceHistory = fillMissingPriceHistory(sixDaysAgo, today, priceHistoryByDate);
 
 		return CommonResponse.listSuccess(priceHistory);
 	}
 
 	private List<PriceHistoryResponse> fillMissingPriceHistory(
-		LocalDate sevenDaysAgo,
-		LocalDate oneDayAgo,
+		LocalDate startDate,
+		LocalDate endDate,
 		Map<LocalDate, PriceHistoryResponse> priceHistoryByDate
 	) {
 		List<PriceHistoryResponse> priceHistory = new ArrayList<>();
-		for (LocalDate date = sevenDaysAgo; !date.isAfter(oneDayAgo); date = date.plusDays(1)) {
-			PriceHistoryResponse response = priceHistoryByDate.get(date);
-			if (response == null) {
-				priceHistory.add(new PriceHistoryResponse(0, 0.0, 0, date));
-			} else {
-				priceHistory.add(response);
-			}
+		for (LocalDate date = startDate; !date.isAfter(endDate); date = date.plusDays(1)) {
+			PriceHistoryResponse response = priceHistoryByDate.getOrDefault(
+				date, new PriceHistoryResponse(0, 0.0, 0, date)
+			);
+			priceHistory.add(response);
 		}
 		return priceHistory;
 	}

@@ -8,6 +8,8 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class GameResult {
+	private int userId;
+
 	private String userNickname;
 
 	private int totalPrize;
