@@ -44,34 +44,38 @@ function App() {
             <GlobalLayout>
               <AuthContextProvider>
                 <HorseProvider>
-                  <PastureHorseContextProvider>
-                    <Routes>
-                      {/* 인증 + 회원가입 필요 */}
-                      <Route element={<ProtectedRoute requireAuth requireRegistration />}>
-                        <Route path='/' element={<HomePage />} />
+                  <Routes>
+                    {/* 인증 + 회원가입 필요 */}
+                    <Route
+                      element={
+                        <PastureHorseContextProvider>
+                          <ProtectedRoute requireAuth requireRegistration />
+                        </PastureHorseContextProvider>
+                      }
+                    >
+                      <Route path='/' element={<HomePage />} />
 
-                        <Route path='/stall' element={<StallPage />} />
-                        <Route path='/market' element={<MarketPage />} />
-                        <Route path='/market/card/result' element={<CardResultPage />} />
-                        <Route path='/market/sell' element={<SellPage />} />
+                      <Route path='/stall' element={<StallPage />} />
+                      <Route path='/market' element={<MarketPage />} />
+                      <Route path='/market/card/result' element={<CardResultPage />} />
+                      <Route path='/market/sell' element={<SellPage />} />
 
-                        <Route path='/racetrack' element={<RacetrackPage />} />
-                        <Route path='/racetrack/room/:roomId' element={<RacetrackRoomPage />} />
-                        <Route path='/racetrack/room/:roomId/race' element={<RaceTrackRacePage />} />
-                      </Route>
+                      <Route path='/racetrack' element={<RacetrackPage />} />
+                      <Route path='/racetrack/room/:roomId' element={<RacetrackRoomPage />} />
+                      <Route path='/racetrack/room/:roomId/race' element={<RaceTrackRacePage />} />
+                    </Route>
 
-                      {/* 인증 필요 */}
-                      {/* <Route element={<ProtectedRoute requireAuth />}> */}
-                      <Route path='/register' element={<RegisterPage />} />
-                      {/* </Route> */}
+                    {/* 인증 필요 */}
+                    {/* <Route element={<ProtectedRoute requireAuth />}> */}
+                    <Route path='/register' element={<RegisterPage />} />
+                    {/* </Route> */}
 
-                      {/* 공개 라우트 */}
-                      <Route element={<ProtectedRoute requireAuth={false} />}>
-                        <Route path='/auth' element={<AuthPage />} />
-                        <Route path='/landing' element={<LandingPage />} />
-                      </Route>
-                    </Routes>
-                  </PastureHorseContextProvider>
+                    {/* 공개 라우트 */}
+                    <Route element={<ProtectedRoute requireAuth={false} />}>
+                      <Route path='/auth' element={<AuthPage />} />
+                      <Route path='/landing' element={<LandingPage />} />
+                    </Route>
+                  </Routes>
                 </HorseProvider>
               </AuthContextProvider>
             </GlobalLayout>

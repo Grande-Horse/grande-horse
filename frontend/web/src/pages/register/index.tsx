@@ -55,8 +55,6 @@ const LoadingIndicator = ({ isLoading }: { isLoading: boolean }) => {
 };
 const ErrorMessage = ({ message }: { message: string }) => <div className='text-warning h-4'>{message}</div>;
 
-// NicknameInput, NicknameCheck, LoadingIndicator 컴포넌트는 그대로 유지
-
 const RegisterForm = () => {
   const navigate = useNavigate();
   const { state: authState, handleRegister } = useAuth(); // AuthContext 사용
@@ -83,19 +81,17 @@ const RegisterForm = () => {
       const isDuplicated = await checkNicknameDuplicated(nickname);
       setIsNicknameChecked(true);
       setIsNicknameAvailable(!isDuplicated);
-      setIsLoading(false);
-    } catch (error) {
+    } catch (error: any) {
+      const code = error?.response?.data?.errorCode;
+      const messages: Record<string, string> = {
+        U1: '이미 등록된 닉네임입니다.',
+        C1: '닉네임은 최소 3자 이상 최대 10자 이하여야 합니다.',
+      };
+      setError(messages[code] || '닉네임 중복 확인 중 오류가 발생했습니다.');
       setIsNicknameChecked(false);
       setIsNicknameAvailable(null);
+    } finally {
       setIsLoading(false);
-
-      if (error.response?.data?.errorCode === 'U1') {
-        setError('이미 등록된 닉네임입니다.');
-      } else if (error.response?.data?.errorCode === 'C1') {
-        setError('닉네임은 최소 3자 이상 최대 10자 이하여야 합니다.');
-      } else {
-        setError('닉네임 중복 확인 중 오류가 발생했습니다.');
-      }
     }
   };
 
@@ -105,9 +101,14 @@ const RegisterForm = () => {
     setIsLoading(true);
     try {
       // AuthContext의 handleRegister 사용
-      await handleRegister(nickname);
+      await handleRegister(nickname).then(() => {
+        navigate('/');
+      });
     } catch (error) {
       setError('회원가입 중 오류가 발생했습니다.');
+      setError(error.response.data.errorCode);
+      console.error(error);
+    } finally {
       setIsLoading(false);
     }
   };

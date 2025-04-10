@@ -77,7 +77,7 @@ const HorseInfoPanel: React.FC<HorseInfoPanelProps> = ({ selectedHorse, setSelec
             }
           }}
         >
-          {selectedHorse?.status === 3 ? '경주마 해제' : '경주마 지정'}
+          {selectedHorse?.status === 3 ? '출전마 해제' : '출전마 지정'}
         </Button>
         <Button
           className='flex-1'
