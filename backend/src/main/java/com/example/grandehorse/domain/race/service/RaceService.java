@@ -203,7 +203,7 @@ public class RaceService {
 		String rankRestriction = websocketRedisTemplate.opsForHash().get(roomKey, "rankRestriction").toString();
 
 		System.out.println(horseRank + " " + rankRestriction);
-		return RANK_PRIORITY.get(horseRank) < RANK_PRIORITY.get(rankRestriction);
+		return RANK_PRIORITY.get(horseRank) <= RANK_PRIORITY.get(rankRestriction);
 	}
 
 	private boolean hasUserEnoughCoin(int userId, String roomKey) {
