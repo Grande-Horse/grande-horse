@@ -1,19 +1,15 @@
 import { type ResultData } from '@/types/race';
-import { Button } from '../ui/Button';
-import useModal from '../ui/modal/useModal';
+import { Button } from '@/components/ui/Button';
+
+import { rankTextColor } from '@/constants/rank';
 
 interface RaceResultProps {
   gameResult: ResultData['gameResult'];
   setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  playersInfo: ResultData['playersInfo'];
 }
 
-const prizeTextColor: Record<number, string> = {
-  1: 'text-unique',
-  2: 'text-legend',
-  3: 'text-rare',
-} as const;
-
-const RaceResult: React.FC<RaceResultProps> = ({ gameResult, setIsOpen }) => {
+const RaceResult: React.FC<RaceResultProps> = ({ gameResult, setIsOpen, playersInfo }) => {
   const handleOnClick = () => {
     setIsOpen((prev) => !prev);
   };
@@ -27,18 +23,22 @@ const RaceResult: React.FC<RaceResultProps> = ({ gameResult, setIsOpen }) => {
         <p className='flex-2 text-center'>획득 코인</p>
       </div>
 
-      {gameResult.map(({ raceRank, totalPrize, userNickname }) => (
-        <div
-          key={raceRank}
-          className={`${prizeTextColor[raceRank]} text-stroke text-body1 flex w-full items-center justify-between truncate bg-white/50 px-6 py-2`}
-        >
-          <p className='text-heading1 flex-1 text-center'>{raceRank}</p>
-          <p className='flex-2 text-center'>{userNickname}</p>
-          <p className='flex-2 text-center'>{totalPrize}</p>
-        </div>
-      ))}
+      {gameResult.map(({ raceRank, totalPrize, userNickname, userId }) => {
+        const player = playersInfo?.find((p) => p.userId === userId);
+        const textColor = player?.horseRank ? rankTextColor[player.horseRank] : 'text-white';
+        return (
+          <div
+            key={raceRank}
+            className={`${textColor} text-stroke text-body1 flex w-full items-center justify-between truncate bg-white/50 px-6 py-2`}
+          >
+            <p className='text-heading1 flex-1 text-center'>{raceRank}</p>
+            <p className='flex-2 text-center'>{userNickname}</p>
+            <p className='flex-2 text-center'>{totalPrize}</p>
+          </div>
+        );
+      })}
 
-      <div className='z-50 flex'>
+      <div className='z-9999 flex'>
         <Button className='bg-primary/50 text-body1 w-full rounded-sm text-white' onClick={handleOnClick}>
           방으로 돌아가기
         </Button>

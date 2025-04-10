@@ -17,6 +17,7 @@ export interface GameResult {
   userNickname: string;
   totalPrize: number;
   raceRank: number;
+  userId: number;
 }
 
 export interface ProgressData {
