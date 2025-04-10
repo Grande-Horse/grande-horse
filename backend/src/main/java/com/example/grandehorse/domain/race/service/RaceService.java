@@ -607,6 +607,7 @@ public class RaceService {
 		Map<String, Object> response = new HashMap<>();
 
 		boolean started = Boolean.valueOf(websocketRedisTemplate.opsForHash().get(roomKey, "start").toString());
+		response.put("rankRestriction", websocketRedisTemplate.opsForHash().get(roomKey, "rankRestriction").toString());
 		response.put("isGameStarted", started);
 		response.put("playersInfo", playersInfo);
 		messagingTemplate.convertAndSend("/topic/race_room/" + roomId, response);
