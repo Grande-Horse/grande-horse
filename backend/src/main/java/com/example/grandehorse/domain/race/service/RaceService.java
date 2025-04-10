@@ -703,7 +703,7 @@ public class RaceService {
 			(speed * speedWeight * 0.8) +
 				(accel * accelWeight * 0.8) +
 				(stamina * staminaWeight * 0.8) -
-				(weight * 0.02);
+				(weight * 0.05);
 
 		double fatigue = Math.max(0, (currentDistance / 1900.0) - (stamina * 0.01));
 		double luck = ((random.nextDouble() - 0.5) * 2) + (accel - weight) * 0.01;
