@@ -698,10 +698,10 @@ public class RaceService {
 		}
 
 		double baseDistance =
-			(speed * speedWeight * 0.8) +
-				(accel * accelWeight * 0.8) +
-				(stamina * staminaWeight * 0.8) -
-				(weight * 0.005);
+			(speed * speedWeight * 0.5) +
+				(accel * accelWeight * 0.5) +
+				(stamina * staminaWeight * 0.5) -
+				(weight * 0.01);
 
 		return Math.max(0.0, baseDistance);
 	}
