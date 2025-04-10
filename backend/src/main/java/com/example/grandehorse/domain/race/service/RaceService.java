@@ -377,41 +377,44 @@ public class RaceService {
 
 		boolean isRaceFinished = distanceMap.values().stream().anyMatch(d -> d >= 1900.0);
 		if (isRaceFinished) {
-			Thread worker = roomQueueWorkers.get(roomId);
-			if (worker != null) {
-				worker.interrupt();
-				roomQueueWorkers.remove(roomId);
+			try {
+				int playerCount = playerIds.size();
+				int bettingCoin = Integer.parseInt(
+					String.valueOf(websocketRedisTemplate.opsForHash().get(roomKey, "bettingCoin"))
+				);
+
+				List<GameResult> gameResults = raceResultService.processRaceResult(
+					bettingCoin,
+					playerCount,
+					roomKey,
+					raceProgresses,
+					websocketRedisTemplate
+				);
+
+				sendRaceProgress(roomId, raceProgresses);
+
+				for (Object idObj : playerIds) {
+					int currentUserId = Integer.parseInt(idObj.toString());
+					String userKey = roomKey + ":user:" + currentUserId;
+					websocketRedisTemplate.opsForHash().put(userKey, "isReady", "false");
+					websocketRedisTemplate.opsForHash().put(userKey, "distance", "0.0");
+				}
+
+				websocketRedisTemplate.delete("queue:playGame:" + roomId);
+				websocketRedisTemplate.opsForHash().put(roomKey, "start", "false");
+
+				sendRaceResult(roomId, gameResults);
+				broadcastRaceRooms();
+
+				return;
+
+			} finally {
+				Thread worker = roomQueueWorkers.get(roomId);
+				if (worker != null) {
+					roomQueueWorkers.remove(roomId);
+					worker.interrupt();
+				}
 			}
-
-			int playerCount = playerIds.size();
-			int bettingCoin = Integer.parseInt(
-				String.valueOf(websocketRedisTemplate.opsForHash().get(roomKey, "bettingCoin"))
-			);
-
-			List<GameResult> gameResults = raceResultService.processRaceResult(
-				bettingCoin,
-				playerCount,
-				roomKey,
-				raceProgresses,
-				websocketRedisTemplate
-			);
-
-			sendRaceProgress(roomId, raceProgresses);
-
-			for (Object idObj : playerIds) {
-				int currentUserId = Integer.parseInt(idObj.toString());
-				String userKey = roomKey + ":user:" + currentUserId;
-				websocketRedisTemplate.opsForHash().put(userKey, "isReady", "false");
-				websocketRedisTemplate.opsForHash().put(userKey, "distance", "0.0");
-			}
-
-			websocketRedisTemplate.delete("queue:playGame:" + roomId);
-			websocketRedisTemplate.opsForHash().put(roomKey, "start", "false");
-
-			sendRaceResult(roomId, gameResults);
-			broadcastRaceRooms();
-
-			return;
 		}
 
 		sendRaceProgress(roomId, raceProgresses);
@@ -720,7 +723,6 @@ public class RaceService {
 
 		return Math.max(0.0, baseDistance * dynamicMultiplier);
 	}
-
 
 	private double getPlayerDistance(String userKey) {
 		Object distanceObj = websocketRedisTemplate.opsForHash().get(userKey, "distance");
