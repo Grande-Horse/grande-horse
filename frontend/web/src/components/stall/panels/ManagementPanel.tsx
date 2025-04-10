@@ -10,9 +10,10 @@ import { Button } from '@/components/ui/Button';
 import CrownIcon from '@/assets/icons/crownIcon.svg?react';
 import { HorseCardType } from '@/types/card';
 import { ClipLoader } from 'react-spinners';
-import { useRepresentativeHorse, useUpdateCandidateHorse } from '@/services/horseManagement';
+import { useCandidateHorses, useRepresentativeHorse, useUpdateCandidateHorse } from '@/services/horseManagement';
 import { useInView } from 'react-intersection-observer';
 import useGetMyHorseCards from '@/hooks/useQueries/useGetMyHorseCards';
+import { useQueryClient } from '@tanstack/react-query';
 
 const pastureBgUrl = `bg-[url('@/assets/images/backgrounds/managementPastureBg.webp')] bg-contain bg-center`;
 
@@ -24,46 +25,51 @@ const ManagementPanel: React.FC = () => {
 
   const { ref, inView } = useInView();
 
+  const queryClient = useQueryClient();
   useEffect(() => {
     if (inView) {
       fetchNextPage();
     }
   }, [inView]);
-  const { state, dispatch } = usePastureHorse();
 
   const candidateMutation = useUpdateCandidateHorse();
+  const { data: candidateHorses } = useCandidateHorses();
   const { setRepresentative: representativeMutation, unsetRepresentative: unsetRepresentativeMutation } =
     useRepresentativeHorse();
 
   useEffect(() => {
-    if (state.candidateHorses.length === 0) setCurrentHorseId(null);
-    else if (!state.candidateHorses.some((h) => h.cardId === currentHorseId))
-      setCurrentHorseId(state.candidateHorses[0].cardId);
-  }, [state.candidateHorses, currentHorseId]);
+    if (!candidateHorses) return;
+
+    if (candidateHorses.length === 0) {
+      setCurrentHorseId(null);
+    } else if (!candidateHorses.some((h) => h.cardId === currentHorseId)) {
+      setCurrentHorseId(candidateHorses[0].cardId);
+    }
+  }, [candidateHorses, currentHorseId]);
 
   const getCurrentHorse = () => {
-    return state.candidateHorses.find((h) => h.cardId === currentHorseId) ?? null;
+    return candidateHorses?.find((h) => h.cardId === currentHorseId) ?? null;
   };
 
   const ChangeHorseButton = ({ type }: { type: 'minus' | 'plus' }) => {
     const handleChangeIndex = (type: 'minus' | 'plus') => {
-      if (state.candidateHorses.length === 0 || currentHorseId === null) return;
-      const currentIndex = state.candidateHorses.findIndex((h) => h.cardId === currentHorseId);
+      if (candidateHorses?.length === 0 || currentHorseId === null) return;
+      const currentIndex = candidateHorses.findIndex((h) => h.cardId === currentHorseId);
       if (currentIndex === -1) return;
       const newIndex =
         type === 'minus'
           ? currentIndex === 0
-            ? state.candidateHorses.length - 1
+            ? candidateHorses?.length - 1
             : currentIndex - 1
-          : (currentIndex + 1) % state.candidateHorses.length;
-      setCurrentHorseId(state.candidateHorses[newIndex].cardId);
+          : (currentIndex + 1) % candidateHorses?.length;
+      setCurrentHorseId(candidateHorses[newIndex].cardId);
     };
 
     return (
       <button
         onClick={() => handleChangeIndex(type)}
         className='flex h-8 w-8 items-center justify-center rounded-full'
-        disabled={state.candidateHorses.length === 0}
+        disabled={candidateHorses?.length === 0}
       >
         {type === 'minus' ? (
           <div className='h-0 w-0 border-t-[8px] border-r-[12px] border-b-[8px] border-t-transparent border-r-white border-b-transparent' />
@@ -76,9 +82,9 @@ const ManagementPanel: React.FC = () => {
 
   const PastureHorsesIndicator = () => (
     <div
-      className={`${state.candidateHorses.length > 0 ? 'bg-primary' : 'bg-background'} flex h-5 max-w-full min-w-1 items-center justify-center gap-2 rounded-full px-4`}
+      className={`${candidateHorses?.length > 0 ? 'bg-primary' : 'bg-background'} flex h-5 max-w-full min-w-1 items-center justify-center gap-2 rounded-full px-4`}
     >
-      {state.candidateHorses.map((horse) => {
+      {candidateHorses?.map((horse) => {
         const isCurrent = horse.cardId === currentHorseId;
 
         return (
@@ -95,7 +101,8 @@ const ManagementPanel: React.FC = () => {
 
   const SelectedHorseInfo = () => {
     const currentHorse = getCurrentHorse();
-    const isRepresentative = currentHorse?.status === 3 || state.representativeHorse?.cardId === currentHorse?.cardId;
+    const isRepresentative =
+      currentHorse?.status === 3 || candidateHorses?.find((h) => h.cardId === currentHorse?.cardId)?.status === 3;
 
     return (
       <div className='flex flex-col items-center gap-10'>
@@ -123,7 +130,7 @@ const ManagementPanel: React.FC = () => {
     <div className='my-2 flex px-4 text-white'>
       <div className={`bg-primary flex items-center gap-2 rounded-full px-4`}>
         <PastureIcon />
-        <span>{state.candidateHorses.length} / 6 마리</span>
+        <span>{candidateHorses?.length} / 6 마리</span>
       </div>
     </div>
   );
@@ -132,13 +139,13 @@ const ManagementPanel: React.FC = () => {
     if (horse.status === 3) {
       unsetRepresentativeMutation.mutate(horse.cardId, {
         onSuccess: () => {
-          dispatch({ type: 'TOGGLE_REPRESENTATIVE_HORSE', payload: null });
+          queryClient.invalidateQueries({ queryKey: ['candidateHorses'] });
         },
       });
     } else {
       representativeMutation.mutate(horse.cardId, {
         onSuccess: () => {
-          dispatch({ type: 'TOGGLE_REPRESENTATIVE_HORSE', payload: { ...horse, status: 3 } });
+          queryClient.invalidateQueries({ queryKey: ['candidateHorses'] });
         },
       });
     }
@@ -154,9 +161,9 @@ const ManagementPanel: React.FC = () => {
               const currentHorse = getCurrentHorse();
               if (currentHorse) handleToggleRepresentative(currentHorse);
             }}
-            disabled={state.candidateHorses.length === 0}
+            disabled={candidateHorses?.length === 0}
           >
-            {getCurrentHorse()?.status === 3 ? '출전마 해제' : '출전마 지정'}
+            {candidateHorses ? (getCurrentHorse()?.status === 3 ? '출전마 해제' : '출전마 지정') : '출전마 지정'}
           </Button>
         </div>
       </section>

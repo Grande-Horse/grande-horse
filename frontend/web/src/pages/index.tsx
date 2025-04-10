@@ -1,6 +1,6 @@
 import { HorseCardType } from '@/types/card';
 
-import { useRef, useState, useEffect } from 'react';
+import { useRef, useState, useEffect, use } from 'react';
 import Horse from '@/components/pasture/Horse';
 import HorseInfoPanel from '@/components/pasture/HorseInfoPanel';
 import { usePastureHorse } from '@/contexts/PastureHorseContextProvider';

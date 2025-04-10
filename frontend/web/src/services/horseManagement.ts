@@ -26,7 +26,7 @@ export const useCandidateHorses = () => {
     queryKey: ['candidateHorses'],
     queryFn: async () => {
       const response = await getAllCandidateHorses();
-      return response.data;
+      return response;
     },
   });
 };
