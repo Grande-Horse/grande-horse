@@ -104,7 +104,7 @@ const RaceTrackRacePage = () => {
     return () => {
       removeEventListeners();
     };
-  }, [state?.roomId, publish]);
+  }, [state?.roomId, publish, waiting]);
 
   useEffect(() => {
     if (!isOpen) {

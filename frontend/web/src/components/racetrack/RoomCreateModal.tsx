@@ -5,6 +5,8 @@ import Input from '@/components/ui/Input';
 
 import { rankMap, rankNameMap } from '@/constants/rank';
 import { RankKrType, type RankType } from '@/types/horse';
+import { RoomCreateData } from '@/types/room';
+import { useStompClient } from '@/contexts/StompContext';
 
 const PARTICIPANT_NUMBERS = ['2', '3', '4', '5', '6'];
 
@@ -17,11 +19,14 @@ interface RoomCreateModalReturn {
 
 interface RoomCreateModalProps {
   setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
+  onSuccess: (data: RoomCreateData) => void;
 }
 
 const MAX_ROOM_NAME_LENGTH = 20;
 
-const RoomCreateModal = () => {
+const RoomCreateModal: React.FC<RoomCreateModalProps> = ({ setIsOpen, onSuccess }) => {
+  const { connected, publish } = useStompClient();
+
   const [roomName, setRoomName] = useState<string>('');
   const [maxPlayers, setMaxPlayers] = useState<number>(0);
   const [rankRestriction, setRankRestriction] = useState<RankKrType | ''>('');
@@ -29,6 +34,21 @@ const RoomCreateModal = () => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+
+    const dataToSend = {
+      roomName,
+      rankRestriction: rankRestriction ? rankNameMap[rankRestriction] : 'all',
+      bettingCoin,
+      maxPlayers,
+    };
+
+    onSuccess(dataToSend);
+
+    if (!connected) {
+      console.warn('STOMP 연결되지 않음. 방 생성 실패');
+      return;
+    }
+    publish('/app/createRoom', dataToSend);
   };
 
   const handleDropDownOnChange = (value: string | RankKrType, name: 'maxPlayers' | 'rankRestriction') => {
@@ -44,7 +64,15 @@ const RoomCreateModal = () => {
     maxPlayers > 0 &&
     rankRestriction !== '' &&
     bettingCoin > 0 &&
-    bettingCoin <= 99999;
+    bettingCoin <= 9999;
+
+  const handleCancelOnClick = () => {
+    setRoomName('');
+    setMaxPlayers(0);
+    setRankRestriction('');
+    setBettingCoin(0);
+    setIsOpen(false);
+  };
 
   return (
     <div className='z-modal fixed inset-0 flex items-center justify-center'>
@@ -84,14 +112,14 @@ const RoomCreateModal = () => {
             onChange={(e) => {
               const rawValue = e.target.value;
               if (!/^\d*$/.test(rawValue)) return;
-              const numericValue = Math.min(Number(rawValue), 999999);
+              const numericValue = Math.min(Number(rawValue), 9999);
               setBettingCoin(numericValue);
             }}
             className='text-detail1 placeholder:text-black'
-            max={999999}
+            max={9999}
           />
           <div className='flex w-full gap-3 pt-5'>
-            <Button type='button' className='flex-1' onClick={closeModalWithoutSave}>
+            <Button type='button' className='flex-1' onClick={handleCancelOnClick}>
               취소
             </Button>
             <Button type='submit' className='flex-1' disabled={!isFormValid}>
