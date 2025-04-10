@@ -6,13 +6,19 @@ import HorseInfoPanel from '@/components/pasture/HorseInfoPanel';
 import { usePastureHorse } from '@/contexts/PastureHorseContextProvider';
 import useUserInfo from '@/hooks/useQueries/useUserInfo';
 import { useStompClient } from '@/contexts/StompContext';
+import { useQuery } from '@tanstack/react-query';
+import { getAllCandidateHorses } from '@/services/horseManagement';
 
 const HomePage: React.FC = () => {
   const [selectedHorse, setSelectedHorse] = useState<HorseCardType | null>(null);
-  const { dispatch, state } = usePastureHorse();
   const { unsubscribeAll, publish } = useStompClient();
 
   useUserInfo();
+
+  const { data: candidateHorses } = useQuery({
+    queryKey: ['candidateHorses'],
+    queryFn: () => getAllCandidateHorses(),
+  });
 
   const horseSoundRef = useRef<HTMLAudioElement>(null);
   const horseSoundRef2 = useRef<HTMLAudioElement>(null);
@@ -39,15 +45,12 @@ const HomePage: React.FC = () => {
   useEffect(() => {
     publish('/app/force_leave');
     unsubscribeAll();
-    return () => {
-      dispatch({ type: 'SELECT_HORSE', payload: null });
-    };
   }, []);
 
   return (
     <div className='h-body relative flex w-full items-center justify-center'>
       <div className='w-base fixed top-0 h-screen bg-[url(@/assets/images/backgrounds/pastureBg.png)] bg-cover bg-left bg-no-repeat'></div>
-      {state.candidateHorses.map((horse) => (
+      {candidateHorses?.map((horse) => (
         <Horse
           key={horse.cardId}
           horseCard={horse}
