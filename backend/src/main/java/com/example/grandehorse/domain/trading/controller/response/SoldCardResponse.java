@@ -32,7 +32,6 @@ public class SoldCardResponse {
 
 	@JsonFormat(pattern = "yyyy-MM-dd HH:mm")
 	private LocalDateTime soldAt;
-
 	public SoldCardResponse(
 		Integer tradeId,
 		String horseId,

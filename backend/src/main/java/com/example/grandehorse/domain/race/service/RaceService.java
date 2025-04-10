@@ -336,7 +336,8 @@ public class RaceService {
 
             double distance = getPlayerDistance(userKey);
             if (currentUserId == userId) {
-                double moveDistance = calculateDistance(websocketRedisTemplate.opsForHash().entries(userKey));
+                double moveDistance
+                    = calculateDistance(websocketRedisTemplate.opsForHash().entries(userKey), distance);
                 distance += moveDistance;
                 websocketRedisTemplate.opsForHash().put(userKey, "distance", String.valueOf(distance));
 
@@ -647,7 +648,7 @@ public class RaceService {
         );
     }
 
-    private double calculateDistance(Map<Object, Object> stats) {
+    private double calculateDistance(Map<Object, Object> stats, double currentDistance) {
         Random random = new Random();
 
         double speed = Double.parseDouble(stats.getOrDefault("horseSpeed", "0").toString());
@@ -655,8 +656,25 @@ public class RaceService {
         double stamina = Double.parseDouble(stats.getOrDefault("horseStamina", "0").toString());
         double weight = Double.parseDouble(stats.getOrDefault("horseWeight", "0").toString());
 
-        double baseDistance = speed * 0.5 + accel * 0.3 + stamina * 0.2 - weight * 0.1;
+        double speedWeight = 0.0;
+        double accelWeight = 0.0;
+        double staminaWeight = 0.0;
 
+        if (currentDistance <= 625.0) {
+            accelWeight = 0.5;
+            speedWeight = 0.3;
+            staminaWeight = 0.2;
+        } else if (currentDistance <= 1275.0) {
+            speedWeight = 0.5;
+            accelWeight = 0.3;
+            staminaWeight = 0.2;
+        } else {
+            staminaWeight = 0.5;
+            speedWeight = 0.3;
+            accelWeight = 0.2;
+        }
+
+        double baseDistance = speed * speedWeight + accel * accelWeight + stamina * staminaWeight - weight * 0.1;
         double randomMultiplier = 0.7 + (random.nextDouble() * 0.5);
 
         return baseDistance * randomMultiplier;
