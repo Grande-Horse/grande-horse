@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { useStompClient } from '@/contexts/StompContext';
 import useUserInfo from '@/hooks/useQueries/useUserInfo';
@@ -37,32 +37,32 @@ const RaceTrackRacePage = () => {
   const { ModalWrapper, openModal } = useModal();
   const [isOpen, setIsOpen] = useState(true);
 
-  let handleKeyDown: ((e: KeyboardEvent) => void) | null = null;
-  let handleTouchStart: (() => void) | null = null;
-  let handleMouseDown: (() => void) | null = null;
+  const keyDownRef = useRef<(e: KeyboardEvent) => void | null>(null);
+  const touchStartRef = useRef<() => void | null>(null);
+  const mouseDownRef = useRef<() => void | null>(null);
 
   const addEventListeners = (callback: () => void) => {
-    handleKeyDown = (e: KeyboardEvent) => {
+    keyDownRef.current = (e: KeyboardEvent) => {
       if ((e.key === ' ' || e.code === 'Space') && !e.repeat) {
         callback();
       }
     };
-    handleTouchStart = () => callback();
-    handleMouseDown = () => callback();
+    touchStartRef.current = () => callback();
+    mouseDownRef.current = () => callback();
 
-    window.addEventListener('keydown', handleKeyDown);
-    window.addEventListener('touchstart', handleTouchStart);
-    window.addEventListener('mousedown', handleMouseDown);
+    window.addEventListener('keydown', keyDownRef.current);
+    window.addEventListener('touchstart', touchStartRef.current);
+    window.addEventListener('mousedown', mouseDownRef.current);
   };
 
   const removeEventListeners = () => {
-    if (handleKeyDown) window.removeEventListener('keydown', handleKeyDown);
-    if (handleTouchStart) window.removeEventListener('touchstart', handleTouchStart);
-    if (handleMouseDown) window.removeEventListener('mousedown', handleMouseDown);
+    if (keyDownRef.current) window.removeEventListener('keydown', keyDownRef.current);
+    if (touchStartRef.current) window.removeEventListener('touchstart', touchStartRef.current);
+    if (mouseDownRef.current) window.removeEventListener('mousedown', mouseDownRef.current);
 
-    handleKeyDown = null;
-    handleTouchStart = null;
-    handleMouseDown = null;
+    keyDownRef.current = null;
+    touchStartRef.current = null;
+    mouseDownRef.current = null;
   };
 
   useEffect(() => {
