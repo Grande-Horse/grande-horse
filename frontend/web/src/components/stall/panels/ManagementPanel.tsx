@@ -8,12 +8,11 @@ import { useState, useEffect } from 'react';
 import { usePastureHorse } from '@/contexts/PastureHorseContextProvider';
 import { Button } from '@/components/ui/Button';
 import CrownIcon from '@/assets/icons/crownIcon.svg?react';
-import useInfiniteScroll from '@/hooks/useQueries/useInfiniteScroll';
 import { HorseCardType } from '@/types/card';
-import { queryKey } from '@/constants/queryKey';
-import { getMyHorseCards } from '@/services/stall';
 import { ClipLoader } from 'react-spinners';
 import { useRepresentativeHorse, useUpdateCandidateHorse } from '@/services/horseManagement';
+import { useInView } from 'react-intersection-observer';
+import useGetMyHorseCards from '@/hooks/useQueries/useGetMyHorseCards';
 
 const pastureBgUrl = `bg-[url('@/assets/images/backgrounds/managementPastureBg.webp')] bg-contain bg-center`;
 
@@ -21,7 +20,15 @@ const ManagementPanel: React.FC = () => {
   const [rank, setRank] = useState<string>('');
   const [currentHorseId, setCurrentHorseId] = useState<number | null>(null);
 
-  const { data, hasNextPage, ref } = useInfiniteScroll(queryKey.MY_HORSE_CARDS, getMyHorseCards);
+  const { data, fetchNextPage, hasNextPage } = useGetMyHorseCards(rankNameMap[rank as keyof typeof rankNameMap]);
+
+  const { ref, inView } = useInView();
+
+  useEffect(() => {
+    if (inView) {
+      fetchNextPage();
+    }
+  }, [inView]);
   const { state, dispatch } = usePastureHorse();
 
   const candidateMutation = useUpdateCandidateHorse();
@@ -68,12 +75,14 @@ const ManagementPanel: React.FC = () => {
   };
 
   const PastureHorsesIndicator = () => (
-    <div className='bg-primary flex h-8 w-20 max-w-full items-center justify-center gap-2 rounded-full'>
+    <div
+      className={`${state.candidateHorses.length > 0 ? 'bg-primary' : 'bg-background'} flex h-5 max-w-full min-w-1 items-center justify-center gap-2 rounded-full px-4`}
+    >
       {state.candidateHorses.map((horse) => {
         const isCurrent = horse.cardId === currentHorseId;
 
         return (
-          <div key={horse.cardId} className='relative flex h-4 w-4 items-center justify-center'>
+          <div key={horse.cardId} className='relative flex h-2 w-2 items-center justify-center'>
             <button
               onClick={() => setCurrentHorseId(horse.cardId)}
               className={`h-2 w-2 rounded-full transition-colors ${isCurrent ? 'bg-white' : 'bg-background'}`}
@@ -89,7 +98,7 @@ const ManagementPanel: React.FC = () => {
     const isRepresentative = currentHorse?.status === 3 || state.representativeHorse?.cardId === currentHorse?.cardId;
 
     return (
-      <div className='flex flex-col items-center gap-8'>
+      <div className='flex flex-col items-center gap-10'>
         <PastureHorsesIndicator />
         <div className='flex items-center gap-10'>
           <ChangeHorseButton type='minus' />
@@ -165,28 +174,30 @@ const ManagementPanel: React.FC = () => {
         <HorsesCountIndicator />
         <section className='grid grid-cols-3 place-items-center px-1 py-2'>
           {data.pages.flatMap((page) =>
-            page.items.map((item) => (
-              <div
-                key={item.cardId}
-                className='relative z-10'
-                onClick={() => {
-                  candidateMutation.mutate(item.cardId, {
-                    onSuccess: () => {
-                      dispatch({ type: 'TOGGLE_CANDIDATE_HORSE', payload: item });
-                      setCurrentHorseId(item.cardId);
-                    },
-                  });
-                }}
-              >
-                {(item.status === 2 || item.status === 3) && (
-                  <div className='absolute inset-0 z-20 flex h-66 w-44 items-center justify-center self-center rounded-xl bg-black/60'>
-                    <SelectedIcon />
-                  </div>
-                )}
+            page.items
+              .filter((item) => item.status !== 1)
+              .map((item) => (
+                <div
+                  key={item.cardId}
+                  className='relative z-10'
+                  onClick={() => {
+                    candidateMutation.mutate(item.cardId, {
+                      onSuccess: () => {
+                        dispatch({ type: 'TOGGLE_CANDIDATE_HORSE', payload: item });
+                        setCurrentHorseId(item.cardId);
+                      },
+                    });
+                  }}
+                >
+                  {(item.status === 2 || item.status === 3) && (
+                    <div className='absolute inset-0 z-20 flex h-66 w-44 items-center justify-center self-center rounded-xl bg-black/60'>
+                      <SelectedIcon />
+                    </div>
+                  )}
 
-                <SmallHorseCard horse={item} onClick={() => {}} />
-              </div>
-            ))
+                  <SmallHorseCard horse={item} onClick={() => {}} />
+                </div>
+              ))
           )}
         </section>
         {hasNextPage && (

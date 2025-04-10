@@ -70,6 +70,8 @@ const RaceTrackContent: React.FC<DefaultContentProps> = ({ coin, foot }) => {
   const { goBack } = useInternalRouter();
   const { unsubscribeAll } = useStompClient();
 
+  const { isPlaying, togglePlay } = useMusic();
+
   const handleClick = () => {
     unsubscribeAll();
     goBack();
@@ -81,10 +83,15 @@ const RaceTrackContent: React.FC<DefaultContentProps> = ({ coin, foot }) => {
         <BackIcon />
       </button>
 
-      <div className='flex gap-6'>
+      <div className='flex'>
         <div className='flex items-center justify-center gap-3'>
           <CoinIcon />
           <p className='text-stroke'>{coin.toLocaleString()}</p>
+        </div>
+
+        <div onClick={togglePlay} className='ml-6 flex items-center justify-center gap-3'>
+          <SoundIcon className='cursor-pointer' />
+          <p className='text-stroke w-10'>{isPlaying ? 'ON' : 'OFF'}</p>
         </div>
       </div>
     </>
