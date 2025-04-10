@@ -32,7 +32,7 @@ const CardpackPanel: React.FC = () => {
   const dailyMutation = useMutation({
     mutationFn: () => buyDailyCardpack(),
     onSuccess: (data) => {
-      queryClient.refetchQueries({ queryKey: [queryKey.COIN] });
+      queryClient.refetchQueries({ queryKey: [queryKey.DAILY] });
       push('/market/card/result', { state: { data } });
     },
     onError: (error) => {
