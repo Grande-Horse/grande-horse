@@ -105,6 +105,11 @@ const CA12: CustomError = {
   message: '출전마로 등록된 말이 없습니다.',
 };
 
+const CA13: CustomError = {
+  code: 'CA13',
+  message: '말 카드 등급이 방 제한 등급을 넘어섰습니다',
+};
+
 const T1: CustomError = {
   code: 'T1',
   message: '판매 중인 말 카드가 아닙니다.',
@@ -262,6 +267,7 @@ export const customError = {
   CA10,
   CA11,
   CA12,
+  CA13,
   T1,
   T2,
   T3,
