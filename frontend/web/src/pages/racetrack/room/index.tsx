@@ -5,6 +5,7 @@ import { useStompClient } from '@/contexts/StompContext';
 import ChatBox from '@/components/racetrack/ChatBox';
 import RoomLobby from '@/components/racetrack/RoomLobby';
 import { type RoomJoinUserData } from '@/types/room';
+import { type RankType } from '@/types/horse';
 
 interface Chat {
   sender: string;
@@ -13,6 +14,7 @@ interface Chat {
 }
 
 interface RaceData {
+  rankRestriction: RankType;
   isGameStarted: boolean;
   playersInfo: RoomJoinUserData[];
 }
