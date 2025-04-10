@@ -5,7 +5,6 @@ import java.time.Instant;
 import java.time.LocalTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
@@ -365,13 +364,9 @@ public class RaceService {
 					return;
 				}
 
-				double leadDistance = distanceMap.isEmpty()
-					? distance
-					: Math.max(distance, Collections.max(distanceMap.values()));
 				double moveDistance
-					= calculateDistance(websocketRedisTemplate.opsForHash().entries(userKey), distance, leadDistance);
+					= calculateDistance(websocketRedisTemplate.opsForHash().entries(userKey), distance);
 				distance += moveDistance;
-
 
 				websocketRedisTemplate.opsForHash().put(userKey, "distance", String.valueOf(distance));
 
@@ -681,7 +676,7 @@ public class RaceService {
 		);
 	}
 
-	private double calculateDistance(Map<Object, Object> stats, double currentDistance, double leadDistance) {
+	private double calculateDistance(Map<Object, Object> stats, double currentDistance) {
 		Random random = new Random();
 
 		double speed = Double.parseDouble(stats.getOrDefault("horseSpeed", "0").toString());
@@ -705,14 +700,13 @@ public class RaceService {
 		}
 
 		double baseDistance =
-			(speed * speedWeight * 0.7) +
-				(accel * accelWeight * 0.7) +
-				(stamina * staminaWeight * 0.7) -
-				(weight * 0.05);
+			(speed * speedWeight * 0.8) +
+				(accel * accelWeight * 0.8) +
+				(stamina * staminaWeight * 0.8) -
+				(weight * 0.02);
 
 		double fatigue = Math.max(0, (currentDistance / 1900.0) - (stamina * 0.01));
 		double luck = ((random.nextDouble() - 0.5) * 2) + (accel - weight) * 0.01;
-
 
 		double dynamicMultiplier =
 			(0.9 + random.nextDouble() * 0.3) +
@@ -732,12 +726,6 @@ public class RaceService {
 		} else if (eventChance > 0.94) {
 			dynamicMultiplier *= 0.85;
 			log.info("😓 Slight misstep, losing rhythm.");
-		}
-
-		double behindFactor = Math.max(0, 1.0 - (currentDistance / (leadDistance + 0.01)));
-		if (random.nextDouble() < (0.03 + behindFactor * 0.05)) {
-			dynamicMultiplier *= 1.4;
-			log.info("🔥 COMEBACK MODE! The horse is catching up fiercely!");
 		}
 
 		return Math.max(0.0, baseDistance * dynamicMultiplier);
