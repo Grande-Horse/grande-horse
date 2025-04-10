@@ -6,5 +6,5 @@ export const buyCardpack = async (cardpackId: number) => {
   return response;
 };
 export const buyDailyCardpack = async () => {
-  await apiPost<null, null>('/purchases/cardpack/daily', null);
+  return await apiPost<null, null>('/purchases/cardpack/daily', null);
 };
