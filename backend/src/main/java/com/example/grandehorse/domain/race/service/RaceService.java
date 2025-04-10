@@ -691,17 +691,17 @@ public class RaceService {
 
 		double speedWeight, accelWeight, staminaWeight;
 		if (currentDistance <= 625.0) {
-			accelWeight = 0.3;
-			speedWeight = 0.2;
-			staminaWeight = 0.1;
+			accelWeight = 0.5;
+			speedWeight = 0.3;
+			staminaWeight = 0.2;
 		} else if (currentDistance <= 1275.0) {
+			speedWeight = 0.5;
+			accelWeight = 0.3;
+			staminaWeight = 0.2;
+		} else {
+			staminaWeight = 0.5;
 			speedWeight = 0.3;
 			accelWeight = 0.2;
-			staminaWeight = 0.1;
-		} else {
-			staminaWeight = 0.3;
-			speedWeight = 0.2;
-			accelWeight = 0.1;
 		}
 
 		double baseDistance =
