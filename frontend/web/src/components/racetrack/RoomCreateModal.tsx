@@ -8,6 +8,7 @@ import { RankKrType, type RankType } from '@/types/horse';
 import { RoomCreateData } from '@/types/room';
 import { useStompClient } from '@/contexts/StompContext';
 import type UserInfoData from '@/types/user';
+import useUserInfo from '@/hooks/useQueries/useUserInfo';
 
 const PARTICIPANT_NUMBERS = ['2', '3', '4', '5', '6'];
 
@@ -21,7 +22,6 @@ interface RoomCreateModalReturn {
 interface RoomCreateModalProps {
   setIsOpen: React.Dispatch<React.SetStateAction<boolean>>;
   onSuccess: (data: RoomCreateData) => void;
-  userInfo: UserInfoData | null | undefined;
 }
 
 const MAX_ROOM_NAME_LENGTH = 20;
@@ -35,8 +35,10 @@ const RankScore = {
   normal: 1,
 };
 
-const RoomCreateModal: React.FC<RoomCreateModalProps> = ({ setIsOpen, onSuccess, userInfo }) => {
+const RoomCreateModal: React.FC<RoomCreateModalProps> = ({ setIsOpen, onSuccess }) => {
   const { connected, publish } = useStompClient();
+
+  const { data } = useUserInfo();
 
   const [roomName, setRoomName] = useState<string>('');
   const [maxPlayers, setMaxPlayers] = useState<number>(0);
@@ -46,23 +48,22 @@ const RoomCreateModal: React.FC<RoomCreateModalProps> = ({ setIsOpen, onSuccess,
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!userInfo) {
+    if (!data) {
       console.warn('userInfo가 없습니다.');
       return;
     } else {
-      if (userInfo.coin < bettingCoin) {
+      if (data.coin < bettingCoin) {
         alert('보유 코인이 부족합니다.');
         return;
       }
 
-      if (userInfo.representativeCard === null) {
+      if (data.representativeCard === null) {
         alert('대표 카드가 없습니다.');
         return;
       }
 
       if (
-        RankScore[userInfo.representativeCard.horseRank] >
-        RankScore[rankRestriction ? rankNameMap[rankRestriction] : 'all']
+        RankScore[data.representativeCard.horseRank] > RankScore[rankRestriction ? rankNameMap[rankRestriction] : 'all']
       ) {
         alert('대표 카드의 등급이 방의 등급 제한보다 높습니다.');
         return;

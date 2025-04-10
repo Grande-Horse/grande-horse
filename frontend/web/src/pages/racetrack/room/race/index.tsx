@@ -39,7 +39,6 @@ const RaceTrackRacePage = () => {
 
   const keyDownRef = useRef<(e: KeyboardEvent) => void | null>(null);
   const touchStartRef = useRef<() => void | null>(null);
-  const mouseDownRef = useRef<() => void | null>(null);
 
   const addEventListeners = (callback: () => void) => {
     keyDownRef.current = (e: KeyboardEvent) => {
@@ -48,21 +47,17 @@ const RaceTrackRacePage = () => {
       }
     };
     touchStartRef.current = () => callback();
-    mouseDownRef.current = () => callback();
 
     window.addEventListener('keydown', keyDownRef.current);
     window.addEventListener('touchstart', touchStartRef.current);
-    window.addEventListener('mousedown', mouseDownRef.current);
   };
 
   const removeEventListeners = () => {
     if (keyDownRef.current) window.removeEventListener('keydown', keyDownRef.current);
     if (touchStartRef.current) window.removeEventListener('touchstart', touchStartRef.current);
-    if (mouseDownRef.current) window.removeEventListener('mousedown', mouseDownRef.current);
 
     keyDownRef.current = null;
     touchStartRef.current = null;
-    mouseDownRef.current = null;
   };
 
   useEffect(() => {

@@ -7,14 +7,11 @@ import { RoomCreateModal } from '@/components/racetrack/RoomCreateModal';
 
 import { useStompClient } from '@/contexts/StompContext';
 import { type RoomData, type RoomCreateData } from '@/types/room';
-import useUserInfo from '@/hooks/useQueries/useUserInfo';
 import { customError } from '@/constants/error';
 
 const RacetrackPage = () => {
   const navigate = useNavigate();
   const navigationType = useNavigationType();
-
-  const { data } = useUserInfo();
 
   const { connected, publish, subscribe, unsubscribe } = useStompClient();
 
@@ -85,7 +82,6 @@ const RacetrackPage = () => {
             setRoomData(data);
           }}
           setIsOpen={setIsOpen}
-          userInfo={data}
         />
       </div>
       <div className='bg-background flex h-16 w-full justify-end'>
