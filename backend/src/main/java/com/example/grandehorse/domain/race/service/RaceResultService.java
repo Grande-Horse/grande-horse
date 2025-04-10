@@ -59,12 +59,12 @@ public class RaceResultService {
                 userService.increaseUserCoin(userId, totalPrize);
                 cardService.updateCardWinRecord(cardId, totalPrize);
                 saveRaceRecord(userId, cardId, raceId, (byte) rankNumber, totalPrize, bettingCoin);
-                gameResults.add(new GameResult(nickname, totalPrize, rankNumber));
+                gameResults.add(new GameResult(userId, nickname, totalPrize, rankNumber));
             } else {
                 userService.decreaseUserCoin(userId, bettingCoin);
                 cardService.updateCardRaceRecord(cardId);
                 saveRaceRecord(userId, cardId, raceId, (byte) rankNumber, 0, bettingCoin);
-                gameResults.add(new GameResult(nickname, -bettingCoin, rankNumber));
+                gameResults.add(new GameResult(userId, nickname, -bettingCoin, rankNumber));
             }
         }
 
