@@ -190,7 +190,6 @@ const ManagementPanel: React.FC = () => {
                   onClick={() => {
                     candidateMutation.mutate(item.cardId, {
                       onSuccess: () => {
-                        dispatch({ type: 'TOGGLE_CANDIDATE_HORSE', payload: item });
                         setCurrentHorseId(item.cardId);
                       },
                     });
