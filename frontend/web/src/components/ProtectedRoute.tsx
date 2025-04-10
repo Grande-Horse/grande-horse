@@ -13,7 +13,7 @@ export const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ requireAuth = tr
   const location = useLocation();
 
   // 로딩 시
-  if (state.isLoading) return <div>Loading...</div>;
+  if (state.isLoading) return;
 
   // 인증이 필요한 페이지에서 인증되지 않은 경우
   if (!user && requireAuth && !state.isAuthenticated)
