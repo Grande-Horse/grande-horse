@@ -19,7 +19,7 @@ const RaceTrackRacePage = () => {
 
   const { state } = useLocation() as { state: StateType };
   const { data } = useUserInfo();
-  const { subscribe, publish, unsubscribe } = useStompClient();
+  const { subscribe, publish, unsubscribeAll } = useStompClient();
 
   const [players, setPlayers] = useState<RoomJoinUserData[]>([]);
   const [raceUsers, setRaceUsers] = useState<RaceUser[]>([]);
@@ -108,6 +108,16 @@ const RaceTrackRacePage = () => {
 
   useEffect(() => {
     if (!isOpen) {
+      playersInfo?.forEach((player) => {
+        if (player.userId === data?.id) {
+          if (!player.hasEnoughCoin) {
+            publish('/app/force_leave');
+            unsubscribeAll();
+            navigate('/racetrack', { replace: true });
+          }
+        }
+      });
+
       navigate(`/racetrack/room/${roomId}?title=${roomName}`, {
         state: { playersInfo, isEnd: true, maxPlayers, roomId },
         replace: true,
