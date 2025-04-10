@@ -78,7 +78,6 @@ const RaceTrackRacePage = () => {
       `/topic/race_room/${roomId}/game`,
       (data: GameData) => {
         if (data.type === 'resultData') {
-          unsubscribe(`/topic/race_room/${roomId}/game`);
           removeEventListeners();
           openModal();
           setGameResult(data.gameResult);
