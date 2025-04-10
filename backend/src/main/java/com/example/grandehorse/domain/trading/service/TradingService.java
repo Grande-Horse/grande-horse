@@ -137,12 +137,12 @@ public class TradingService {
 		LocalDate sixDaysAgo = today.minusDays(6);
 
 		List<PriceHistoryResponse> priceHistory
-			= cardTradingJpaRepository.findPriceHistory(horseId, today, sixDaysAgo);
+			= cardTradingJpaRepository.findPriceHistory(horseId, sixDaysAgo, today);
 
 		Map<LocalDate, PriceHistoryResponse> priceHistoryByDate = priceHistory.stream()
 			.collect(Collectors.toMap(PriceHistoryResponse::getDate, Function.identity()));
 
-		priceHistory = fillMissingPriceHistory(today, sixDaysAgo, priceHistoryByDate);
+		priceHistory = fillMissingPriceHistory(sixDaysAgo, today, priceHistoryByDate);
 
 		return CommonResponse.listSuccess(priceHistory);
 	}
