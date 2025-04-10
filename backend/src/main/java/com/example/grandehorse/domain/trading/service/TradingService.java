@@ -134,33 +134,31 @@ public class TradingService {
 	 */
 	public ResponseEntity<CommonResponse<List<PriceHistoryResponse>>> getPriceHistory(String horseId) {
 		LocalDate now = LocalDate.now();
-		LocalDate oneDayAgo = now.minusDays(1);
-		LocalDate sevenDaysAgo = now.minusDays(7);
+		LocalDate today = now.minusDays(0);
+		LocalDate sixDaysAgo = now.minusDays(6);
 
 		List<PriceHistoryResponse> priceHistory
-			= cardTradingJpaRepository.findPriceHistory(horseId, oneDayAgo, sevenDaysAgo);
+			= cardTradingJpaRepository.findPriceHistory(horseId, today, sixDaysAgo);
 
 		Map<LocalDate, PriceHistoryResponse> priceHistoryByDate = priceHistory.stream()
 			.collect(Collectors.toMap(PriceHistoryResponse::getDate, Function.identity()));
 
-		priceHistory = fillMissingPriceHistory(sevenDaysAgo, oneDayAgo, priceHistoryByDate);
+		priceHistory = fillMissingPriceHistory(today, sixDaysAgo, priceHistoryByDate);
 
 		return CommonResponse.listSuccess(priceHistory);
 	}
 
 	private List<PriceHistoryResponse> fillMissingPriceHistory(
-		LocalDate sevenDaysAgo,
-		LocalDate oneDayAgo,
+		LocalDate startDate,
+		LocalDate endDate,
 		Map<LocalDate, PriceHistoryResponse> priceHistoryByDate
 	) {
 		List<PriceHistoryResponse> priceHistory = new ArrayList<>();
-		for (LocalDate date = sevenDaysAgo; !date.isAfter(oneDayAgo); date = date.plusDays(1)) {
-			PriceHistoryResponse response = priceHistoryByDate.get(date);
-			if (response == null) {
-				priceHistory.add(new PriceHistoryResponse(0, 0.0, 0, date));
-			} else {
-				priceHistory.add(response);
-			}
+		for (LocalDate date = startDate; !date.isAfter(endDate); date = date.plusDays(1)) {
+			PriceHistoryResponse response = priceHistoryByDate.getOrDefault(
+				date, new PriceHistoryResponse(0, 0.0, 0, date)
+			);
+			priceHistory.add(response);
 		}
 		return priceHistory;
 	}
