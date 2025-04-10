@@ -5,19 +5,19 @@ import { useQueryClient, useQuery, useMutation } from '@tanstack/react-query';
 import { queryKey } from '@/constants/queryKey';
 
 export const getAllCandidateHorses = async (): Promise<ApiResponse<CandidateHorseType[]>> => {
-  return apiGet<ApiResponse<CandidateHorseType[]>>('/cards/candidate');
+  return await apiGet<ApiResponse<CandidateHorseType[]>>('/cards/candidate');
 };
 
 export const putCandidateHorse = async (cardId: number) => {
-  return apiPut(`/cards/${cardId}/candidate`, null);
+  return await apiPut(`/cards/${cardId}/candidate`, null);
 };
 
 export const setRepresentativeHorse = async (cardId: number) => {
-  apiPut(`/cards/${cardId}/representative`, null);
+  return await apiPut(`/cards/${cardId}/representative`, null);
 };
 
 export const unsetRepresentativeHorse = async (cardId: number) => {
-  apiPut(`/cards/representative/unset`, null);
+  return await apiPut(`/cards/representative/unset`, null);
 };
 
 export const useCandidateHorses = () => {

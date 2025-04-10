@@ -184,7 +184,7 @@ const ManagementPanel: React.FC = () => {
                 }}
               >
                 {(item.status === 2 || item.status === 3) && (
-                  <div className='absolute inset-0 z-20 flex h-65.5 w-44 items-center justify-center self-center rounded-xl bg-black/60'>
+                  <div className='absolute inset-0 z-20 flex h-66 w-44 items-center justify-center self-center rounded-xl bg-black/60'>
                     <SelectedIcon />
                   </div>
                 )}

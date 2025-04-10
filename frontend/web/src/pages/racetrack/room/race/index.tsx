@@ -19,13 +19,13 @@ const RaceTrackRacePage = () => {
 
   const { state } = useLocation() as { state: StateType };
   const { data } = useUserInfo();
-  const { subscribe, publish } = useStompClient();
+  const { subscribe, publish, unsubscribe } = useStompClient();
 
   const [players, setPlayers] = useState<RoomJoinUserData[]>([]);
   const [raceUsers, setRaceUsers] = useState<RaceUser[]>([]);
 
   const [gameResult, setGameResult] = useState<ResultData['gameResult']>([
-    { raceRank: 0, totalPrize: 0, userNickname: '' },
+    { raceRank: 0, totalPrize: 0, userNickname: '', userId: 0 },
   ]);
 
   const [playersInfo, setPlayersInfo] = useState<RoomJoinUserData[]>();
@@ -78,6 +78,7 @@ const RaceTrackRacePage = () => {
       `/topic/race_room/${roomId}/game`,
       (data: GameData) => {
         if (data.type === 'resultData') {
+          unsubscribe(`/topic/race_room/${roomId}/game`);
           removeEventListeners();
           openModal();
           setGameResult(data.gameResult);
@@ -118,7 +119,7 @@ const RaceTrackRacePage = () => {
   return (
     <div className='flex h-dvh flex-col items-center justify-center'>
       <ModalWrapper>
-        <RaceResult gameResult={gameResult} setIsOpen={setIsOpen} />
+        <RaceResult gameResult={gameResult} setIsOpen={setIsOpen} playersInfo={playersInfo} />
       </ModalWrapper>
 
       {waiting && <RaceWaiting color={data ? data.representativeCard.coatColor : 'black'} setWaiting={setWaiting} />}
