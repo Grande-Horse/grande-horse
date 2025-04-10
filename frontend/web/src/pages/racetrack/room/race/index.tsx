@@ -93,7 +93,7 @@ const RaceTrackRacePage = () => {
         console.log(error);
       }
     );
-  }, [state, data]);
+  }, []);
 
   useEffect(() => {
     if (!state?.roomId) return;
