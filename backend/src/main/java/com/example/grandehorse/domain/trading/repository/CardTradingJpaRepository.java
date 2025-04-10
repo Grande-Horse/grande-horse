@@ -1,6 +1,6 @@
 package com.example.grandehorse.domain.trading.repository;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.List;
 
 import jakarta.persistence.LockModeType;
@@ -137,7 +137,7 @@ public interface CardTradingJpaRepository extends JpaRepository<CardTradeEntity,
 		""")
 	List<PriceHistoryResponse> findPriceHistory(
 		@Param("horseId") String horseId,
-		@Param("startDateTime") LocalDateTime startDateTime,
-		@Param("endDateTime") LocalDateTime endDateTime
+		@Param("startDateTime") LocalDate startDateTime,
+		@Param("endDateTime") LocalDate endDateTime
 	);
 }
