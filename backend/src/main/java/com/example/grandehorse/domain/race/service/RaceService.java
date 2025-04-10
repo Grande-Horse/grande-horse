@@ -677,8 +677,6 @@ public class RaceService {
 	}
 
 	private double calculateDistance(Map<Object, Object> stats, double currentDistance) {
-		Random random = new Random();
-
 		double speed = Double.parseDouble(stats.getOrDefault("horseSpeed", "0").toString());
 		double accel = Double.parseDouble(stats.getOrDefault("horseAcceleration", "0").toString());
 		double stamina = Double.parseDouble(stats.getOrDefault("horseStamina", "0").toString());
@@ -703,32 +701,9 @@ public class RaceService {
 			(speed * speedWeight * 0.8) +
 				(accel * accelWeight * 0.8) +
 				(stamina * staminaWeight * 0.8) -
-				(weight * 0.05);
+				(weight * 0.005);
 
-		double fatigue = Math.max(0, (currentDistance / 1900.0) - (stamina * 0.01));
-		double luck = ((random.nextDouble() - 0.5) * 2) + (accel - weight) * 0.01;
-
-		double dynamicMultiplier =
-			(0.9 + random.nextDouble() * 0.3) +
-				(luck * 0.1) -
-				(fatigue * 0.2);
-
-		double eventChance = random.nextDouble();
-		if (eventChance < 0.03) {
-			dynamicMultiplier *= 1.4;
-			log.info("🚀 BOOST! This horse found a burst of speed!");
-		} else if (eventChance < 0.06) {
-			dynamicMultiplier *= 1.2;
-			log.info("🐎 Smooth stride! Gains some extra momentum.");
-		} else if (eventChance > 0.97) {
-			dynamicMultiplier *= 0.7;
-			log.info("😵 Slipped! This horse is slowing down!");
-		} else if (eventChance > 0.94) {
-			dynamicMultiplier *= 0.85;
-			log.info("😓 Slight misstep, losing rhythm.");
-		}
-
-		return Math.max(0.0, baseDistance * dynamicMultiplier);
+		return Math.max(0.0, baseDistance);
 	}
 
 	private double getPlayerDistance(String userKey) {
