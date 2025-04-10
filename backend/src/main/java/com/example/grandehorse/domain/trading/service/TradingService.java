@@ -2,6 +2,7 @@ package com.example.grandehorse.domain.trading.service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -136,8 +137,11 @@ public class TradingService {
 		LocalDate today = LocalDate.now();
 		LocalDate sixDaysAgo = today.minusDays(6);
 
-		List<PriceHistoryResponse> priceHistory
-			= cardTradingJpaRepository.findPriceHistory(horseId, sixDaysAgo, today);
+		LocalDateTime startDateTime = sixDaysAgo.atStartOfDay();
+		LocalDateTime endDateTime = today.atTime(LocalTime.MAX);
+
+		List<PriceHistoryResponse> priceHistory =
+			cardTradingJpaRepository.findPriceHistory(horseId, startDateTime, endDateTime);
 
 		Map<LocalDate, PriceHistoryResponse> priceHistoryByDate = priceHistory.stream()
 			.collect(Collectors.toMap(PriceHistoryResponse::getDate, Function.identity()));
