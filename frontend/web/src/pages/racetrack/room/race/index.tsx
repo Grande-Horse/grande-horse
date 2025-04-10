@@ -19,7 +19,7 @@ const RaceTrackRacePage = () => {
 
   const { state } = useLocation() as { state: StateType };
   const { data } = useUserInfo();
-  const { subscribe, publish, unsubscribe } = useStompClient();
+  const { subscribe, publish, unsubscribeAll } = useStompClient();
 
   const [players, setPlayers] = useState<RoomJoinUserData[]>([]);
   const [raceUsers, setRaceUsers] = useState<RaceUser[]>([]);
@@ -108,10 +108,25 @@ const RaceTrackRacePage = () => {
 
   useEffect(() => {
     if (!isOpen) {
-      navigate(`/racetrack/room/${roomId}?title=${roomName}`, {
-        state: { playersInfo, isEnd: true, maxPlayers, roomId },
-        replace: true,
+      let hasInsufficientCoin = false;
+
+      playersInfo?.forEach((player) => {
+        if (player.userId === data?.id && !player.hasEnoughCoin) {
+          hasInsufficientCoin = true;
+        }
       });
+
+      if (hasInsufficientCoin) {
+        publish('/app/force_leave');
+        unsubscribeAll();
+        alert('코인이 부족해서 게임에 참여하실 수 없습니다.');
+        navigate('/racetrack', { replace: true });
+      } else {
+        navigate(`/racetrack/room/${roomId}?title=${roomName}`, {
+          state: { playersInfo, isEnd: true, maxPlayers, roomId },
+          replace: true,
+        });
+      }
     }
   }, [isOpen]);
 

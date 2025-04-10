@@ -3,8 +3,6 @@ import { Button } from '@/components/ui/Button';
 
 import { rankTextColor } from '@/constants/rank';
 import useUserInfo from '@/hooks/useQueries/useUserInfo';
-import { useStompClient } from '@/contexts/StompContext';
-import { useNavigate } from 'react-router-dom';
 
 interface RaceResultProps {
   gameResult: ResultData['gameResult'];
@@ -13,23 +11,9 @@ interface RaceResultProps {
 }
 
 const RaceResult: React.FC<RaceResultProps> = ({ gameResult, setIsOpen, playersInfo }) => {
-  const { data } = useUserInfo();
-  const navigate = useNavigate();
-  const { publish, unsubscribeAll } = useStompClient();
-
+  const { refetch } = useUserInfo();
   const handleOnClick = () => {
-    if (data) {
-      playersInfo?.forEach((player) => {
-        if (player.userId === data.id) {
-          if (!player.hasEnoughCoin) {
-            publish('/app/force_leave');
-            unsubscribeAll();
-            navigate('/racetrack', { replace: true });
-          }
-        }
-      });
-    }
-
+    refetch();
     setIsOpen(false);
   };
 
