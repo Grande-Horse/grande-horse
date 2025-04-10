@@ -47,10 +47,13 @@ export const useUpdateCandidateHorse = () => {
       const serverError = error.response?.data;
       if (serverError?.errorCode === 'CA5') {
         alert('출전마는 후보마에서 해제할 수 없습니다.');
+        return;
       } else if (serverError?.errorCode === 'CA6') {
         alert('후보마는 6마리까지만 추가할 수 있습니다.');
+        return;
       } else {
         alert(serverError?.message || '알 수 없는 오류가 발생했습니다.');
+        return;
       }
     },
   });
