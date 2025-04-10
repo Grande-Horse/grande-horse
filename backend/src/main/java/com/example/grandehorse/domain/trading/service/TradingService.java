@@ -2,6 +2,7 @@ package com.example.grandehorse.domain.trading.service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
@@ -133,17 +134,19 @@ public class TradingService {
 		스케줄링 돌려서 매일 밤 12시에 데이터 들고와서 레디스에 올려놓는 방식으로 리팩토링하기 (성능 개선 예정)
 	 */
 	public ResponseEntity<CommonResponse<List<PriceHistoryResponse>>> getPriceHistory(String horseId) {
-		LocalDate now = LocalDate.now();
-		LocalDate today = now.minusDays(0);
-		LocalDate sixDaysAgo = now.minusDays(6);
+		LocalDate today = LocalDate.now();
+		LocalDate sixDaysAgo = today.minusDays(6);
 
-		List<PriceHistoryResponse> priceHistory
-			= cardTradingJpaRepository.findPriceHistory(horseId, today, sixDaysAgo);
+		LocalDateTime startDateTime = sixDaysAgo.atStartOfDay();
+		LocalDateTime endDateTime = today.atTime(LocalTime.MAX);
+
+		List<PriceHistoryResponse> priceHistory =
+			cardTradingJpaRepository.findPriceHistory(horseId, startDateTime, endDateTime);
 
 		Map<LocalDate, PriceHistoryResponse> priceHistoryByDate = priceHistory.stream()
 			.collect(Collectors.toMap(PriceHistoryResponse::getDate, Function.identity()));
 
-		priceHistory = fillMissingPriceHistory(today, sixDaysAgo, priceHistoryByDate);
+		priceHistory = fillMissingPriceHistory(sixDaysAgo, today, priceHistoryByDate);
 
 		return CommonResponse.listSuccess(priceHistory);
 	}

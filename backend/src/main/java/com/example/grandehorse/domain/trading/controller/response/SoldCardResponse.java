@@ -4,6 +4,7 @@ import java.time.LocalDateTime;
 
 import com.example.grandehorse.domain.horse.entity.CoatColor;
 import com.example.grandehorse.domain.horse.entity.HorseRank;
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -29,8 +30,8 @@ public class SoldCardResponse {
 
 	private Double stamina;
 
+	@JsonFormat(pattern = "yyyy-MM-dd HH:mm")
 	private LocalDateTime soldAt;
-
 	public SoldCardResponse(
 		Integer tradeId,
 		String horseId,
