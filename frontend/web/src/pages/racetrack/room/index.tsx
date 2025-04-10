@@ -82,7 +82,7 @@ const RacetrackRoomPage = () => {
   return (
     <div className='flex h-[calc(100dvh-6rem)] flex-col gap-5 p-5'>
       <RoomLobby roomId={roomId} users={users} maxPlayers={maxPlayers}>
-        <ChatBox roomId={roomId} chatContent={chatContent} />
+        <ChatBox roomId={roomId} chatContent={chatContent} users={users} />
       </RoomLobby>
     </div>
   );

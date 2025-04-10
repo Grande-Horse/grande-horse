@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/Button';
 import Input from '@/components/ui/Input';
 import { useStompClient } from '@/contexts/StompContext';
 import { rankTextColor } from '@/constants/rank';
-import useUserInfo from '@/hooks/useQueries/useUserInfo';
+import { type RoomJoinUserData } from '@/types/room';
 
 interface Chat {
   sender: string;
@@ -14,15 +14,13 @@ interface Chat {
 interface ChatBoxProps {
   roomId: number;
   chatContent: Chat[];
+  users: RoomJoinUserData[];
 }
 
-const ChatBox: React.FC<ChatBoxProps> = ({ roomId, chatContent }) => {
-  const { data } = useUserInfo();
+const ChatBox: React.FC<ChatBoxProps> = ({ roomId, chatContent, users }) => {
   const [message, setMessage] = useState('');
   const ulRef = useRef<HTMLUListElement>(null);
   const buttonRef = useRef<HTMLButtonElement>(null);
-
-  const rankKey = data?.representativeCard.horseRank ?? 'all';
 
   const { publish } = useStompClient();
 
@@ -55,10 +53,12 @@ const ChatBox: React.FC<ChatBoxProps> = ({ roomId, chatContent }) => {
       >
         {chatContent.map((chat) => {
           const isSystem = chat.sender === 'SYSTEM';
+          const user = users.find((u) => u.userNickname === chat.sender);
+          const rankColor = user ? rankTextColor[user.horseRank] : '';
 
           return (
             <li key={`chat ${Math.random()}`} className='flex gap-3'>
-              <p className={isSystem ? '' : rankTextColor[rankKey]}>{chat.sender}:</p>
+              <p className={isSystem ? '' : rankColor}>{chat.sender}:</p>
               <p className='flex-1'>{chat.message}</p>
             </li>
           );
