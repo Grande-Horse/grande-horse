@@ -41,7 +41,7 @@ const HorseSelectModal: React.FC = () => {
               .map((item) => (
                 <div className='relative' key={item.cardId}>
                   <div
-                    className='absolute top-1 z-10 flex h-65.5 w-44 cursor-pointer items-center justify-center rounded-xl bg-black/60'
+                    className='absolute top-1 z-10 flex h-66 w-44 cursor-pointer items-center justify-center rounded-xl bg-black/60'
                     style={{
                       opacity: selectedHorse?.cardId === item.cardId ? 1 : 0,
                       pointerEvents: selectedHorse?.cardId === item.cardId ? 'auto' : 'none',
