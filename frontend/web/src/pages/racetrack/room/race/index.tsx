@@ -108,20 +108,25 @@ const RaceTrackRacePage = () => {
 
   useEffect(() => {
     if (!isOpen) {
+      let hasInsufficientCoin = false;
+
       playersInfo?.forEach((player) => {
-        if (player.userId === data?.id) {
-          if (!player.hasEnoughCoin) {
-            publish('/app/force_leave');
-            unsubscribeAll();
-            navigate('/racetrack', { replace: true });
-          }
+        if (player.userId === data?.id && !player.hasEnoughCoin) {
+          hasInsufficientCoin = true;
         }
       });
 
-      navigate(`/racetrack/room/${roomId}?title=${roomName}`, {
-        state: { playersInfo, isEnd: true, maxPlayers, roomId },
-        replace: true,
-      });
+      if (hasInsufficientCoin) {
+        publish('/app/force_leave');
+        unsubscribeAll();
+        alert('코인이 부족해서 게임에 참여하실 수 없습니다.');
+        navigate('/racetrack', { replace: true });
+      } else {
+        navigate(`/racetrack/room/${roomId}?title=${roomName}`, {
+          state: { playersInfo, isEnd: true, maxPlayers, roomId },
+          replace: true,
+        });
+      }
     }
   }, [isOpen]);
 
