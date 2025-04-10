@@ -5,6 +5,7 @@ import { useStompClient } from '@/contexts/StompContext';
 import ChatBox from '@/components/racetrack/ChatBox';
 import RoomLobby from '@/components/racetrack/RoomLobby';
 import { type RoomJoinUserData } from '@/types/room';
+import { type RankType } from '@/types/horse';
 
 interface Chat {
   sender: string;
@@ -13,6 +14,7 @@ interface Chat {
 }
 
 interface RaceData {
+  rankRestriction: RankType;
   isGameStarted: boolean;
   playersInfo: RoomJoinUserData[];
 }
@@ -82,7 +84,7 @@ const RacetrackRoomPage = () => {
   return (
     <div className='flex h-[calc(100dvh-6rem)] flex-col gap-5 p-5'>
       <RoomLobby roomId={roomId} users={users} maxPlayers={maxPlayers}>
-        <ChatBox roomId={roomId} chatContent={chatContent} />
+        <ChatBox roomId={roomId} chatContent={chatContent} users={users} />
       </RoomLobby>
     </div>
   );
