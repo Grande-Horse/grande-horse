@@ -40,7 +40,7 @@ export const useUpdateCandidateHorse = () => {
       const isAlreadyCandidateHorse = currentCandidates.some((horse) => horse.cardId === cardId);
 
       if (!isAlreadyCandidateHorse && currentCandidates.length >= 6) {
-        throw new Error(`후보 말은 6마리까지만 추가할 수 있습니다.`);
+        throw new Error(`후보마는 6마리까지만 추가할 수 있습니다.`);
       }
 
       return putCandidateHorse(cardId);
@@ -52,9 +52,9 @@ export const useUpdateCandidateHorse = () => {
     onError: (error: Error) => {
       const serverError = error.response?.data;
       if (serverError?.errorCode === 'CA5') {
-        alert('경주마는 후보 말에서 해제할 수 없습니다.');
+        alert('경주마는 후보마에서 해제할 수 없습니다.');
       } else if (serverError?.errorCode === 'CA6') {
-        alert('후보 말은 6마리까지만 추가할 수 있습니다.');
+        alert('후보마는 6마리까지만 추가할 수 있습니다.');
       } else {
         alert(serverError?.message || '알 수 없는 오류가 발생했습니다.');
       }

@@ -116,7 +116,7 @@ const HorseInfoPanel: React.FC<HorseInfoPanelProps> = ({ selectedHorse, setSelec
             });
           }}
         >
-          후보 말 해제
+          후보마 해제
         </Button>
       </div>
     </section>

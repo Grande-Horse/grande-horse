@@ -51,7 +51,7 @@ const pastureHorseReducer = (state: PastureHorseState, action: PastureHorseActio
         if (state.candidateHorses.length >= state.maxHorses) {
           return {
             ...state,
-            error: `후보 말은 ${state.maxHorses}마리까지만 추가할 수 있습니다.`,
+            error: `후보마는 ${state.maxHorses}마리까지만 추가할 수 있습니다.`,
           };
         }
 
