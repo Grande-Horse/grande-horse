@@ -8,12 +8,11 @@ import { useState, useEffect } from 'react';
 import { usePastureHorse } from '@/contexts/PastureHorseContextProvider';
 import { Button } from '@/components/ui/Button';
 import CrownIcon from '@/assets/icons/crownIcon.svg?react';
-import useInfiniteScroll from '@/hooks/useQueries/useInfiniteScroll';
 import { HorseCardType } from '@/types/card';
-import { queryKey } from '@/constants/queryKey';
-import { getMyHorseCards } from '@/services/stall';
 import { ClipLoader } from 'react-spinners';
 import { useRepresentativeHorse, useUpdateCandidateHorse } from '@/services/horseManagement';
+import { useInView } from 'react-intersection-observer';
+import useGetMyHorseCards from '@/hooks/useQueries/useGetMyHorseCards';
 
 const pastureBgUrl = `bg-[url('@/assets/images/backgrounds/managementPastureBg.webp')] bg-contain bg-center`;
 
@@ -21,7 +20,15 @@ const ManagementPanel: React.FC = () => {
   const [rank, setRank] = useState<string>('');
   const [currentHorseId, setCurrentHorseId] = useState<number | null>(null);
 
-  const { data, hasNextPage, ref } = useInfiniteScroll(queryKey.MY_HORSE_CARDS, getMyHorseCards);
+  const { data, fetchNextPage, hasNextPage } = useGetMyHorseCards(rankNameMap[rank as keyof typeof rankNameMap]);
+
+  const { ref, inView } = useInView();
+
+  useEffect(() => {
+    if (inView) {
+      fetchNextPage();
+    }
+  }, [inView]);
   const { state, dispatch } = usePastureHorse();
 
   const candidateMutation = useUpdateCandidateHorse();
