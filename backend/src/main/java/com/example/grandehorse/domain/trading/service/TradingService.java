@@ -133,9 +133,8 @@ public class TradingService {
 		스케줄링 돌려서 매일 밤 12시에 데이터 들고와서 레디스에 올려놓는 방식으로 리팩토링하기 (성능 개선 예정)
 	 */
 	public ResponseEntity<CommonResponse<List<PriceHistoryResponse>>> getPriceHistory(String horseId) {
-		LocalDate now = LocalDate.now();
-		LocalDate today = now.minusDays(0);
-		LocalDate sixDaysAgo = now.minusDays(6);
+		LocalDate today = LocalDate.now();
+		LocalDate sixDaysAgo = today.minusDays(6);
 
 		List<PriceHistoryResponse> priceHistory
 			= cardTradingJpaRepository.findPriceHistory(horseId, today, sixDaysAgo);
