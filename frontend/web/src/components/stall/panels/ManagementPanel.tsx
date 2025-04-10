@@ -20,14 +20,18 @@ const pastureBgUrl = `bg-[url('@/assets/images/backgrounds/managementPastureBg.w
 const ManagementPanel: React.FC = () => {
   const [rank, setRank] = useState<string>('');
   const [currentHorseId, setCurrentHorseId] = useState<number | null>(null);
+
+  const { data, hasNextPage, ref } = useInfiniteScroll(queryKey.MY_HORSE_CARDS, getMyHorseCards);
   const { state, dispatch } = usePastureHorse();
 
+  const candidateMutation = useUpdateCandidateHorse();
+  const { setRepresentative: representativeMutation, unsetRepresentative: unsetRepresentativeMutation } =
+    useRepresentativeHorse();
+
   useEffect(() => {
-    if (state.candidateHorses.length === 0) {
-      setCurrentHorseId(null);
-    } else if (!state.candidateHorses.some((h) => h.cardId === currentHorseId)) {
+    if (state.candidateHorses.length === 0) setCurrentHorseId(null);
+    else if (!state.candidateHorses.some((h) => h.cardId === currentHorseId))
       setCurrentHorseId(state.candidateHorses[0].cardId);
-    }
   }, [state.candidateHorses, currentHorseId]);
 
   const getCurrentHorse = () => {
@@ -64,10 +68,9 @@ const ManagementPanel: React.FC = () => {
   };
 
   const PastureHorsesIndicator = () => (
-    <div className='bg-primary flex h-8 w-40 max-w-full items-center justify-center gap-2 rounded-full'>
+    <div className='bg-primary flex h-8 w-20 max-w-full items-center justify-center gap-2 rounded-full'>
       {state.candidateHorses.map((horse) => {
         const isCurrent = horse.cardId === currentHorseId;
-        const isRepresentative = horse.status === 3 || state.representativeHorse?.cardId === horse.cardId;
 
         return (
           <div key={horse.cardId} className='relative flex h-4 w-4 items-center justify-center'>
@@ -100,7 +103,7 @@ const ManagementPanel: React.FC = () => {
           <ChangeHorseButton type='plus' />
         </div>
         <div className='flex items-center gap-2'>
-          {isRepresentative && <CrownIcon width={20} height={20} />}
+          {currentHorse && isRepresentative && <CrownIcon width={20} height={20} />}
           <div className='h-10'>{currentHorse?.name || '선택된 말이 없습니다'}</div>
         </div>
       </div>
@@ -115,10 +118,6 @@ const ManagementPanel: React.FC = () => {
       </div>
     </div>
   );
-
-  const candidateMutation = useUpdateCandidateHorse();
-  const { setRepresentative: representativeMutation, unsetRepresentative: unsetRepresentativeMutation } =
-    useRepresentativeHorse();
 
   const handleToggleRepresentative = (horse: HorseCardType) => {
     if (horse.status === 3) {
@@ -136,8 +135,6 @@ const ManagementPanel: React.FC = () => {
     }
   };
 
-  const { data, hasNextPage, ref } = useInfiniteScroll(queryKey.MY_HORSE_CARDS, getMyHorseCards);
-
   return (
     <div className='flex h-full flex-col'>
       <section className='my-10 flex flex-col items-center justify-center gap-2'>
@@ -146,13 +143,11 @@ const ManagementPanel: React.FC = () => {
           <Button
             onClick={() => {
               const currentHorse = getCurrentHorse();
-              if (currentHorse) {
-                handleToggleRepresentative(currentHorse);
-              }
+              if (currentHorse) handleToggleRepresentative(currentHorse);
             }}
             disabled={state.candidateHorses.length === 0}
           >
-            {getCurrentHorse()?.status === 3 ? '경주마 해제' : '경주마 지정'}
+            {getCurrentHorse()?.status === 3 ? '출전마 해제' : '출전마 지정'}
           </Button>
         </div>
       </section>
@@ -189,7 +184,7 @@ const ManagementPanel: React.FC = () => {
                   </div>
                 )}
 
-                <SmallHorseCard horse={item} />
+                <SmallHorseCard horse={item} onClick={() => {}} />
               </div>
             ))
           )}

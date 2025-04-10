@@ -1,5 +1,4 @@
 import { createContext, useReducer, ReactNode, useContext, useEffect, useRef } from 'react';
-import { HorseType } from '@/types/horse';
 import { HorseCardType } from '@/types/card';
 import { getAllCandidateHorses, putCandidateHorse, setRepresentativeHorse } from '@/services/horseManagement';
 

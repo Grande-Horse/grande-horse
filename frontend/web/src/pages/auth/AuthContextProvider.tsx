@@ -169,23 +169,15 @@ export const AuthContextProvider: React.FC<{ children: React.ReactNode }> = ({ c
   const handleAutoLogin = async () => {
     try {
       dispatch({ type: 'SET_LOADING', payload: true });
-      const response = await autoLogin();
-
-      if (response) {
-        // 로그인 성공 시
-        if (response.errorCode === '') {
-          dispatch({
-            type: 'LOGIN_SUCCESS',
-          });
-        } else {
-          // 회원가입 필요 시
+      await autoLogin().then(() => {
+        dispatch({ type: 'LOGIN_SUCCESS' });
+        handleOauthRedirect(sessionStorage.getItem('oauthProvider') || '').catch((error) => {
+          dispatch({ type: 'SET_ERROR', payload: '자동 로그인 실패' });
           dispatch({
             type: 'REGISTER_REQUIRED',
           });
-        }
-      } else {
-        dispatch({ type: 'LOGOUT' });
-      }
+        });
+      });
     } catch (error) {
       console.error(error);
       dispatch({ type: 'SET_ERROR', payload: '자동 로그인 실패' });
@@ -207,7 +199,7 @@ export const AuthContextProvider: React.FC<{ children: React.ReactNode }> = ({ c
       const isDuplicated = await checkNicknameDuplicated(nickname);
 
       if (!isDuplicated) {
-        dispatch({ type: 'NICKNAME_AVAILABLE' });
+        dispatch({ type: 'NICKNAME_AVAILABLE', payload: nickname });
         return true;
       } else {
         dispatch({
@@ -247,28 +239,7 @@ export const AuthContextProvider: React.FC<{ children: React.ReactNode }> = ({ c
 
       if (response.isSuccess) {
         // 회원가입 성공 후 자동 로그인 시도
-        try {
-          const loginResponse = await autoLogin();
-          if (loginResponse && loginResponse.errorCode === '') {
-            dispatch({ type: 'REGISTER_SUCCESS' });
-            dispatch({ type: 'LOGIN_SUCCESS' });
-            return true;
-          } else {
-            dispatch({
-              type: 'SET_ERROR',
-              payload: '로그인에 실패했습니다',
-            });
-            dispatch({ type: 'REGISTER_SUCCESS' });
-            return false;
-          }
-        } catch (loginError) {
-          dispatch({
-            type: 'SET_ERROR',
-            payload: '로그인에 실패했습니다',
-          });
-          dispatch({ type: 'REGISTER_SUCCESS' });
-          return false;
-        }
+        await handleAutoLogin();
       } else {
         dispatch({
           type: 'SET_ERROR',
@@ -315,38 +286,6 @@ export const AuthContextProvider: React.FC<{ children: React.ReactNode }> = ({ c
     }
   }, []);
 
-  // 인증 상태 변경에 따른 라우트 보호
-  useEffect(() => {
-    // 이미 마운트되고 상태가 변경된 경우
-    if (state.isAuthenticated) {
-      if (state.isRegistered) {
-        if (state.isLoggedIn) {
-          // 로그인 완료
-          const publicRoutes = ['/landing', '/login', '/register'];
-          if (publicRoutes.includes(location.pathname)) {
-            navigate('/', { replace: true });
-          }
-        } else {
-          // 회원가입 완료, 로그인 아직 안된 경우
-          // 자동 로그인 시도
-          handleAutoLogin().catch((error) => {
-            console.error('자동 로그인 실패:', error);
-          });
-        }
-      } else {
-        // 인증 완료, 회원가입 아직 안된 경우
-        if (location.pathname !== '/register') {
-          navigate('/register', { replace: true });
-        }
-      }
-    } else {
-      // 인증 안된 경우
-      const publicRoutes = ['/landing', '/login'];
-      if (!publicRoutes.includes(location.pathname) && location.pathname !== '/') {
-        navigate('/landing', { replace: true });
-      }
-    }
-  }, [state.isAuthenticated, state.isRegistered, state.isLoggedIn, location.pathname]);
 
   const value: AuthContextType = {
     state,

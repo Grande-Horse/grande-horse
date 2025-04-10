@@ -9,6 +9,15 @@ interface RoomItemProps {
   room: RoomData;
 }
 
+const RankScore = {
+  all: 6,
+  legend: 5,
+  unique: 4,
+  epic: 3,
+  rare: 2,
+  normal: 1,
+};
+
 const RoomItem: React.FC<RoomItemProps> = ({ room }) => {
   const currentPlayers = room.currentPlayers || 1;
   const isRoomFull = currentPlayers >= room.maxPlayers;
@@ -23,6 +32,16 @@ const RoomItem: React.FC<RoomItemProps> = ({ room }) => {
     if (data) {
       if (data.coin < room.bettingCoin) {
         alert('코인이 부족합니다.');
+        return;
+      }
+
+      if (data.representativeCard === null) {
+        alert('대표 카드가 설정되지 않았습니다. 설정 후 다시 시도해주세요.');
+        return;
+      }
+
+      if (RankScore[data.representativeCard.horseRank] > RankScore[room.rankRestriction as keyof typeof RankScore]) {
+        alert(`제한 등급보다 높은 카드로 입장할 수 없습니다.`);
         return;
       }
 

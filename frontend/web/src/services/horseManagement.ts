@@ -3,6 +3,7 @@ import { ApiResponse, CursorResponse } from '@/types/service/response';
 import { CandidateHorseType } from '@/types/horse';
 import { useQueryClient, useQuery, useMutation } from '@tanstack/react-query';
 import { queryKey } from '@/constants/queryKey';
+import useUserInfo from '@/hooks/useQueries/useUserInfo';
 
 export const getAllCandidateHorses = async (): Promise<ApiResponse<CandidateHorseType[]>> => {
   return await apiGet<ApiResponse<CandidateHorseType[]>>('/cards/candidate');
@@ -63,7 +64,7 @@ export const useUpdateCandidateHorse = () => {
 
 export const useRepresentativeHorse = () => {
   const queryClient = useQueryClient();
-
+  const { refetch } = useUserInfo();
   return {
     setRepresentative: useMutation({
       mutationFn: async (cardId: number) => {
@@ -80,6 +81,7 @@ export const useRepresentativeHorse = () => {
       onSuccess: () => {
         queryClient.invalidateQueries({ queryKey: ['candidateHorses'] });
         queryClient.invalidateQueries({ queryKey: [queryKey.MY_HORSE_CARDS] });
+        refetch();
       },
       onError: (error: Error) => {
         alert(error.message);
