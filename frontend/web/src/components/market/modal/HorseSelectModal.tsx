@@ -31,10 +31,9 @@ const HorseSelectModal: React.FC = () => {
 
   return (
     <ConfirmDialog onConfirm={handleConfirm} confirmText='선택'>
-      <div className='flex max-h-[40rem] flex-col gap-6'>
-        <p className='text-heading4 text-stroke'>판매할 말을 선택해 주세요!</p>
-
-        <section className='scrollbar-hide grid grid-cols-2 place-items-center gap-5 overflow-y-auto'>
+      <p className='text-heading4 text-stroke pb-6'>판매할 말을 선택해 주세요!</p>
+      <div className='scrollbar-hide flex max-h-[36rem] flex-col gap-6 overflow-y-auto'>
+        <section className='grid grid-cols-2 place-items-center gap-5'>
           {data?.pages.flatMap((page) =>
             page.items
               .filter((item) => item.status === 0)
