@@ -5,6 +5,7 @@ import java.time.Instant;
 import java.time.LocalTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
@@ -364,7 +365,9 @@ public class RaceService {
 					return;
 				}
 
-				double moveDistance = calculateDistance(websocketRedisTemplate.opsForHash().entries(userKey), distance);
+				double leadDistance = Collections.max(distanceMap.values());
+				double moveDistance
+					= calculateDistance(websocketRedisTemplate.opsForHash().entries(userKey), distance, leadDistance);
 				distance += moveDistance;
 				websocketRedisTemplate.opsForHash().put(userKey, "distance", String.valueOf(distance));
 
@@ -674,7 +677,7 @@ public class RaceService {
 		);
 	}
 
-	private double calculateDistance(Map<Object, Object> stats, double currentDistance) {
+	private double calculateDistance(Map<Object, Object> stats, double currentDistance, double leadDistance) {
 		Random random = new Random();
 
 		double speed = Double.parseDouble(stats.getOrDefault("horseSpeed", "0").toString());
@@ -682,45 +685,65 @@ public class RaceService {
 		double stamina = Double.parseDouble(stats.getOrDefault("horseStamina", "0").toString());
 		double weight = Double.parseDouble(stats.getOrDefault("horseWeight", "0").toString());
 
+		// 구간별 스탯 가중치 설정
 		double speedWeight, accelWeight, staminaWeight;
 		if (currentDistance <= 625.0) {
-			accelWeight = 0.5;
-			speedWeight = 0.3;
-			staminaWeight = 0.2;
-		} else if (currentDistance <= 1275.0) {
-			speedWeight = 0.5;
 			accelWeight = 0.3;
-			staminaWeight = 0.2;
-		} else {
-			staminaWeight = 0.5;
+			speedWeight = 0.2;
+			staminaWeight = 0.1;
+		} else if (currentDistance <= 1275.0) {
 			speedWeight = 0.3;
 			accelWeight = 0.2;
+			staminaWeight = 0.1;
+		} else {
+			staminaWeight = 0.3;
+			speedWeight = 0.2;
+			accelWeight = 0.1;
 		}
 
+		// 기본 거리 계산 (스탯 영향 축소)
+		double baseDistance =
+			(speed * speedWeight * 0.7) +
+				(accel * accelWeight * 0.7) +
+				(stamina * staminaWeight * 0.7) -
+				(weight * 0.05); // 체중 영향도 감소
+
+		// 피로도 계산
 		double fatigue = Math.max(0, (currentDistance / 1900.0) - (stamina * 0.01));
 
-		double baseDistance =
-			(speed * speedWeight) +
-				(accel * accelWeight) +
-				(stamina * staminaWeight) -
-				(weight * 0.1);
+		// 운 요소: 가속이 좋고 체중이 가벼우면 운빨도 좋아짐
+		double luck = ((random.nextDouble() - 0.5) * 2) + (accel - weight) * 0.01;
 
-		double luck = (random.nextDouble() - 0.5) * 2;
-
+		// 동적 배율 계산
 		double dynamicMultiplier =
 			(0.9 + random.nextDouble() * 0.3) + // 0.9 ~ 1.2
 				(luck * 0.1) -
 				(fatigue * 0.2);
 
+		// 특수 이벤트 (확률적으로 추가 boost/slip)
 		double eventChance = random.nextDouble();
 		if (eventChance < 0.03) {
-			dynamicMultiplier *= 1.3;
-			log.info("🔥 BOOST! This horse is surging forward!");
+			dynamicMultiplier *= 1.4;
+			log.info("🚀 BOOST! This horse found a burst of speed!");
+		} else if (eventChance < 0.06) {
+			dynamicMultiplier *= 1.2;
+			log.info("🐎 Smooth stride! Gains some extra momentum.");
 		} else if (eventChance > 0.97) {
 			dynamicMultiplier *= 0.7;
 			log.info("😵 Slipped! This horse is slowing down!");
+		} else if (eventChance > 0.94) {
+			dynamicMultiplier *= 0.85;
+			log.info("😓 Slight misstep, losing rhythm.");
 		}
 
+		// 역전 기회 제공 (뒤처진 말일수록 boost 확률 증가)
+		double behindFactor = Math.max(0, 1.0 - (currentDistance / (leadDistance + 0.01)));
+		if (random.nextDouble() < (0.03 + behindFactor * 0.05)) {
+			dynamicMultiplier *= 1.4;
+			log.info("🔥 COMEBACK MODE! The horse is catching up fiercely!");
+		}
+
+		// 최종 거리 계산
 		return Math.max(0.0, baseDistance * dynamicMultiplier);
 	}
 
