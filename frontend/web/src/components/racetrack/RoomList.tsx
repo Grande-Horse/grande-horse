@@ -8,7 +8,7 @@ interface RoomListProps {
 const RoomList: React.FC<RoomListProps> = ({ rooms }) => {
   return (
     <div className='text-detail flex h-full flex-col gap-5'>
-      {rooms.length > 0 ? (
+      {Array.isArray(rooms) && rooms.length > 0 ? (
         rooms.map((room) => {
           return <RoomItem room={room} key={room.roomId} />;
         })
