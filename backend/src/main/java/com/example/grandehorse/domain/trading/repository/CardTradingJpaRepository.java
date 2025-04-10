@@ -1,6 +1,6 @@
 package com.example.grandehorse.domain.trading.repository;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import jakarta.persistence.LockModeType;
@@ -122,22 +122,22 @@ public interface CardTradingJpaRepository extends JpaRepository<CardTradeEntity,
 	);
 
 	@Query("""
-        SELECT new com.example.grandehorse.domain.trading.controller.response.PriceHistoryResponse(
-            MAX(t.price),
-            AVG(t.price),
-            MIN(t.price),
-            FUNCTION('DATE', t.soldAt)
-        )
-        FROM CardTradeEntity t
-        WHERE t.horseId = :horseId
-        AND t.status = 'SOLD'
-        AND FUNCTION('DATE', t.soldAt) BETWEEN :sixDaysAgo AND :today
-        GROUP BY FUNCTION('DATE', t.soldAt)
-        ORDER BY FUNCTION('DATE', t.soldAt) DESC
-        """)
+		SELECT new com.example.grandehorse.domain.trading.controller.response.PriceHistoryResponse(
+		    MAX(t.price),
+		    AVG(t.price),
+		    MIN(t.price),
+		    FUNCTION('DATE', t.soldAt)
+		)
+		FROM CardTradeEntity t
+		WHERE t.horseId = :horseId
+		AND t.status = 'SOLD'
+		AND t.soldAt BETWEEN :startDateTime AND :endDateTime
+		GROUP BY FUNCTION('DATE', t.soldAt)
+		ORDER BY FUNCTION('DATE', t.soldAt) DESC
+		""")
 	List<PriceHistoryResponse> findPriceHistory(
 		@Param("horseId") String horseId,
-		@Param("today") LocalDate today,
-		@Param("sixDaysAgo") LocalDate sixDaysAgo
+		@Param("startDateTime") LocalDateTime startDateTime,
+		@Param("endDateTime") LocalDateTime endDateTime
 	);
 }
