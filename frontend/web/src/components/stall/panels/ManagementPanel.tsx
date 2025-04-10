@@ -68,12 +68,14 @@ const ManagementPanel: React.FC = () => {
   };
 
   const PastureHorsesIndicator = () => (
-    <div className='bg-primary flex h-8 w-20 max-w-full items-center justify-center gap-2 rounded-full'>
+    <div
+      className={`${state.candidateHorses.length > 0 ? 'bg-primary' : 'bg-background'} flex h-5 max-w-full min-w-1 items-center justify-center gap-2 rounded-full px-4`}
+    >
       {state.candidateHorses.map((horse) => {
         const isCurrent = horse.cardId === currentHorseId;
 
         return (
-          <div key={horse.cardId} className='relative flex h-4 w-4 items-center justify-center'>
+          <div key={horse.cardId} className='relative flex h-2 w-2 items-center justify-center'>
             <button
               onClick={() => setCurrentHorseId(horse.cardId)}
               className={`h-2 w-2 rounded-full transition-colors ${isCurrent ? 'bg-white' : 'bg-background'}`}
@@ -89,7 +91,7 @@ const ManagementPanel: React.FC = () => {
     const isRepresentative = currentHorse?.status === 3 || state.representativeHorse?.cardId === currentHorse?.cardId;
 
     return (
-      <div className='flex flex-col items-center gap-8'>
+      <div className='flex flex-col items-center gap-10'>
         <PastureHorsesIndicator />
         <div className='flex items-center gap-10'>
           <ChangeHorseButton type='minus' />
