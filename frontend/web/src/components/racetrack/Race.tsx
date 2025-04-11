@@ -110,7 +110,7 @@ const Race: React.FC<RaceProps> = ({ user, info, players }) => {
                   }}
                 >
                   {isMine && (
-                    <div className='absolute -top-10 flex flex-col items-center justify-center'>
+                    <div className='absolute -top-10 z-50 flex flex-col items-center justify-center'>
                       <div className='text-stroke'>{player.userNickname}</div>
                       <div className='triangle-down'></div>
                     </div>

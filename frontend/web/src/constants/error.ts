@@ -67,12 +67,12 @@ const CA4: CustomError = {
 
 const CA5: CustomError = {
   code: 'CA5',
-  message: '후보 말로 등록 또는 해제할 수 없는 카드입니다.',
+  message: '후보마로 등록 또는 해제할 수 없는 카드입니다.',
 };
 
 const CA6: CustomError = {
   code: 'CA6',
-  message: '출전마 및 후보 말은 최대 6마리까지 등록할 수 있습니다.',
+  message: '출전마 및 후보마는 최대 6마리까지 등록할 수 있습니다.',
 };
 
 const CA7: CustomError = {

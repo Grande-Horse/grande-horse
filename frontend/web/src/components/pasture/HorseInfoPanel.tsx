@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react';
 import HorseProfileCard from '@/components/cards/HorseProfileCard';
 import { Button } from '@/components/ui/Button';
 import { HorseCardType } from '@/types/card';
@@ -7,9 +8,14 @@ import SpeedIcon from '@/assets/icons/speedIcon.svg?react';
 import AccelerationIcon from '@/assets/icons/accelerationIcon.svg?react';
 import StaminaIcon from '@/assets/icons/staminaIcon.svg?react';
 import { rankMap } from '@/constants/rank';
-import { unsetRepresentativeHorse, useRepresentativeHorse, useUpdateCandidateHorse } from '@/services/horseManagement';
+import {
+  useCandidateHorses,
+  unsetRepresentativeHorse,
+  useRepresentativeHorse,
+  useUpdateCandidateHorse,
+} from '@/services/horseManagement';
 import { usePastureHorse } from '@/contexts/PastureHorseContextProvider';
-
+import { useQueryClient } from '@tanstack/react-query';
 interface HorseInfoPanelProps {
   selectedHorse: HorseCardType | null;
   setSelectedHorse: (horse: HorseCardType | null) => void;
@@ -17,9 +23,25 @@ interface HorseInfoPanelProps {
 
 const HorseInfoPanel: React.FC<HorseInfoPanelProps> = ({ selectedHorse, setSelectedHorse }) => {
   const { dispatch } = usePastureHorse();
+  const [isRepresentative, setIsRepresentative] = useState(false);
   const candidateMutation = useUpdateCandidateHorse();
-  const { setRepresentative: representativeMutation, unsetRepresentative: unsetRepresentativeMutation } =
+  const { setRepresentative: setRepresentativeMutation, unsetRepresentative: unsetRepresentativeMutation } =
     useRepresentativeHorse();
+
+  const { data: candidateHorses } = useCandidateHorses();
+  const queryClient = useQueryClient();
+  useEffect(() => {
+    if (!selectedHorse || !candidateHorses) {
+      setIsRepresentative(false);
+      return;
+    }
+
+    const isRepresentative = candidateHorses?.find(
+      (horse) => horse.cardId === selectedHorse?.cardId && horse.status === 3
+    );
+    setIsRepresentative(!!isRepresentative);
+  }, [candidateHorses, selectedHorse]);
+
   const horseStats = [
     {
       icon: <RankIcon />,
@@ -62,22 +84,26 @@ const HorseInfoPanel: React.FC<HorseInfoPanelProps> = ({ selectedHorse, setSelec
         <Button
           className='flex-1'
           onClick={() => {
-            if (selectedHorse?.status === 3) {
+            const currentStatus = candidateHorses?.find((horse) => horse.cardId === selectedHorse?.cardId)?.status;
+
+            if (currentStatus === 3) {
               unsetRepresentativeMutation.mutate(selectedHorse.cardId, {
                 onSuccess: () => {
-                  dispatch({ type: 'TOGGLE_REPRESENTATIVE_HORSE', payload: null });
+                  queryClient.invalidateQueries({ queryKey: ['candidateHorses'] });
+                  setIsRepresentative(false);
                 },
               });
             } else {
-              representativeMutation.mutate(selectedHorse.cardId, {
+              setRepresentativeMutation.mutate(selectedHorse.cardId, {
                 onSuccess: () => {
-                  dispatch({ type: 'TOGGLE_REPRESENTATIVE_HORSE', payload: selectedHorse });
+                  queryClient.invalidateQueries({ queryKey: ['candidateHorses'] });
+                  setIsRepresentative(true);
                 },
               });
             }
           }}
         >
-          {selectedHorse?.status === 3 ? '출전마 해제' : '출전마 지정'}
+          {isRepresentative ? '출전마 해제' : '출전마 지정'}
         </Button>
         <Button
           className='flex-1'
@@ -90,7 +116,7 @@ const HorseInfoPanel: React.FC<HorseInfoPanelProps> = ({ selectedHorse, setSelec
             });
           }}
         >
-          후보 말 해제
+          후보마 해제
         </Button>
       </div>
     </section>

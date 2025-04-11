@@ -26,7 +26,7 @@ export const useCandidateHorses = () => {
     queryKey: ['candidateHorses'],
     queryFn: async () => {
       const response = await getAllCandidateHorses();
-      return response.data;
+      return response;
     },
   });
 };
@@ -36,13 +36,6 @@ export const useUpdateCandidateHorse = () => {
 
   return useMutation({
     mutationFn: (cardId: number) => {
-      const currentCandidates = queryClient.getQueryData<CandidateHorseType[]>(['candidateHorses']) || [];
-      const isAlreadyCandidateHorse = currentCandidates.some((horse) => horse.cardId === cardId);
-
-      if (!isAlreadyCandidateHorse && currentCandidates.length >= 6) {
-        throw new Error(`후보 말은 6마리까지만 추가할 수 있습니다.`);
-      }
-
       return putCandidateHorse(cardId);
     },
     onSuccess: () => {
@@ -50,13 +43,17 @@ export const useUpdateCandidateHorse = () => {
       queryClient.invalidateQueries({ queryKey: [queryKey.MY_HORSE_CARDS] });
     },
     onError: (error: Error) => {
+      console.log(error);
       const serverError = error.response?.data;
       if (serverError?.errorCode === 'CA5') {
-        alert('경주마는 후보 말에서 해제할 수 없습니다.');
+        alert('출전마는 후보마에서 해제할 수 없습니다.');
+        return;
       } else if (serverError?.errorCode === 'CA6') {
-        alert('후보 말은 6마리까지만 추가할 수 있습니다.');
+        alert('후보마는 6마리까지만 추가할 수 있습니다.');
+        return;
       } else {
         alert(serverError?.message || '알 수 없는 오류가 발생했습니다.');
+        return;
       }
     },
   });
