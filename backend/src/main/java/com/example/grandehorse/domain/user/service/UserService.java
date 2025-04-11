@@ -95,7 +95,7 @@ public class UserService {
 		);
 
 		if (socialProvider == SocialProvider.SSAFY) {
-			userEntity.increaseCoin(10_000);
+			userEntity.increaseCoin(100_000);
 		}
 
 		userJpaRepository.save(userEntity);
