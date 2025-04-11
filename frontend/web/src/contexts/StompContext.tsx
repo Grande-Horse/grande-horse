@@ -30,14 +30,14 @@ export const StompProvider = ({ children }: { children: React.ReactNode }) => {
       reconnectDelay: 5000,
       onConnect: () => {
         setConnected(true);
-        console.log('STOMP 연결됨');
+        // console.log('STOMP 연결됨');
       },
       onDisconnect: () => {
         setConnected(false);
-        console.log('STOMP 연결 해제됨');
+        // console.log('STOMP 연결 해제됨');
       },
       onStompError: (frame) => {
-        console.error('STOMP 오류:', frame);
+        // console.error('STOMP 오류:', frame);
       },
     })
   );
@@ -50,7 +50,7 @@ export const StompProvider = ({ children }: { children: React.ReactNode }) => {
     if (!clientRef.current.connected) return;
 
     if (subscriptions.current.has(destination)) {
-      console.warn(`이미 구독 중: ${destination}`);
+      // console.warn(`이미 구독 중: ${destination}`);
       // return;
     }
 
@@ -68,7 +68,7 @@ export const StompProvider = ({ children }: { children: React.ReactNode }) => {
       }
     });
     subscriptions.current.set(destination, sub);
-    console.log(`구독됨: ${destination}`);
+    // console.log(`구독됨: ${destination}`);
   };
 
   const unsubscribe = (destination: string) => {
@@ -76,19 +76,19 @@ export const StompProvider = ({ children }: { children: React.ReactNode }) => {
     if (sub) {
       sub.unsubscribe();
       subscriptions.current.delete(destination);
-      console.log(`구독 해제됨: ${destination}`);
+      // console.log(`구독 해제됨: ${destination}`);
     }
   };
 
   const unsubscribeAll = () => {
     subscriptions.current.forEach((sub) => sub.unsubscribe());
     subscriptions.current.clear();
-    console.log('모든 구독 해제됨');
+    // console.log('모든 구독 해제됨');
   };
 
   const publish = <T = unknown,>(destination: string, body?: T) => {
     if (!clientRef.current.connected) {
-      console.warn('STOMP 연결되지 않음. 메시지 전송 실패');
+      // console.warn('STOMP 연결되지 않음. 메시지 전송 실패');
       return;
     }
 
@@ -97,7 +97,7 @@ export const StompProvider = ({ children }: { children: React.ReactNode }) => {
       body: typeof body === 'string' ? body : JSON.stringify(body),
     });
 
-    console.log(`메시지 전송됨 → ${destination}`);
+    // console.log(`메시지 전송됨 → ${destination}`);
   };
 
   const getSubscriptions = () => {

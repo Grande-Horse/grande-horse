@@ -31,7 +31,7 @@ const RoomActionButtons: React.FC<RoomActionButtonsProps> = ({ roomId, users }) 
         setIsOpen(true);
       }
     } catch (error) {
-      console.log(error);
+      // console.log(error);
     }
   };
 

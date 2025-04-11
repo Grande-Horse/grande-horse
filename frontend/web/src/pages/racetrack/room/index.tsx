@@ -52,7 +52,7 @@ const RacetrackRoomPage = () => {
         });
       },
       (error) => {
-        console.log(error);
+        // console.log(error);
       }
     );
     subscribe(
@@ -64,7 +64,7 @@ const RacetrackRoomPage = () => {
         setUsers(data.playersInfo);
       },
       (error) => {
-        console.log(error);
+        // console.log(error);
       }
     );
 
