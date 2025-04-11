@@ -49,7 +49,7 @@ const RoomCreateModal: React.FC<RoomCreateModalProps> = ({ setIsOpen, onSuccess 
     e.preventDefault();
 
     if (!data) {
-      console.warn('userInfo가 없습니다.');
+      // console.warn('userInfo가 없습니다.');
       return;
     } else {
       if (data.coin < bettingCoin) {
@@ -80,7 +80,7 @@ const RoomCreateModal: React.FC<RoomCreateModalProps> = ({ setIsOpen, onSuccess 
     onSuccess(dataToSend);
 
     if (!connected) {
-      console.warn('STOMP 연결되지 않음. 방 생성 실패');
+      // console.warn('STOMP 연결되지 않음. 방 생성 실패');
       return;
     }
     publish('/app/createRoom', dataToSend);

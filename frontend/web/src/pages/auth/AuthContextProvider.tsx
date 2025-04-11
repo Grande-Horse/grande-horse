@@ -161,7 +161,7 @@ export const AuthContextProvider: React.FC<{ children: React.ReactNode }> = ({ c
         type: 'SET_ERROR',
         payload: '로그인 실패',
       });
-      console.error('oauth 로그인 오류:', error);
+      // console.error('oauth 로그인 오류:', error);
     }
   };
 
@@ -179,7 +179,7 @@ export const AuthContextProvider: React.FC<{ children: React.ReactNode }> = ({ c
         });
       });
     } catch (error) {
-      console.error(error);
+      // console.error(error);
       dispatch({ type: 'SET_ERROR', payload: '자동 로그인 실패' });
       dispatch({ type: 'LOGOUT' });
     }
@@ -285,7 +285,6 @@ export const AuthContextProvider: React.FC<{ children: React.ReactNode }> = ({ c
       }
     }
   }, []);
-
 
   const value: AuthContextType = {
     state,
