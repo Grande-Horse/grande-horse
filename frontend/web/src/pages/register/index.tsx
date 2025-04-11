@@ -107,7 +107,7 @@ const RegisterForm = () => {
     } catch (error) {
       setError('회원가입 중 오류가 발생했습니다.');
       setError(error.response.data.errorCode);
-      console.error(error);
+      // console.error(error);
     } finally {
       setIsLoading(false);
     }

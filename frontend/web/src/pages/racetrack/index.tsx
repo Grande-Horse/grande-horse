@@ -46,7 +46,7 @@ const RacetrackPage = () => {
       (data: any) => {
         if (data.type === 'createRoom') {
           if (!roomData) {
-            console.warn('roomData가 설정되지 않았습니다.');
+            // console.warn('roomData가 설정되지 않았습니다.');
             return;
           }
           navigate(`/racetrack/room/${data.roomId}?title=${roomData.roomName}`, {

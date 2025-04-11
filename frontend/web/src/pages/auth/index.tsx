@@ -43,7 +43,7 @@ const AuthPage = () => {
         }
         navigate(response?.redirectUrl, { replace: true });
       } catch (error) {
-        console.error('OAuth 로그인 실패:', error);
+        // console.error('OAuth 로그인 실패:', error);
         setError('로그인 처리 중 오류가 발생했습니다');
         navigate('/landing');
       } finally {
