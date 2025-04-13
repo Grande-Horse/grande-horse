@@ -1,5 +1,5 @@
 # 🐎 그런데 말입니다
-실제 한국마사회의 경주마 데이터에 기반한 2D 도트 그래픽 경마 게임 👾
+실제 한국마사회의 경주마 데이터에 기반한 2D 도트 그래픽 경마 게임 👾  
 
 ## 🚀 주요 기능
 ### ➊ 경마 게임 및 실시간 채팅 💬
@@ -38,10 +38,23 @@
 |<img width="479" alt="pasture" src="https://github.com/user-attachments/assets/422f5d44-485b-4179-8c58-ca3edd7f4eb5" />|<img width="377" alt="스크린샷 2025-04-10 오후 5 21 16" src="https://github.com/user-attachments/assets/f195df90-f8a0-4260-92ae-c81ffc865041" />|
 
 
-
 ### ➎ SSAFY, Kakao 로그인 기능 🔐
 - 싸피 혹은 카카오 계정으로 손쉽게 로그인
 
 |Landing Screen|
 |:--:|
 |<img width="478" alt="landing" src="https://github.com/user-attachments/assets/3ea54382-ab58-4715-bfd9-f2a27d3e4760" />|
+
+## 🌟 성과
+- 이용자 수 150명 이상 달성 👥
+
+## 🫂 팀원 소개
+|![박경범](https://github.com/user-attachments/assets/8bbab79e-66db-442e-b76a-3f9cfa8f7618)<br />BE & 총괄 팀장|![우성문](https://github.com/user-attachments/assets/7a6bf2f8-2f7d-4a44-8ae1-7cb303c11c39)<br />BE & Infra|![오상하](https://github.com/user-attachments/assets/c502c47c-aa57-4535-81d8-3c55420a5d60)<br />BE & Data|![김서로](https://github.com/user-attachments/assets/f744d8b7-7ed1-4345-b1e8-a77885e8e3f0)<br />FE 팀장 & Design|![신성우](https://github.com/user-attachments/assets/76ea2b33-b132-4bd8-bbf2-eba36a930eae)<br />FE & Design|![이지운](https://github.com/user-attachments/assets/505846df-82ef-4766-bd79-f90b2812d88f)<br />FE & Design|
+|:--:|:--:|:--:|:--:|:--:|:--:|
+
+## 🛠️ 기술 스택
+|BE|![Java](https://img.shields.io/badge/Java-%234D7896.svg?style=flat&logo=java&logoColor=white) ![Spring Boot](https://img.shields.io/badge/SpringBoot-6DB33F?style=flat&logo=SpringBoot&logoColor=white) ![Gradle](https://img.shields.io/badge/Gradle-02303A?style=flat&logo=gradle&logoColor=white) ![MySQL](https://img.shields.io/badge/MySQL-4479A1?style=flat&logo=MySQL&logoColor=white) ![Redis](https://img.shields.io/badge/Redis-FF4438?style=flat&logo=redis&logoColor=white)|
+|:--:|:--|
+|FE|![TypeScript](https://img.shields.io/badge/TypeScript-%23007ACC.svg?style=flat&logo=typescript&logoColor=white) ![React](https://img.shields.io/badge/React-61DAFB?style=flat&logo=react&logoColor=black) ![Vite](https://img.shields.io/badge/Vite-646CFF.svg?style=flat&logo=vite&logoColor=white) ![pnpm](https://img.shields.io/badge/pnpm-%23F69220.svg?style=flat&logo=pnpm&logoColor=white) ![TailwindCSS](https://img.shields.io/badge/TailwindCSS-%2338B2AC.svg?style=flat&logo=tailwind-css&logoColor=white) ![MSW](https://img.shields.io/badge/MSW-FF6A33.svg?style=flat&logo=Mock-Service-Worker&logoColor=white)
+|Infra|![Docker](https://img.shields.io/badge/Docker-2496ED.svg?style=flat&logo=Docker&logoColor=white) ![nginx](https://img.shields.io/badge/nginx-009639.svg?style=flat&logo=nginx&logoColor=white) ![Jenkins](https://img.shields.io/badge/Jenkins-D24939.svg?style=flat&logo=Jenkins&logoColor=white)|
+|Cooperation|![GitLab](https://img.shields.io/badge/GitLab-%23FC6D26.svg?style=flat&logo=gitlab&logoColor=white) ![Jira](https://img.shields.io/badge/Jira-%230052CC.svg?style=flat&logo=jira&logoColor=white) ![Figma](https://img.shields.io/badge/Figma-%23F24E1E.svg?style=flat&logo=figma&logoColor=white) ![Notion](https://img.shields.io/badge/Notion-%23000000.svg?style=flat&logo=notion&logoColor=white)|
