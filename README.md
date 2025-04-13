@@ -1,5 +1,8 @@
 # 🐎 그런데 말입니다
 실제 한국마사회의 경주마 데이터에 기반한 2D 도트 그래픽 경마 게임 👾  
+  
+- [짜릿한 경마의 세계로! (서비스 링크)](https://j12a606.p.ssafy.io) 🎮  
+- [영상 포트폴리오 시청](https://youtu.be/BNAXOQ2jusE) 🎥  
 
 ## 🚀 주요 기능
 ### ➊ 경마 게임 및 실시간 채팅 💬
@@ -46,7 +49,7 @@
 |<img width="478" alt="landing" src="https://github.com/user-attachments/assets/3ea54382-ab58-4715-bfd9-f2a27d3e4760" />|
 
 ## 🌟 성과
-- 이용자 수 150명 이상 달성 👥
+- 이용자 수 150명 이상 달성 📈
 
 
 ## 🫂 팀원 소개
