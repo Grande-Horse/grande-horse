@@ -91,7 +91,7 @@ STOMP의 `subscribe` 함수는 구독 시점이 중요하기 때문에 컴포넌
 |:--:|:--:|:--:|:--:|:--:|:--:|:--:|:--:|
 |![horseRunRight](https://github.com/user-attachments/assets/bb54e8a8-4a3d-40c7-9d5a-58173b83bfec)|![horseRunLeft](https://github.com/user-attachments/assets/4460ee04-3bbd-44e9-8e0e-c3a5f902d978)|![horseRunUp](https://github.com/user-attachments/assets/9d7a6954-4ccf-4326-9e93-9eaa75c8e559)|![horseRunDown](https://github.com/user-attachments/assets/5a3590a5-a471-442d-816b-f81f4c2becbf)|![horseIdleRight](https://github.com/user-attachments/assets/51ed6cf5-fed0-4c4a-9eec-86c4b906755f)|![horseIdleLeft](https://github.com/user-attachments/assets/59cb421a-9ae0-4d01-9912-b0d25e77ba79)|![horseIdleUp](https://github.com/user-attachments/assets/abc4e42b-2f06-4985-bee4-541fe360d35e)|![horseIdleDown](https://github.com/user-attachments/assets/fb695967-c47b-4823-bb6b-bdcc00b279de)|
   
-또한 각각의 말이 이동하면서 서로 부딪히지 않도록 모든 말의 좌표와 바라보는 방향을 Context API을 통해 전역적으로 관리하였습니다.  
+각각의 말이 이동하면서 서로 부딪히지 않도록 모든 말의 좌표와 바라보는 방향을 Context API을 통해 전역적으로 관리하였습니다.  
 `random`, `setTimeout` 함수를 재귀적으로 활용하여 각 말이 랜덤한 주기로 이동하도록 구현하였으며,  
 주변에 다른 말이나 장애물이 감지되면 정지하거나 방향을 전환하도록 설계하였습니다.  
 이러한 방식으로 목장페이지에서 모든 말에 자연스러운 움직임을 부여할 수 있었습니다.  
