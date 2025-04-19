@@ -84,7 +84,8 @@ STOMP의 `subscribe` 함수는 구독 시점이 중요하기 때문에 컴포넌
 ### ➋ 말 무작위 움직임
 
 목장 페이지 속 살아 있는 말을 나타내기 위해 Image Sprite을 활용하여 여러 마리의 말이 랜덤한 위치로 이동하도록 구현했습니다.  
-상하좌우의 방향으로 이동하거나 정지하는 말 객체를 표현하기 위해 총 8가지 말의 상태를 Tailwind CSS 전역 클래스로 정의하였습니다.  
+상하좌우의 방향으로 이동하거나 정지하는 말 객체를 표현하기 위해,  
+총 8가지 말의 상태를 Tailwind CSS 전역 클래스로 정의하였습니다.  
 이를 통해 다른 페이지에서 동일한 클래스를 불필요하게 정의하지 않고 말 클래스를 재사용할 수 있도록 설계하였습니다.  
   
 |HorseRun Right|HorseRun Left|HorseRun Up|HorseRun Down|HorseIdle Right|HorseIdle Left|HorseIdle Up|HorseIdle Down|
