@@ -95,3 +95,30 @@ STOMP의 `subscribe` 함수는 구독 시점이 중요하기 때문에 컴포넌
 `random`, `setTimeout` 함수를 재귀적으로 활용하여 각 말이 랜덤한 주기로 이동하도록 구현하였으며,  
 주변에 다른 말이나 장애물이 감지되면 정지하거나 방향을 전환하도록 설계하였습니다.  
 이러한 방식으로 목장페이지에서 모든 말에 자연스러운 움직임을 부여할 수 있었습니다.  
+
+### ➌ Suspense & Error Boundary 도입
+사용자 경험 개선과 효율적인 에러 처리를 위해 Suspense와 ErrorBoundary을 도입하였습니다.  
+또한 체계적으로 오류를 식별하고 다양한 예외 상황에 대처하기 위해 다양한 커스텀 에러 코드를 정의하였습니다.  
+  
+이러한 개발 과정에 있어서 다음과 같은 문제가 발생하였습니다.  
+- 컴포넌트 마운트 후 실행되는 Data Fetching은 React의 생명 주기와 직접적인 연관이 없음
+- 이로 인해 Suspense와 ErrorBoundary가 로딩 상태와 에러를 감지하지 못함
+  
+따라서 렌더링과 동시에 Data Fetching을 진행할 수 있도록 TanStack Query의 useSuspenseQuery hook을 사용하였습니다.  
+해당 hook은 내부적으로 렌더링 중에 로딩과 에러 상태를 throw하기 때문에  
+부모 컴포넌트인 Suspense와 ErrorBoundary가 이를 catch하게 됩니다.  
+  
+위 과정을 통해 애플리케이션 전반에 걸쳐 일관된 로딩과 에러 상태를 표시하고 사용자 경험을 크게 향상시켰습니다.  
+  
+|Error Screen|
+|:--:|
+|![image](https://github.com/user-attachments/assets/a85d5062-e7e5-47fb-aa99-c293b0dc1e94)|
+
+### ➍ Mock Service Worker을 활용한 API 요청 테스트
+Backend API 개발이 완료되기 전까지 Frontend 개발을 대기해야 하는 비효율적인 문제를 해결하기 위해  
+클라이언트 사이드에서 API을 모킹할 수 있는 도구인 MSW을 도입하였습니다.  
+  
+MSW는 브라우저에서 제공하는 API인 Service Worker을 이용하여 클라이언트 측에서 네트워크 요청을 가로채고 모의 응답을 전송합니다.  
+  
+실제 API 명세서에 기반한 모의 응답을 설계함으로써 네트워크 지연이나 서버 오류와 같은 예외 상황에 대한  
+통신 테스트를 수행했고 이를 통해 실제 Backend API 연동 과정에서 발생할 수 있는 문제를 사전에 최소화했습니다.  
