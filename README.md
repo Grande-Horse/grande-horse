@@ -1,7 +1,6 @@
 # 🐎 그런데 말입니다
 실제 한국마사회의 경주마 데이터에 기반한 2D 도트 그래픽 경마 게임 👾  
 
-- [짜릿한 경마의 세계로! (서비스 링크)](https://j12a606.p.ssafy.io) 🎮  
 - [영상 포트폴리오 시청](https://youtu.be/BNAXOQ2jusE) 🎥  
 
 ## 🚀 주요 기능
@@ -29,7 +28,7 @@
 
 |Coin Market Screen|Horse Purchase Screen|Horse Sell Screen|
 |:--:|:--:|:--:|
-|<img width="908" alt="coin" src="https://github.com/user-attachments/assets/49565dc8-cab2-44d0-9dfe-72870438507b" />|<img width="456" alt="스크린샷 2025-04-13 오후 2 35 27" src="https://github.com/user-attachments/assets/ca85e4c3-7332-4489-a8bd-bc3b801237fc" />|<img width="475" alt="스크린샷 2025-04-13 오후 2 41 01" src="https://github.com/user-attachments/assets/0d2470e0-9e15-4f68-8f30-5d6c117db265" />|
+|<img width="908" alt="coin" src="https://github.com/user-attachments/assets/49565dc8-cab2-44d0-9dfe-72870438507b" />|<img width="478" alt="Image" src="https://github.com/user-attachments/assets/54522f8d-8248-4799-b9b5-c4e55f6b1c07" />|<img width="478" alt="Image" src="https://github.com/user-attachments/assets/0fc91667-db20-43bf-a498-be131bd93ae6" />|
 
 
 ### ➍ 목장 관리 시스템 🌳
